@@ -2134,6 +2134,520 @@ input, textarea, select {
 .proj-complete-btn.completed { background: var(--accent-soft); color: var(--accent); }
 
 /* ============================================
+   DINNERS / MEAL PLAN
+   ============================================ */
+.meal-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.meal-day {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meal-day:hover { border-color: var(--border-strong); background: var(--surface-2); }
+.meal-day.today { border-color: var(--accent); background: var(--accent-soft); }
+
+.meal-day-head { display: flex; flex-direction: column; gap: 2px; }
+.meal-day-name {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+}
+.meal-day-num {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+}
+.meal-day.today .meal-day-num { color: var(--accent); }
+
+.meal-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.3;
+}
+
+.meal-empty {
+  color: var(--text-3);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.meal-pill {
+  background: var(--surface-3);
+  border-left: 3px solid var(--accent);
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  width: 100%;
+  word-break: break-word;
+}
+
+.dinner-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.dinner-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+
+.dinner-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+}
+
+.dinner-card::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  right: -20%;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(closest-side, rgba(251, 191, 36, 0.16), transparent);
+  pointer-events: none;
+}
+
+.dinner-card-name {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.15;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+
+.dinner-card-notes {
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.5;
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dinner-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+}
+
+.dinner-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-3);
+  font-weight: 500;
+}
+
+.dinner-add-grocery {
+  font-size: 10px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.dinner-add-grocery:hover { background: var(--accent); color: #1a1410; }
+
+.idea-pick-chip {
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.idea-pick-chip:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Today's dinner card on dashboard */
+.dinner-tonight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), transparent);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: var(--radius);
+}
+
+.dinner-tonight-icon { font-size: 28px; }
+.dinner-tonight-info { flex: 1; }
+.dinner-tonight-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+}
+.dinner-tonight-name {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 18px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Member tags on grocery items */
+.gro-tags {
+  display: flex;
+  gap: 3px;
+  margin-left: 8px;
+}
+
+.gro-tag-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #1a1410;
+}
+
+/* Multi-select "Everyone" pill */
+.member-chip.everyone {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+@media (max-width: 880px) {
+  .meal-week {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+  }
+  .meal-day {
+    min-width: 160px;
+    scroll-snap-align: start;
+  }
+}
+
+/* ============================================
+   PHOTO ALBUM
+   ============================================ */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.photo-tile {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+}
+
+.photo-tile:hover { transform: scale(1.02); border-color: var(--accent); }
+
+.photo-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-del {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.photo-tile:hover .photo-del { opacity: 1; }
+.photo-del svg { width: 14px; height: 14px; }
+.photo-del:hover { background: var(--danger); }
+
+.photo-upload-btn {
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.photo-upload-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.photo-upload-btn svg { width: 16px; height: 16px; }
+
+/* Dashboard photo widget */
+.photo-widget {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.3s var(--ease);
+}
+
+.photo-widget:hover { transform: translateY(-2px); border-color: var(--border-strong); }
+
+.photo-widget img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 1.2s ease;
+}
+
+.photo-widget-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%);
+  display: flex;
+  align-items: flex-end;
+  padding: 16px;
+  pointer-events: none;
+}
+
+.photo-widget-label {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 18px;
+  color: white;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.photo-widget-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-3);
+  gap: 8px;
+}
+
+.photo-widget-empty .pw-icon { font-size: 36px; opacity: 0.6; }
+.photo-widget-empty .pw-text {
+  font-size: 13px;
+  font-style: italic;
+  font-family: var(--display);
+}
+
+/* ============================================
+   SCREENSAVER
+   ============================================ */
+.screensaver {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 500;
+  display: none;
+  overflow: hidden;
+}
+
+.screensaver.active {
+  display: block;
+  animation: fadeIn 0.6s var(--ease);
+}
+
+.ss-photo {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 1.5s ease, transform 12s ease-out;
+}
+
+.ss-photo.visible {
+  opacity: 1;
+}
+
+.ss-photo.zooming {
+  transform: scale(1.08);
+}
+
+.ss-overlay {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 32px 40px;
+  pointer-events: none;
+}
+
+.ss-clock-row {
+  align-self: flex-start;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 16px 24px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ss-clock {
+  font-family: var(--display);
+  font-size: clamp(48px, 7vw, 88px);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variation-settings: "opsz" 144, "SOFT" 30;
+}
+
+.ss-date {
+  font-family: var(--display);
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  margin-top: 8px;
+  font-weight: 400;
+}
+
+.ss-exit {
+  align-self: flex-end;
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.95);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ss-exit:hover {
+  background: rgba(0, 0, 0, 0.75);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.ss-exit svg { width: 16px; height: 16px; }
+
+.ss-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+  padding: 40px;
+}
+
+.ss-empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.ss-empty-title {
+  font-family: var(--display);
+  font-size: 32px;
+  font-style: italic;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.ss-empty-sub {
+  font-size: 14px;
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+/* ============================================
    FIREBASE SYNC UI
    ============================================ */
 .sync-indicator {
@@ -2498,6 +3012,10 @@ input, textarea, select {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 7h14l-1.5 11a2 2 0 01-2 1.7H8.5a2 2 0 01-2-1.7L5 7zM9 7V5a3 3 0 016 0v2"/></svg>
       <span>Groceries</span>
     </button>
+    <button class="rail-btn" data-view="dinners" aria-label="Dinners">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h18M5 12V8a3 3 0 013-3h8a3 3 0 013 3v4M7 12v6a2 2 0 002 2h6a2 2 0 002-2v-6"/></svg>
+      <span>Dinners</span>
+    </button>
     <button class="rail-btn" data-view="chores" aria-label="Chores">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3 8-8M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg>
       <span>Chores</span>
@@ -2511,6 +3029,10 @@ input, textarea, select {
       <span>Family</span>
     </button>
     <div class="rail-spacer"></div>
+    <button class="rail-btn" onclick="enterScreensaver()" aria-label="Lock / Screensaver" style="margin-top: 8px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+      <span>Lock</span>
+    </button>
   </nav>
 
   <!-- Main Stage -->
@@ -2525,7 +3047,7 @@ input, textarea, select {
         </div>
         <div class="weather-chip" id="weatherChip">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M19.07 4.93l-1.41 1.41M6.34 17.66l-1.41 1.41M19.07 19.07l-1.41-1.41M6.34 6.34L4.93 4.93"/></svg>
-          <span><strong id="weatherTemp">—</strong> <span id="weatherDesc">Macomb, MI</span></span>
+          <span><strong id="weatherTemp">—</strong> <span id="weatherDesc">Loading…</span></span>
         </div>
       </div>
 
@@ -2556,12 +3078,19 @@ input, textarea, select {
               <div class="label">Family Members</div>
             </div>
           </div>
+          <div class="photo-widget" id="dashPhotoWidget" onclick="enterScreensaver()">
+            <div class="photo-widget-empty" id="dashPhotoEmpty">
+              <div class="pw-icon">📷</div>
+              <div class="pw-text">Add family photos to start the slideshow</div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="dash-row">
         <div class="card">
           <div class="card-title">Today's Schedule</div>
+          <div id="dinnerTonight" style="margin-bottom:14px;"></div>
           <div class="today-list" id="todayEvents"></div>
         </div>
         <div class="card">
@@ -2632,6 +3161,11 @@ input, textarea, select {
         </button>
       </div>
 
+      <div style="margin: -8px 0 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-3);">For:</span>
+        <div class="member-picker" id="groMemberPicker" style="flex: 1;"></div>
+      </div>
+
       <div class="gro-categories" id="groList"></div>
 
       <div class="gro-toolbar">
@@ -2642,6 +3176,29 @@ input, textarea, select {
       </div>
     </section>
 
+    <!-- DINNERS -->
+    <section class="view" id="view-dinners">
+      <div class="view-header">
+        <div>
+          <h1 class="view-title">What's for <em>dinner?</em></h1>
+          <div class="view-sub">Weekly meal plan · Save your favorite ideas</div>
+        </div>
+        <button class="btn btn-primary" onclick="openDinnerIdeaModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          New Idea
+        </button>
+      </div>
+
+      <h2 class="card-title" style="margin-bottom: 12px;">This Week</h2>
+      <div class="meal-week" id="mealWeek"></div>
+
+      <div style="display:flex; align-items:center; justify-content:space-between; margin: 32px 0 12px;">
+        <h2 class="card-title" style="margin: 0;">Your Dinner Ideas</h2>
+        <div class="gro-stats"><strong id="dinnerCount">0</strong> ideas saved</div>
+      </div>
+      <div class="dinner-grid" id="dinnerIdeas"></div>
+    </section>
+
     <!-- CHORES -->
     <section class="view" id="view-chores">
       <div class="view-header">
@@ -2650,6 +3207,10 @@ input, textarea, select {
           <div class="view-sub">Tap to complete · Auto-resets daily/weekly</div>
         </div>
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="openChoreModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Add Chore
+          </button>
           <button class="btn" onclick="openSuggestionsModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17.5 6.5 21 8 13.5 3 9l6.5-.5z"/></svg>
             Library
@@ -2704,6 +3265,19 @@ input, textarea, select {
       </div>
       <div class="fam-grid" id="famList"></div>
 
+      <div class="sync-section" style="margin-top: 32px;">
+        <div class="sync-section-head">
+          <div class="sync-section-title"><span class="icon">📷</span>Family Photos</div>
+          <label class="photo-upload-btn" style="cursor:pointer;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            Add Photos
+            <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this)">
+          </label>
+        </div>
+        <p>Photos are stored on this device only (not synced) — perfect for a wall tablet screensaver. Upload as many as you want; they're auto-compressed to save space.</p>
+        <div class="photo-grid" id="photoGrid"></div>
+      </div>
+
       <div class="sync-section" id="syncSection" style="margin-top: 32px;"></div>
 
       <div class="settings-section">
@@ -2718,7 +3292,7 @@ input, textarea, select {
         <div class="settings-row">
           <div>
             <div class="settings-label">Weather Location</div>
-            <div class="settings-desc">City for the weather chip (e.g. Macomb, MI)</div>
+            <div class="settings-desc">ZIP code (48044) or city name (Macomb, MI)</div>
           </div>
           <input class="settings-input" id="setWeatherLoc" type="text" onchange="saveSetting('weatherLocation', this.value); fetchWeather();">
         </div>
@@ -2818,6 +3392,10 @@ input, textarea, select {
       <label class="field-label">Chore</label>
       <input class="field-input" id="chName" type="text" placeholder="Take out trash, Make bed...">
     </div>
+    <div class="field">
+      <label class="field-label">Assign to (pick one or more)</label>
+      <div class="member-picker" id="chMemberPicker"></div>
+    </div>
     <div class="field-row">
       <div class="field">
         <label class="field-label">Frequency</label>
@@ -2851,7 +3429,7 @@ input, textarea, select {
     <div class="lib-grid" id="libGrid"></div>
 
     <div class="field" style="margin-top:20px;">
-      <label class="field-label">Assign to</label>
+      <label class="field-label">Assign to (pick one or more)</label>
       <div class="member-picker" id="libMemberPicker"></div>
     </div>
 
@@ -2907,6 +3485,55 @@ input, textarea, select {
 <div class="modal-backdrop" id="projectDetailModal">
   <div class="modal" style="max-width: 720px;">
     <div id="projDetailBody"></div>
+  </div>
+</div>
+
+<!-- DINNER IDEA MODAL -->
+<div class="modal-backdrop" id="dinnerIdeaModal">
+  <div class="modal">
+    <h2 class="modal-title" id="dinnerModalTitle">New <em>Dinner Idea</em></h2>
+    <div class="field">
+      <label class="field-label">Dinner Name</label>
+      <input class="field-input" id="dinnerName" type="text" placeholder="Spaghetti Bolognese, Taco Tuesday, Sheet Pan Salmon...">
+    </div>
+    <div class="field">
+      <label class="field-label">Notes / Recipe (optional)</label>
+      <textarea class="field-textarea" id="dinnerNotes" placeholder="Recipe link, cooking tips, who likes it..."></textarea>
+    </div>
+    <div class="field">
+      <label class="field-label">Ingredients (one per line, optional)</label>
+      <textarea class="field-textarea" id="dinnerIngredients" placeholder="ground beef&#10;pasta&#10;crushed tomatoes&#10;parmesan" style="font-family: var(--mono); font-size: 13px;"></textarea>
+      <div style="font-size: 11px; color: var(--text-3); margin-top: 6px;">You can add these to your grocery list with one tap later</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="dinnerDelete" style="display:none" onclick="deleteDinner()">Delete</button>
+      <button class="btn" onclick="closeModal('dinnerIdeaModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveDinnerIdea()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- DAY ASSIGNMENT MODAL -->
+<div class="modal-backdrop" id="mealAssignModal">
+  <div class="modal">
+    <h2 class="modal-title" id="mealAssignTitle">Plan <em>Dinner</em></h2>
+    <div style="font-size: 13px; color: var(--text-3); margin-top: -12px; margin-bottom: 16px;" id="mealAssignDate"></div>
+
+    <div class="field">
+      <label class="field-label">Pick from your ideas</label>
+      <div id="mealAssignIdeas" style="display:flex; flex-wrap:wrap; gap:8px; max-height: 240px; overflow-y: auto; padding: 4px;"></div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Or write something custom</label>
+      <input class="field-input" id="mealAssignCustom" type="text" placeholder="Pizza night, leftover Tuesday, takeout...">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="mealAssignClear" onclick="clearMealAssignment()">Clear</button>
+      <button class="btn" onclick="closeModal('mealAssignModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMealAssignment()">Save</button>
+    </div>
   </div>
 </div>
 
@@ -3002,6 +3629,29 @@ input, textarea, select {
 </div>
 
 <!-- ============================================
+     SCREENSAVER
+     ============================================ -->
+<div class="screensaver" id="screensaver">
+  <div class="ss-photo" id="ssPhotoA"></div>
+  <div class="ss-photo" id="ssPhotoB"></div>
+  <div class="ss-overlay">
+    <div class="ss-empty" id="ssEmptyState" style="display:none;">
+      <div class="ss-empty-icon">📷</div>
+      <div class="ss-empty-title">No photos yet</div>
+      <div class="ss-empty-sub">Add family photos in the Family tab to use as a screensaver</div>
+    </div>
+    <div class="ss-clock-row">
+      <div class="ss-clock" id="ssClock">12:00</div>
+      <div class="ss-date" id="ssDate">Monday, January 1</div>
+    </div>
+    <button class="ss-exit" onclick="exitScreensaver()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h13M11 6l-6 6 6 6"/><rect x="16" y="3" width="5" height="18" rx="1"/></svg>
+      Back to Hub
+    </button>
+  </div>
+</div>
+
+<!-- ============================================
      ONBOARDING
      ============================================ -->
 <div class="welcome" id="welcome" style="display:none;">
@@ -3019,8 +3669,8 @@ input, textarea, select {
         <input class="field-input" id="welcomeName" type="text" placeholder="Zach">
       </div>
       <div class="field">
-        <label class="field-label">Weather Location</label>
-        <input class="field-input" id="welcomeLoc" type="text" value="Macomb, MI">
+        <label class="field-label">Weather Location (ZIP or city)</label>
+        <input class="field-input" id="welcomeLoc" type="text" value="48044">
       </div>
     </div>
     <button class="btn btn-primary" style="width:100%; padding:16px; font-size:15px;" onclick="completeWelcome()">Get Started</button>
@@ -3039,33 +3689,19 @@ const STORAGE_KEY = 'goff_family_hub_v1';
 
 // Optional: bake in your Firebase config here so family members don't need to paste it.
 // Leave as null to require manual entry on each device.
-// Example:
-// const FIREBASE_CONFIG = {
-//   apiKey: "AIza...",
-//   authDomain: "yourproject.firebaseapp.com",
-//   projectId: "yourproject",
-//   ...
-// };
 const FIREBASE_CONFIG = {
-
   apiKey: "AIzaSyDj83br-wQOs5nW9zAFncZQgRbvuWrl1Bc",
-
   authDomain: "goff-home-app.firebaseapp.com",
-
   projectId: "goff-home-app",
-
   storageBucket: "goff-home-app.firebasestorage.app",
-
   messagingSenderId: "648583968247",
-
   appId: "1:648583968247:web:6805c16a279acf19046af2"
-
 };
 
 const defaultState = () => ({
   settings: {
     familyName: 'Goff Family',
-    weatherLocation: 'Macomb, MI',
+    weatherLocation: '48044',
     onboarded: false,
   },
   members: [],
@@ -3073,6 +3709,8 @@ const defaultState = () => ({
   groceries: [],
   chores: [],
   projects: [],
+  dinners: [],
+  mealPlan: {},
   lastDailyReset: null,
   lastWeeklyReset: null,
   lastMonthlyReset: null,
@@ -3271,6 +3909,8 @@ async function startSyncListener() {
       if (Array.isArray(data.groceries)) state.groceries = data.groceries;
       if (Array.isArray(data.chores)) state.chores = data.chores;
       if (Array.isArray(data.projects)) state.projects = data.projects;
+      if (Array.isArray(data.dinners)) state.dinners = data.dinners;
+      if (data.mealPlan && typeof data.mealPlan === 'object') state.mealPlan = data.mealPlan;
       isApplyingRemoteUpdate = false;
       saveLocal();
       renderAll();
@@ -3293,6 +3933,8 @@ async function pushToCloud() {
       groceries: state.groceries,
       chores: state.chores,
       projects: state.projects,
+      dinners: state.dinners,
+      mealPlan: state.mealPlan,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     }, { merge: true });
     setSyncStatus('connected', 'Synced');
@@ -3392,6 +4034,8 @@ async function syncCreate() {
       groceries: state.groceries,
       chores: state.chores,
       projects: state.projects,
+      dinners: state.dinners,
+      mealPlan: state.mealPlan,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
@@ -3434,6 +4078,8 @@ async function syncJoin() {
     state.groceries = data.groceries || [];
     state.chores = data.chores || [];
     state.projects = data.projects || [];
+    state.dinners = data.dinners || [];
+    state.mealPlan = data.mealPlan || {};
     state.sync.enabled = true;
     state.sync.familyId = code;
     saveLocal();
@@ -3480,12 +4126,13 @@ function setView(view) {
   document.getElementById('stage').scrollTop = 0;
   // Refresh content for active view
   switch (view) {
-    case 'dashboard': renderDashboard(); break;
+    case 'dashboard': renderDashboard(); renderPhotoWidget(); break;
     case 'calendar': renderCalendar(); break;
     case 'groceries': renderGroceries(); break;
+    case 'dinners': renderDinners(); break;
     case 'chores': renderChores(); break;
     case 'projects': renderProjects(); break;
-    case 'family': renderFamily(); break;
+    case 'family': renderFamily(); renderPhotoAlbum(); break;
   }
 }
 
@@ -3512,6 +4159,31 @@ function renderDashboard() {
 
   // Today's events list
   const todayList = document.getElementById('todayEvents');
+
+  // Tonight's dinner
+  const tonightEl = document.getElementById('dinnerTonight');
+  if (tonightEl) {
+    const plan = state.mealPlan?.[today];
+    if (plan) {
+      const dinner = plan.dinnerId ? state.dinners.find(x => x.id === plan.dinnerId) : null;
+      const name = dinner ? dinner.name : plan.custom;
+      if (name) {
+        tonightEl.innerHTML = `
+          <div class="dinner-tonight" onclick="setView('dinners')" style="cursor:pointer;">
+            <div class="dinner-tonight-icon">🍽️</div>
+            <div class="dinner-tonight-info">
+              <div class="dinner-tonight-label">Tonight's Dinner</div>
+              <div class="dinner-tonight-name">${escapeHtml(name)}</div>
+            </div>
+          </div>
+        `;
+      } else {
+        tonightEl.innerHTML = '';
+      }
+    } else {
+      tonightEl.innerHTML = '';
+    }
+  }
   if (todayEvents.length === 0) {
     todayList.innerHTML = '<div class="empty-mini">No events today — enjoy the day</div>';
   } else {
@@ -3800,6 +4472,40 @@ const CAT_INFO = {
   other: { name: 'Other', emoji: '📦' },
 };
 
+let groSelectedMembers = new Set();
+
+function renderGroMemberPicker() {
+  const c = document.getElementById('groMemberPicker');
+  if (!c) return;
+  if (state.members.length === 0) {
+    c.innerHTML = '<span style="font-size:12px; color:var(--text-3); font-style:italic;">Add family members to tag items</span>';
+    return;
+  }
+  const allSelected = groSelectedMembers.size === state.members.length;
+  const noneSelected = groSelectedMembers.size === 0;
+  const everyoneChip = `<div class="member-chip everyone ${noneSelected || allSelected ? 'selected' : ''}" onclick="toggleGroAll()">
+    <span style="font-size:14px;">👨‍👩‍👧‍👦</span> Everyone
+  </div>`;
+  const memberChips = state.members.map(m => {
+    const sel = groSelectedMembers.has(m.id);
+    return `<div class="member-chip ${sel ? 'selected' : ''}" onclick="toggleGroMember('${m.id}')">
+      <div class="mc-dot" style="background:${m.color}"></div>${escapeHtml(m.name)}
+    </div>`;
+  }).join('');
+  c.innerHTML = everyoneChip + memberChips;
+}
+
+function toggleGroMember(id) {
+  if (groSelectedMembers.has(id)) groSelectedMembers.delete(id);
+  else groSelectedMembers.add(id);
+  renderGroMemberPicker();
+}
+
+function toggleGroAll() {
+  groSelectedMembers.clear();
+  renderGroMemberPicker();
+}
+
 function addGrocery() {
   const inp = document.getElementById('groInput');
   const cat = document.getElementById('groCat').value;
@@ -3811,6 +4517,7 @@ function addGrocery() {
     category: cat,
     done: false,
     addedAt: Date.now(),
+    forMembers: [...groSelectedMembers], // empty array = for everyone
   });
   inp.value = '';
   saveState();
@@ -3845,6 +4552,7 @@ function clearChecked() {
 }
 
 function renderGroceries() {
+  renderGroMemberPicker();
   const list = document.getElementById('groList');
   const total = state.groceries.length;
   const done = state.groceries.filter(g => g.done).length;
@@ -3880,17 +4588,24 @@ function renderGroceries() {
           <div class="cat-count">${items.length}</div>
         </div>
         <div class="gro-list">
-          ${items.map(g => `
-            <div class="gro-item ${g.done ? 'done' : ''}" onclick="toggleGrocery('${g.id}')">
-              <div class="gro-check">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5L20 7"/></svg>
+          ${items.map(g => {
+            const tags = (g.forMembers || []).map(mid => {
+              const m = memberById(mid);
+              return m ? `<span class="gro-tag-avatar" style="background:${m.color}" title="${escapeHtml(m.name)}">${m.emoji || m.name[0]}</span>` : '';
+            }).join('');
+            return `
+              <div class="gro-item ${g.done ? 'done' : ''}" onclick="toggleGrocery('${g.id}')">
+                <div class="gro-check">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5L20 7"/></svg>
+                </div>
+                <div class="gro-name">${escapeHtml(g.name)}</div>
+                ${tags ? `<div class="gro-tags">${tags}</div>` : ''}
+                <button class="gro-del" onclick="event.stopPropagation(); deleteGrocery('${g.id}')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
               </div>
-              <div class="gro-name">${escapeHtml(g.name)}</div>
-              <button class="gro-del" onclick="event.stopPropagation(); deleteGrocery('${g.id}')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-              </button>
-            </div>
-          `).join('')}
+            `;
+          }).join('')}
         </div>
       </div>
     `;
@@ -3898,35 +4613,78 @@ function renderGroceries() {
 }
 
 // ---------- CHORES ----------
-let choreModalMemberId = null;
+let choreModalMemberIds = new Set();
 
 function openChoreModal(memberId) {
-  choreModalMemberId = memberId;
+  // If memberId provided (clicked from a person's card), preselect just that one
+  // Otherwise default to selecting everyone
+  if (memberId) {
+    choreModalMemberIds = new Set([memberId]);
+  } else {
+    choreModalMemberIds = new Set(state.members.map(m => m.id));
+  }
   document.getElementById('chName').value = '';
   document.getElementById('chFreq').value = 'daily';
   document.getElementById('chPoints').value = '5';
+  renderChoreMemberPicker();
   openModal('choreModal');
   setTimeout(() => document.getElementById('chName').focus(), 100);
+}
+
+function renderChoreMemberPicker() {
+  const allSelected = choreModalMemberIds.size === state.members.length && state.members.length > 0;
+  const everyoneChip = `<div class="member-chip everyone ${allSelected ? 'selected' : ''}" onclick="toggleChoreAll()">
+    <span style="font-size:14px;">👨‍👩‍👧‍👦</span> Everyone
+  </div>`;
+  const memberChips = state.members.map(m => {
+    const sel = choreModalMemberIds.has(m.id);
+    return `<div class="member-chip ${sel ? 'selected' : ''}" onclick="toggleChoreMember('${m.id}')">
+      <div class="mc-dot" style="background:${m.color}"></div>${escapeHtml(m.name)}
+    </div>`;
+  }).join('');
+  document.getElementById('chMemberPicker').innerHTML = everyoneChip + memberChips;
+}
+
+function toggleChoreMember(id) {
+  if (choreModalMemberIds.has(id)) choreModalMemberIds.delete(id);
+  else choreModalMemberIds.add(id);
+  renderChoreMemberPicker();
+}
+
+function toggleChoreAll() {
+  if (choreModalMemberIds.size === state.members.length) {
+    choreModalMemberIds.clear();
+  } else {
+    choreModalMemberIds = new Set(state.members.map(m => m.id));
+  }
+  renderChoreMemberPicker();
 }
 
 function saveChore() {
   const name = document.getElementById('chName').value.trim();
   if (!name) { toast('Add a chore name', 'error'); return; }
-  state.chores.push({
-    id: uid(),
-    name,
-    memberId: choreModalMemberId,
-    frequency: document.getElementById('chFreq').value,
-    points: parseInt(document.getElementById('chPoints').value) || 5,
-    done: false,
-    streak: 0,
-    lastDone: null,
+  if (choreModalMemberIds.size === 0) { toast('Pick at least one person', 'error'); return; }
+  const freq = document.getElementById('chFreq').value;
+  const points = parseInt(document.getElementById('chPoints').value) || 5;
+  let added = 0;
+  choreModalMemberIds.forEach(memberId => {
+    state.chores.push({
+      id: uid(),
+      name,
+      memberId,
+      frequency: freq,
+      points,
+      done: false,
+      streak: 0,
+      lastDone: null,
+    });
+    added++;
   });
   saveState();
   closeModal('choreModal');
   renderChores();
   renderDashboard();
-  toast('Chore added', 'success');
+  toast(`Added ${added} chore${added === 1 ? '' : 's'}`, 'success');
 }
 
 function toggleChore(id) {
@@ -4234,7 +4992,7 @@ const CHORE_LIBRARY = {
 
 let libCategory = 'daily';
 let libSelected = new Set();
-let libMemberId = null;
+let libSelectedMembers = new Set();
 
 function openSuggestionsModal() {
   if (state.members.length === 0) {
@@ -4243,7 +5001,8 @@ function openSuggestionsModal() {
   }
   libSelected = new Set();
   libCategory = 'daily';
-  libMemberId = state.members[0].id;
+  // Default: select all members (Everyone)
+  libSelectedMembers = new Set(state.members.map(m => m.id));
   renderLibTabs();
   renderLibGrid();
   renderLibMemberPicker();
@@ -4296,39 +5055,74 @@ function toggleLib(key) {
 }
 
 function renderLibMemberPicker() {
-  document.getElementById('libMemberPicker').innerHTML = state.members.map(m =>
-    `<div class="member-chip ${m.id === libMemberId ? 'selected' : ''}" onclick="libMemberId='${m.id}'; renderLibMemberPicker()">
+  const allSelected = libSelectedMembers.size === state.members.length && state.members.length > 0;
+  const everyoneChip = `<div class="member-chip everyone ${allSelected ? 'selected' : ''}" onclick="toggleLibAll()">
+    <span style="font-size:14px;">👨‍👩‍👧‍👦</span> Everyone
+  </div>`;
+  const memberChips = state.members.map(m => {
+    const sel = libSelectedMembers.has(m.id);
+    return `<div class="member-chip ${sel ? 'selected' : ''}" onclick="toggleLibMember('${m.id}')">
       <div class="mc-dot" style="background:${m.color}"></div>${escapeHtml(m.name)}
-    </div>`
-  ).join('');
+    </div>`;
+  }).join('');
+  document.getElementById('libMemberPicker').innerHTML = everyoneChip + memberChips;
+}
+
+function toggleLibMember(id) {
+  if (libSelectedMembers.has(id)) libSelectedMembers.delete(id);
+  else libSelectedMembers.add(id);
+  renderLibMemberPicker();
+  updateLibAddBtn();
+}
+
+function toggleLibAll() {
+  if (libSelectedMembers.size === state.members.length) {
+    libSelectedMembers.clear();
+  } else {
+    libSelectedMembers = new Set(state.members.map(m => m.id));
+  }
+  renderLibMemberPicker();
+  updateLibAddBtn();
 }
 
 function updateLibAddBtn() {
   const btn = document.getElementById('libAddBtn');
-  const n = libSelected.size;
-  btn.textContent = `Add ${n} Chore${n === 1 ? '' : 's'}`;
-  btn.style.opacity = n === 0 ? '0.5' : '1';
+  const chores = libSelected.size;
+  const members = libSelectedMembers.size;
+  const total = chores * members;
+  if (members === 0 || chores === 0) {
+    btn.textContent = `Add 0 Chores`;
+    btn.style.opacity = '0.5';
+  } else if (members === 1) {
+    btn.textContent = `Add ${chores} Chore${chores === 1 ? '' : 's'}`;
+    btn.style.opacity = '1';
+  } else {
+    btn.textContent = `Add ${chores} × ${members} = ${total} Chores`;
+    btn.style.opacity = '1';
+  }
 }
 
 function addSuggestedChores() {
   if (libSelected.size === 0) { toast('Pick at least one chore', 'error'); return; }
-  if (!libMemberId) { toast('Pick someone to assign to', 'error'); return; }
+  if (libSelectedMembers.size === 0) { toast('Pick at least one person to assign to', 'error'); return; }
   let added = 0;
   libSelected.forEach(key => {
     const [cat, idx] = key.split(':');
     const item = CHORE_LIBRARY[cat][parseInt(idx)];
     if (!item) return;
-    state.chores.push({
-      id: uid(),
-      name: item.name,
-      memberId: libMemberId,
-      frequency: cat,
-      points: item.points,
-      done: false,
-      streak: 0,
-      lastDone: null,
+    libSelectedMembers.forEach(memberId => {
+      state.chores.push({
+        id: uid(),
+        name: item.name,
+        memberId,
+        frequency: cat,
+        points: item.points,
+        done: false,
+        streak: 0,
+        lastDone: null,
+      });
+      added++;
     });
-    added++;
   });
   saveState();
   closeModal('suggestionsModal');
@@ -4735,6 +5529,454 @@ function seedVacationPacking() {
   toast(`Added ${starter.length} packing items`, 'success');
 }
 
+// ---------- DINNERS / MEAL PLAN ----------
+let editingDinnerId = null;
+let mealAssignDate = null;
+
+function renderDinners() {
+  renderMealWeek();
+  renderDinnerIdeas();
+}
+
+function renderMealWeek() {
+  const start = fmt.weekStart(new Date());
+  const todayIso = fmt.iso(new Date());
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const html = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    const iso = fmt.iso(d);
+    const isToday = iso === todayIso;
+    const plan = state.mealPlan?.[iso];
+    const dinner = plan?.dinnerId ? state.dinners.find(x => x.id === plan.dinnerId) : null;
+    const display = dinner ? dinner.name : (plan?.custom || '');
+    html.push(`
+      <div class="meal-day ${isToday ? 'today' : ''}" onclick="openMealAssign('${iso}')">
+        <div class="meal-day-head">
+          <div class="meal-day-name">${dayNames[i]}</div>
+          <div class="meal-day-num">${d.getDate()}</div>
+        </div>
+        <div class="meal-content">
+          ${display ? `<div class="meal-pill">${escapeHtml(display)}</div>` : '<div class="meal-empty">Tap to plan</div>'}
+        </div>
+      </div>
+    `);
+  }
+  document.getElementById('mealWeek').innerHTML = html.join('');
+}
+
+function renderDinnerIdeas() {
+  const c = document.getElementById('dinnerIdeas');
+  document.getElementById('dinnerCount').textContent = state.dinners.length;
+  if (state.dinners.length === 0) {
+    c.innerHTML = `<div class="empty-mini" style="padding:60px 20px; font-size:15px; grid-column:1/-1;">No dinner ideas yet. Add your favorites — Spaghetti, Taco Tuesday, Sheet Pan Salmon, etc.</div>`;
+    return;
+  }
+  // Sort by name
+  const sorted = [...state.dinners].sort((a, b) => a.name.localeCompare(b.name));
+  c.innerHTML = sorted.map(d => {
+    const ingredients = d.ingredients || [];
+    return `
+      <div class="dinner-card" onclick="openDinnerIdeaModal('${d.id}')">
+        <div class="dinner-card-name">${escapeHtml(d.name)}</div>
+        ${d.notes ? `<div class="dinner-card-notes">${escapeHtml(d.notes)}</div>` : ''}
+        <div class="dinner-card-foot">
+          <div class="dinner-tag">
+            ${ingredients.length > 0 ? `🥕 ${ingredients.length} ingredient${ingredients.length === 1 ? '' : 's'}` : '✨ no ingredients listed'}
+          </div>
+          ${ingredients.length > 0 ? `<button class="dinner-add-grocery" onclick="event.stopPropagation(); addDinnerToGroceries('${d.id}')">+ Add to list</button>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openDinnerIdeaModal(id) {
+  editingDinnerId = id || null;
+  document.getElementById('dinnerDelete').style.display = id ? 'inline-flex' : 'none';
+  document.getElementById('dinnerModalTitle').innerHTML = id ? 'Edit <em>Dinner Idea</em>' : 'New <em>Dinner Idea</em>';
+
+  if (id) {
+    const d = state.dinners.find(x => x.id === id);
+    if (d) {
+      document.getElementById('dinnerName').value = d.name;
+      document.getElementById('dinnerNotes').value = d.notes || '';
+      document.getElementById('dinnerIngredients').value = (d.ingredients || []).join('\n');
+    }
+  } else {
+    document.getElementById('dinnerName').value = '';
+    document.getElementById('dinnerNotes').value = '';
+    document.getElementById('dinnerIngredients').value = '';
+  }
+  openModal('dinnerIdeaModal');
+  setTimeout(() => document.getElementById('dinnerName').focus(), 100);
+}
+
+function saveDinnerIdea() {
+  const name = document.getElementById('dinnerName').value.trim();
+  if (!name) { toast('Add a dinner name', 'error'); return; }
+  const notes = document.getElementById('dinnerNotes').value.trim();
+  const ingredients = document.getElementById('dinnerIngredients').value
+    .split('\n').map(s => s.trim()).filter(Boolean);
+
+  if (editingDinnerId) {
+    const d = state.dinners.find(x => x.id === editingDinnerId);
+    if (d) {
+      d.name = name;
+      d.notes = notes;
+      d.ingredients = ingredients;
+    }
+    toast('Dinner updated', 'success');
+  } else {
+    state.dinners.push({
+      id: uid(),
+      name,
+      notes,
+      ingredients,
+      createdAt: Date.now(),
+    });
+    toast('Dinner added', 'success');
+  }
+  saveState();
+  closeModal('dinnerIdeaModal');
+  renderDinners();
+  renderDashboard();
+}
+
+function deleteDinner() {
+  if (!editingDinnerId) return;
+  if (!confirm('Delete this dinner idea?')) return;
+  // Also clear from any meal plan slots
+  Object.keys(state.mealPlan || {}).forEach(iso => {
+    if (state.mealPlan[iso]?.dinnerId === editingDinnerId) {
+      delete state.mealPlan[iso];
+    }
+  });
+  state.dinners = state.dinners.filter(d => d.id !== editingDinnerId);
+  saveState();
+  closeModal('dinnerIdeaModal');
+  renderDinners();
+  renderDashboard();
+  toast('Dinner deleted');
+}
+
+function addDinnerToGroceries(dinnerId) {
+  const d = state.dinners.find(x => x.id === dinnerId);
+  if (!d || !d.ingredients?.length) return;
+  let added = 0;
+  d.ingredients.forEach(name => {
+    // Don't duplicate items already on the list
+    const exists = state.groceries.some(g => !g.done && g.name.toLowerCase() === name.toLowerCase());
+    if (!exists) {
+      state.groceries.push({
+        id: uid(),
+        name,
+        category: 'other',
+        done: false,
+        addedAt: Date.now(),
+        forMembers: [],
+      });
+      added++;
+    }
+  });
+  saveState();
+  renderDashboard();
+  toast(added > 0 ? `Added ${added} item${added === 1 ? '' : 's'} to groceries` : 'All items already on list', 'success');
+}
+
+function openMealAssign(iso) {
+  mealAssignDate = iso;
+  const d = new Date(iso + 'T12:00:00');
+  document.getElementById('mealAssignDate').textContent = d.toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric'
+  });
+
+  const plan = state.mealPlan?.[iso];
+  document.getElementById('mealAssignCustom').value = plan?.custom || '';
+  document.getElementById('mealAssignClear').style.display = plan ? 'inline-flex' : 'none';
+
+  const ideasDiv = document.getElementById('mealAssignIdeas');
+  if (state.dinners.length === 0) {
+    ideasDiv.innerHTML = '<div style="font-size:13px; color:var(--text-3); font-style:italic;">No saved ideas yet. Add some below or create dinner ideas first.</div>';
+  } else {
+    const sorted = [...state.dinners].sort((a, b) => a.name.localeCompare(b.name));
+    ideasDiv.innerHTML = sorted.map(d => `
+      <div class="idea-pick-chip" onclick="pickMealIdea('${d.id}')">${escapeHtml(d.name)}</div>
+    `).join('');
+  }
+
+  openModal('mealAssignModal');
+}
+
+function pickMealIdea(dinnerId) {
+  if (!mealAssignDate) return;
+  if (!state.mealPlan) state.mealPlan = {};
+  state.mealPlan[mealAssignDate] = { dinnerId };
+  saveState();
+  closeModal('mealAssignModal');
+  renderMealWeek();
+  renderDashboard();
+  toast('Dinner planned', 'success');
+}
+
+function saveMealAssignment() {
+  if (!mealAssignDate) return;
+  const custom = document.getElementById('mealAssignCustom').value.trim();
+  if (!state.mealPlan) state.mealPlan = {};
+  if (custom) {
+    state.mealPlan[mealAssignDate] = { custom };
+  } else {
+    delete state.mealPlan[mealAssignDate];
+  }
+  saveState();
+  closeModal('mealAssignModal');
+  renderMealWeek();
+  renderDashboard();
+}
+
+function clearMealAssignment() {
+  if (!mealAssignDate || !state.mealPlan) return;
+  delete state.mealPlan[mealAssignDate];
+  saveState();
+  closeModal('mealAssignModal');
+  renderMealWeek();
+  renderDashboard();
+  toast('Cleared');
+}
+
+// ---------- PHOTO ALBUM (local-only) ----------
+const PHOTOS_KEY = 'goff_family_hub_photos_v1';
+let photoAlbum = []; // {id, dataUrl, addedAt}
+
+function loadPhotos() {
+  try {
+    const raw = localStorage.getItem(PHOTOS_KEY);
+    if (raw) photoAlbum = JSON.parse(raw);
+  } catch (e) {
+    console.error('Failed to load photos', e);
+    photoAlbum = [];
+  }
+}
+
+function savePhotos() {
+  try {
+    localStorage.setItem(PHOTOS_KEY, JSON.stringify(photoAlbum));
+  } catch (e) {
+    console.error('Photo save failed:', e);
+    toast('Storage full — delete some photos first', 'error');
+    return false;
+  }
+  return true;
+}
+
+function compressImage(file, maxDim = 1400, quality = 0.78) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const ratio = Math.min(maxDim / img.width, maxDim / img.height, 1);
+        const w = Math.round(img.width * ratio);
+        const h = Math.round(img.height * ratio);
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => reject(new Error('Image load failed'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('File read failed'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handlePhotoUpload(input) {
+  const files = Array.from(input.files || []);
+  if (!files.length) return;
+  toast(`Processing ${files.length} photo${files.length === 1 ? '' : 's'}…`);
+  let added = 0, failed = 0;
+  for (const file of files) {
+    if (!file.type.startsWith('image/')) { failed++; continue; }
+    try {
+      const dataUrl = await compressImage(file);
+      photoAlbum.push({
+        id: uid(),
+        dataUrl,
+        addedAt: Date.now(),
+      });
+      added++;
+    } catch (e) {
+      failed++;
+    }
+  }
+  if (savePhotos()) {
+    renderPhotoAlbum();
+    renderPhotoWidget();
+    toast(`Added ${added} photo${added === 1 ? '' : 's'}${failed ? ` (${failed} failed)` : ''}`, 'success');
+  }
+  input.value = '';
+}
+
+function deletePhoto(id) {
+  if (!confirm('Delete this photo?')) return;
+  photoAlbum = photoAlbum.filter(p => p.id !== id);
+  savePhotos();
+  renderPhotoAlbum();
+  renderPhotoWidget();
+}
+
+function renderPhotoAlbum() {
+  const c = document.getElementById('photoGrid');
+  if (!c) return;
+  if (photoAlbum.length === 0) {
+    c.innerHTML = '<div class="empty-mini" style="padding:40px 20px; font-size:13px; grid-column:1/-1;">No photos yet. Tap "Add Photos" to get started.</div>';
+    return;
+  }
+  // Newest first
+  const sorted = [...photoAlbum].sort((a, b) => b.addedAt - a.addedAt);
+  c.innerHTML = sorted.map(p => `
+    <div class="photo-tile">
+      <img src="${p.dataUrl}" alt="Family photo">
+      <button class="photo-del" onclick="event.stopPropagation(); deletePhoto('${p.id}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-2 14a2 2 0 01-2 2H9a2 2 0 01-2-2L5 6"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
+
+// Dashboard photo widget (rotating)
+let widgetPhotoIdx = 0;
+let widgetTimer = null;
+
+function renderPhotoWidget() {
+  const widget = document.getElementById('dashPhotoWidget');
+  const empty = document.getElementById('dashPhotoEmpty');
+  if (!widget) return;
+
+  if (widgetTimer) { clearInterval(widgetTimer); widgetTimer = null; }
+
+  if (photoAlbum.length === 0) {
+    widget.innerHTML = `
+      <div class="photo-widget-empty" id="dashPhotoEmpty">
+        <div class="pw-icon">📷</div>
+        <div class="pw-text">Add family photos to start the slideshow</div>
+      </div>
+    `;
+    return;
+  }
+
+  // Random photo, with rotation
+  const showPhoto = () => {
+    const photo = photoAlbum[widgetPhotoIdx % photoAlbum.length];
+    widget.innerHTML = `
+      <img src="${photo.dataUrl}" alt="Family">
+      <div class="photo-widget-overlay">
+        <div class="photo-widget-label">Tap for slideshow →</div>
+      </div>
+    `;
+    widgetPhotoIdx++;
+  };
+  showPhoto();
+  if (photoAlbum.length > 1) {
+    widgetTimer = setInterval(showPhoto, 8000);
+  }
+}
+
+// ---------- SCREENSAVER ----------
+let ssActive = false;
+let ssIdx = 0;
+let ssTimer = null;
+let ssClockTimer = null;
+let ssLayer = 'A'; // currently visible layer
+
+function enterScreensaver() {
+  ssActive = true;
+  document.getElementById('screensaver').classList.add('active');
+
+  // Hide empty state if photos exist
+  const empty = document.getElementById('ssEmptyState');
+  if (photoAlbum.length === 0) {
+    empty.style.display = 'flex';
+    document.getElementById('ssPhotoA').style.background = '';
+    document.getElementById('ssPhotoB').style.background = '';
+  } else {
+    empty.style.display = 'none';
+    ssIdx = Math.floor(Math.random() * photoAlbum.length);
+    showSSPhoto(true);
+    if (photoAlbum.length > 1) {
+      if (ssTimer) clearInterval(ssTimer);
+      ssTimer = setInterval(() => showSSPhoto(false), 9000);
+    }
+  }
+
+  tickSSClock();
+  if (ssClockTimer) clearInterval(ssClockTimer);
+  ssClockTimer = setInterval(tickSSClock, 1000);
+
+  // Try fullscreen if supported (gives the cleanest tablet experience)
+  try {
+    const el = document.documentElement;
+    if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  } catch (e) {}
+}
+
+function exitScreensaver() {
+  ssActive = false;
+  document.getElementById('screensaver').classList.remove('active');
+  if (ssTimer) { clearInterval(ssTimer); ssTimer = null; }
+  if (ssClockTimer) { clearInterval(ssClockTimer); ssClockTimer = null; }
+  try {
+    if (document.exitFullscreen && document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    else if (document.webkitExitFullscreen && document.webkitFullscreenElement) document.webkitExitFullscreen();
+  } catch (e) {}
+}
+
+function showSSPhoto(initial) {
+  if (photoAlbum.length === 0) return;
+  const photo = photoAlbum[ssIdx % photoAlbum.length];
+  const showId = ssLayer === 'A' ? 'ssPhotoA' : 'ssPhotoB';
+  const hideId = ssLayer === 'A' ? 'ssPhotoB' : 'ssPhotoA';
+  const showEl = document.getElementById(showId);
+  const hideEl = document.getElementById(hideId);
+
+  showEl.style.backgroundImage = `url('${photo.dataUrl}')`;
+  showEl.classList.remove('zooming');
+  // Force reflow so CSS transition runs
+  void showEl.offsetWidth;
+  showEl.classList.add('visible');
+  // Trigger Ken Burns zoom after a moment
+  setTimeout(() => showEl.classList.add('zooming'), 100);
+
+  if (!initial) hideEl.classList.remove('visible');
+
+  ssLayer = ssLayer === 'A' ? 'B' : 'A';
+  ssIdx = (ssIdx + 1) % photoAlbum.length;
+}
+
+function tickSSClock() {
+  const now = new Date();
+  let h = now.getHours();
+  const m = now.getMinutes();
+  const ap = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  const c = document.getElementById('ssClock');
+  const d = document.getElementById('ssDate');
+  if (c) c.textContent = `${h}:${String(m).padStart(2, '0')} ${ap}`;
+  if (d) d.textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+}
+
+// Allow Escape to exit screensaver
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && ssActive) exitScreensaver();
+});
+
 // ---------- FAMILY / SETTINGS ----------
 let editingMemberId = null;
 let memSelectedColor = COLORS[0].val;
@@ -4933,8 +6175,10 @@ function importData(input) {
       if (!confirm('Replace current data with this backup? Your current data will be lost.')) return;
       // Merge with defaults so older backups still work
       state = { ...defaultState(), ...data };
-      // Ensure new arrays exist for older backups
+      // Ensure new arrays/objects exist for older backups
       state.projects = state.projects || [];
+      state.dinners = state.dinners || [];
+      state.mealPlan = state.mealPlan || {};
       saveState();
       renderAll();
       toast('Backup restored', 'success');
@@ -4975,28 +6219,61 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ---------- WEATHER ----------
+const MACOMB_FALLBACK = { lat: 42.6716, lon: -82.9376, label: 'Macomb, MI' };
+
 async function fetchWeather() {
-  const loc = state.settings.weatherLocation;
-  if (!loc) return;
+  let loc = (state.settings.weatherLocation || '').trim();
+  if (!loc) loc = '48044';
+
+  let coords = null;
   try {
-    // Use Open-Meteo — free, no API key required
-    // First geocode
-    const geo = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(loc)}&count=1`);
-    const g = await geo.json();
-    if (!g.results || !g.results.length) {
-      document.getElementById('weatherDesc').textContent = loc;
-      return;
+    if (/^\d{5}$/.test(loc)) {
+      // ZIP code lookup via free zippopotam.us API
+      const r = await fetch(`https://api.zippopotam.us/us/${loc}`);
+      if (r.ok) {
+        const d = await r.json();
+        const place = d.places && d.places[0];
+        if (place) {
+          coords = {
+            lat: parseFloat(place.latitude),
+            lon: parseFloat(place.longitude),
+            label: `${place['place name']}, ${place['state abbreviation']}`,
+          };
+        }
+      }
+    } else {
+      // City name lookup via Open-Meteo
+      const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(loc)}&count=1&country=US`);
+      const d = await r.json();
+      if (d.results && d.results.length) {
+        const r0 = d.results[0];
+        coords = {
+          lat: r0.latitude,
+          lon: r0.longitude,
+          label: r0.name + (r0.admin1 ? `, ${r0.admin1}` : ''),
+        };
+      }
     }
-    const { latitude, longitude } = g.results[0];
-    const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&temperature_unit=fahrenheit`);
-    const w = await wRes.json();
-    if (!w.current) return;
-    const t = Math.round(w.current.temperature_2m);
-    document.getElementById('weatherTemp').textContent = `${t}°`;
-    document.getElementById('weatherDesc').textContent = `${loc} · ${weatherCodeText(w.current.weather_code)}`;
   } catch (e) {
-    // Silently fail - weather is non-critical
-    document.getElementById('weatherDesc').textContent = loc;
+    console.warn('Geocoding failed:', e);
+  }
+
+  // Always fall back to Macomb if lookup didn't work
+  if (!coords) coords = MACOMB_FALLBACK;
+
+  try {
+    const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,weather_code&temperature_unit=fahrenheit`);
+    const w = await wRes.json();
+    if (w.current) {
+      const t = Math.round(w.current.temperature_2m);
+      const el = document.getElementById('weatherTemp');
+      const ed = document.getElementById('weatherDesc');
+      if (el) el.textContent = `${t}°`;
+      if (ed) ed.textContent = `${coords.label} · ${weatherCodeText(w.current.weather_code)}`;
+    }
+  } catch (e) {
+    const ed = document.getElementById('weatherDesc');
+    if (ed) ed.textContent = coords.label;
   }
 }
 
@@ -5051,13 +6328,17 @@ function renderAll() {
   renderDashboard();
   renderCalendar();
   renderGroceries();
+  renderDinners();
   renderChores();
   renderProjects();
   renderFamily();
+  renderPhotoAlbum();
+  renderPhotoWidget();
 }
 
 function init() {
   loadState();
+  loadPhotos();
   checkAutoReset();
 
   if (!state.settings.onboarded) {
