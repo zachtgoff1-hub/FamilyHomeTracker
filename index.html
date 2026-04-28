@@ -2377,6 +2377,722 @@ input, textarea, select {
 }
 
 /* ============================================
+   EXPENSES
+   ============================================ */
+.exp-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.exp-stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+  position: relative;
+  overflow: hidden;
+}
+
+.exp-stat-card::before {
+  content: "";
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 60%;
+  height: 140%;
+  background: radial-gradient(closest-side, var(--exp-color, var(--accent-soft)), transparent);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.exp-stat-card.amber { --exp-color: rgba(251, 191, 36, 0.18); }
+.exp-stat-card.sage { --exp-color: rgba(134, 239, 172, 0.18); }
+.exp-stat-card.sky { --exp-color: rgba(125, 211, 252, 0.18); }
+
+.exp-stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+  margin-bottom: 6px;
+}
+
+.exp-stat-value {
+  font-family: var(--display);
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.exp-stat-card.amber .exp-stat-value { color: var(--c-amber); }
+.exp-stat-card.sage .exp-stat-value { color: var(--c-sage); }
+.exp-stat-card.sky .exp-stat-value { color: var(--c-sky); }
+
+.exp-stat-meta {
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.exp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exp-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.exp-item:hover { background: var(--surface-2); border-color: var(--border-strong); }
+
+.exp-cat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  background: var(--surface-2);
+}
+
+.exp-cat-icon.recurring {
+  background: rgba(196, 181, 253, 0.14);
+}
+
+.exp-info { flex: 1; min-width: 0; }
+
+.exp-name {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.exp-recurring-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--c-violet);
+  background: rgba(196, 181, 253, 0.12);
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+.exp-meta {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.exp-paid-by {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.exp-paid-by .pb-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.exp-amount {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+}
+
+.exp-split-info {
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 2px;
+  text-align: right;
+}
+
+/* Category section view */
+.exp-cat-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.exp-cat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.exp-cat-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.exp-cat-total {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.exp-cat-body { padding: 8px; }
+
+/* Who Owes view */
+.owes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.owes-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.owes-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 14px;
+}
+
+.owes-name {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 22px;
+  font-weight: 500;
+  flex: 1;
+}
+
+.owes-balance {
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.owes-balance.positive { color: var(--c-sage); }
+.owes-balance.negative { color: var(--c-coral); }
+.owes-balance.zero { color: var(--text-3); }
+
+.owes-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+}
+
+.owes-line:last-child { border-bottom: none; }
+.owes-line .who { color: var(--text-2); }
+.owes-line .amt { font-weight: 600; }
+.owes-line .amt.positive { color: var(--c-sage); }
+.owes-line .amt.negative { color: var(--c-coral); }
+
+/* Recurring expense list inside modal */
+.recur-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+}
+
+.recur-item-info { flex: 1; min-width: 0; }
+.recur-item-name { font-size: 13px; font-weight: 500; }
+.recur-item-meta { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+.recur-item-amount {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.recur-item-del {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.recur-item-del:hover { color: var(--danger); background: var(--surface-3); }
+.recur-item-del svg { width: 13px; height: 13px; }
+
+/* ============================================
+   ROTATIONS
+   ============================================ */
+.rot-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 8px;
+}
+
+.rot-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.rot-item-name {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.rot-item-actions { display: flex; gap: 4px; }
+
+.rot-method-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+
+.rot-method-tag.round_robin { background: rgba(125, 211, 252, 0.14); color: var(--c-sky); }
+.rot-method-tag.auto_balance { background: rgba(196, 181, 253, 0.14); color: var(--c-violet); }
+
+.rot-current {
+  font-size: 12px;
+  color: var(--text-3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.rot-current .now {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--accent-soft);
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.rot-current .now .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.rot-mini-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.rot-mini-btn:hover { color: var(--text); background: var(--surface-3); }
+.rot-mini-btn.danger:hover { color: var(--danger); }
+.rot-mini-btn svg { width: 13px; height: 13px; }
+
+/* Mobile expense */
+@media (max-width: 880px) {
+  .exp-summary { grid-template-columns: 1fr; gap: 8px; }
+  .exp-stat-card { padding: 14px 16px; }
+  .exp-stat-value { font-size: 28px; }
+  .exp-item { padding: 11px 13px; gap: 10px; }
+  .exp-cat-icon { width: 34px; height: 34px; font-size: 17px; }
+  .exp-amount { font-size: 18px; }
+  .owes-grid { grid-template-columns: 1fr; }
+}
+
+/* ============================================
+   FAMILY PROFILE / SCHEDULE
+   ============================================ */
+.profile-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.profile-tab {
+  flex: 1;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-3);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+  border: none;
+}
+
+.profile-tab.active {
+  background: var(--accent);
+  color: #1a1410;
+}
+
+.profile-pane { display: none; }
+.profile-pane.active { display: block; }
+
+.schedule-grid {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.sched-day-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+  align-self: center;
+  padding: 8px 0;
+}
+
+.sched-day-cell {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.sched-day-cell input {
+  flex: 1;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.sched-day-cell input:focus { border-color: var(--accent); }
+.sched-day-cell input::placeholder { color: var(--text-4); font-size: 11px; }
+
+/* Today's schedule mini-card on dashboard */
+.today-schedule-mini {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+
+.tsm-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1410;
+  flex-shrink: 0;
+}
+
+.tsm-info { flex: 1; min-width: 0; }
+.tsm-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+}
+.tsm-text {
+  font-size: 11px;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================
+   EVENT RECURRENCE / INVITATIONS
+   ============================================ */
+.recur-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--c-violet);
+  background: rgba(196, 181, 253, 0.12);
+  padding: 1px 6px;
+  border-radius: 999px;
+  margin-left: 6px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.recur-badge::before {
+  content: "↻";
+  font-size: 11px;
+  line-height: 1;
+}
+
+.event-pill .recur-badge { margin-left: 0; margin-top: 2px; display: inline-flex; }
+
+.invite-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.invite-controls label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+}
+
+/* Invitations view */
+.invite-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.invite-card.pending { border-left: 3px solid var(--accent); }
+.invite-card.accepted { border-left: 3px solid var(--success); }
+.invite-card.declined { border-left: 3px solid var(--text-4); opacity: 0.7; }
+
+.invite-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.invite-head-info { flex: 1; min-width: 0; }
+.invite-event-name {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.invite-when {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 3px;
+}
+
+.invite-from {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-2);
+  background: var(--surface-2);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.invite-from .if-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.invite-status-pill {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.invite-status-pill.pending {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.invite-status-pill.accepted {
+  background: rgba(134, 239, 172, 0.14);
+  color: var(--success);
+}
+.invite-status-pill.declined {
+  background: rgba(180, 180, 180, 0.1);
+  color: var(--text-3);
+}
+.invite-status-pill.maybe {
+  background: rgba(196, 181, 253, 0.14);
+  color: var(--c-violet);
+}
+
+.invite-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.invite-btn {
+  flex: 1;
+  min-width: 80px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.invite-btn:hover { background: var(--surface-3); }
+
+.invite-btn.accept {
+  background: var(--success);
+  color: #1a1410;
+  border-color: var(--success);
+}
+.invite-btn.accept:hover { background: #a3eebe; }
+
+.invite-btn.decline {
+  background: transparent;
+  color: var(--danger);
+  border-color: var(--danger);
+}
+.invite-btn.decline:hover { background: rgba(251, 113, 133, 0.1); }
+
+.invite-rsvps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.rsvp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  font-size: 10px;
+  color: var(--text-2);
+}
+
+.rsvp-chip .rc-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.rsvp-chip.accepted { color: var(--success); }
+.rsvp-chip.declined { color: var(--text-3); text-decoration: line-through; }
+.rsvp-chip.pending { color: var(--accent); }
+
+/* Invite badge on rail */
+.rail-btn .badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--danger);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* Mobile-only adjustments for new components */
+@media (max-width: 880px) {
+  .schedule-grid { grid-template-columns: 50px 1fr; gap: 4px; }
+  .sched-day-cell input { padding: 6px 10px; font-size: 11px; }
+  .sched-day-label { font-size: 10px; }
+  .invite-card { padding: 12px; }
+  .invite-event-name { font-size: 16px; }
+  .profile-tab { padding: 6px 10px; font-size: 11px; }
+}
+
+/* ============================================
    PHOTO ALBUM
    ============================================ */
 .photo-grid {
@@ -2899,91 +3615,231 @@ input, textarea, select {
 }
 
 /* ============================================
-   RESPONSIVE
+   RESPONSIVE — MOBILE FIRST
    ============================================ */
 @media (max-width: 880px) {
   .lib-grid { grid-template-columns: 1fr; }
   .proj-type-picker { grid-template-columns: repeat(2, 1fr); }
-  .proj-detail-title { font-size: 24px; }
+  .proj-detail-title { font-size: 22px; }
   .chore-kanban { grid-template-columns: 1fr; }
-}
 
-@media (max-width: 880px) {
+  /* Tighten everything */
+  body { font-size: 15px; }
+
   .app {
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr 80px;
+    grid-template-rows: 1fr 64px;
   }
 
   .rail {
     flex-direction: row;
     border-right: none;
     border-top: 1px solid var(--border);
-    padding: 8px 16px;
-    gap: 4px;
+    padding: 4px 6px;
+    gap: 2px;
     order: 2;
     justify-content: space-around;
+    align-items: center;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
+  .rail::-webkit-scrollbar { display: none; }
 
   .rail-logo { display: none; }
   .rail-spacer { display: none; }
 
   .rail-btn {
     width: auto;
-    flex: 1;
-    height: 60px;
-    max-width: 80px;
+    height: 56px;
+    min-width: 56px;
+    padding: 4px 8px;
+    flex-shrink: 0;
   }
-
+  .rail-btn svg { width: 20px; height: 20px; }
+  .rail-btn span { font-size: 9px; }
   .rail-btn.active::before { display: none; }
 
   .stage { order: 1; }
 
-  .view { padding: 24px 20px 24px; }
+  .view {
+    padding: 14px 14px 18px;
+    overflow-x: hidden;
+  }
 
-  .view-title { font-size: 40px; }
+  /* Compact header */
+  .view-header {
+    margin-bottom: 16px;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .view-title { font-size: 28px; line-height: 1; }
+  .view-sub { font-size: 12px; margin-top: 4px; }
 
+  /* Smaller buttons everywhere */
+  .btn {
+    padding: 9px 14px;
+    font-size: 13px;
+  }
+  .btn svg { width: 14px; height: 14px; }
+
+  /* Dashboard - stack but keep tight */
   .dash-grid {
     grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 4px;
   }
+  .hero {
+    padding: 18px;
+    min-height: auto;
+    border-radius: 18px;
+  }
+  .hero-greeting { font-size: 16px; }
+  .clock { font-size: clamp(56px, 18vw, 92px); }
+  .date-row { font-size: 14px; }
+  .date-text { font-size: 16px; }
+
+  .stat-grid { gap: 8px; }
+  .stat-card { padding: 12px 14px; border-radius: 12px; }
+  .stat-card .num { font-size: 28px; }
+  .stat-card .label { font-size: 10px; }
+
+  .photo-widget { aspect-ratio: 16 / 9; border-radius: 14px; }
+  .photo-widget-label { font-size: 14px; }
 
   .dash-row {
     grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 14px;
   }
+  .card { padding: 14px; border-radius: 14px; }
+  .card-title { margin-bottom: 10px; }
+  .today-item { padding: 10px 12px; gap: 10px; }
+  .today-item .time { font-size: 11px; min-width: 56px; }
+  .today-item .name { font-size: 13px; }
+
+  /* Calendar */
+  .cal-toolbar { flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .cal-nav .month-label { padding: 0 8px; font-size: 14px; min-width: 0; }
+  .cal-nav button { width: 32px; height: 32px; }
+  .view-toggle button { padding: 6px 12px; font-size: 12px; }
 
   .week-grid {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    gap: 8px;
-    padding-bottom: 8px;
+    gap: 6px;
+    padding-bottom: 4px;
   }
-
   .week-day {
-    min-width: 200px;
+    min-width: 160px;
     scroll-snap-align: start;
+    padding: 10px;
+    min-height: 220px;
   }
+  .week-day-num { font-size: 22px; }
+  .event-pill { padding: 6px 8px; }
+  .event-pill .ev-title { font-size: 11px; }
+  .event-pill .ev-time { font-size: 9px; }
 
-  .month-cell { padding: 6px; }
-  .month-cell .cell-num { font-size: 14px; }
-  .cell-ev { font-size: 9px; padding: 1px 3px; }
+  .month-cell { padding: 4px; aspect-ratio: 1; }
+  .month-cell .cell-num { font-size: 12px; }
+  .cell-ev { font-size: 8px; padding: 1px 3px; }
+  .month-head { font-size: 9px; padding: 4px 0; }
 
-  .clock { font-size: 80px; }
+  /* Groceries */
+  .gro-add { flex-direction: column; padding: 6px; gap: 6px; }
+  .gro-add input { min-width: 0; padding: 10px 12px; font-size: 14px; }
+  .gro-add select { width: 100%; padding: 10px; font-size: 13px; }
+  .gro-add button { width: 100%; padding: 10px; }
+  .gro-cat-head { padding: 12px 16px; }
+  .gro-cat-head .cat-name { font-size: 16px; }
+  .gro-item { padding: 10px 12px; gap: 10px; }
+  .gro-item .gro-check { width: 22px; height: 22px; }
+  .gro-item .gro-name { font-size: 14px; }
+  .gro-item .gro-del { opacity: 1; width: 28px; height: 28px; }
 
-  .gro-add { flex-wrap: wrap; }
-  .gro-add input { min-width: 100%; }
+  /* Chores */
+  .chores-grid { grid-template-columns: 1fr; gap: 12px; }
+  .person-card { padding: 16px; border-radius: 14px; gap: 12px; }
+  .person-head { padding-bottom: 12px; }
+  .avatar { width: 40px; height: 40px; font-size: 16px; }
+  .person-name { font-size: 18px; }
+  .chore-item { padding: 10px 12px; gap: 10px; }
+  .chore-name { font-size: 13px; }
+  .chore-del { opacity: 1; width: 26px; height: 26px; }
 
-  .field-row { grid-template-columns: 1fr; }
+  /* Dinners */
+  .meal-week {
+    display: flex;
+    overflow-x: auto;
+    gap: 6px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+  .meal-day {
+    min-width: 130px;
+    scroll-snap-align: start;
+    padding: 10px;
+    min-height: 110px;
+  }
+  .meal-day-num { font-size: 18px; }
+  .dinner-grid { grid-template-columns: 1fr; gap: 10px; }
+  .dinner-card { padding: 14px; border-radius: 12px; }
+  .dinner-card-name { font-size: 16px; }
+
+  /* Projects */
+  .proj-grid { grid-template-columns: 1fr; gap: 12px; }
+  .proj-card { padding: 16px; border-radius: 14px; }
+  .proj-name { font-size: 19px; }
+
+  /* Family */
+  .fam-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .fam-card { padding: 14px; }
+  .fam-avatar { width: 56px; height: 56px; font-size: 24px; margin-bottom: 8px; }
+  .fam-name { font-size: 18px; }
+  .fam-stat-num { font-size: 16px; }
+  .fam-stat-label { font-size: 9px; }
+  .fam-stats { gap: 12px; padding-top: 10px; margin-top: 10px; }
+  .fam-actions { opacity: 1; }
+  .photo-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .photo-del { opacity: 1; width: 24px; height: 24px; }
+
+  /* Modals */
+  .modal { padding: 20px; border-radius: 18px; }
+  .modal-title { font-size: 24px; margin-bottom: 16px; }
+  .field { margin-bottom: 12px; }
+  .field-input, .field-select, .field-textarea { padding: 11px 13px; font-size: 14px; }
+  .modal-actions { flex-wrap: wrap; gap: 8px; margin-top: 18px; padding-top: 14px; }
+
+  /* Settings */
+  .settings-row { flex-direction: column; align-items: stretch; gap: 8px; }
+  .settings-input { min-width: 0; width: 100%; }
+  .sync-section { padding: 16px; }
+
+  /* Sync indicator */
+  .sync-indicator {
+    top: 6px;
+    right: 6px;
+    bottom: auto;
+    padding: 4px 9px;
+    font-size: 10px;
+  }
 }
 
 @media (max-width: 480px) {
-  .view-title { font-size: 32px; }
-  .clock { font-size: 64px; }
+  .view { padding: 10px 10px 14px; }
+  .view-title { font-size: 24px; }
+  .clock { font-size: clamp(52px, 16vw, 80px); }
   .stat-grid { grid-template-columns: 1fr 1fr; }
-  .hero { padding: 24px; }
+  .fam-grid { grid-template-columns: 1fr; }
+  .photo-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* Landscape tablet specific */
+/* Landscape tablet */
 @media (min-width: 881px) and (max-height: 800px) {
   .clock { font-size: clamp(64px, 9vw, 100px); }
   .hero { min-height: auto; padding: 28px; }
@@ -3008,6 +3864,10 @@ input, textarea, select {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
       <span>Schedule</span>
     </button>
+    <button class="rail-btn" data-view="invites" aria-label="Invites" id="railInvites">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 8l9 6 9-6M3 8v10a2 2 0 002 2h14a2 2 0 002-2V8M3 8l9-5 9 5"/></svg>
+      <span>Invites</span>
+    </button>
     <button class="rail-btn" data-view="groceries" aria-label="Groceries">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 7h14l-1.5 11a2 2 0 01-2 1.7H8.5a2 2 0 01-2-1.7L5 7zM9 7V5a3 3 0 016 0v2"/></svg>
       <span>Groceries</span>
@@ -3015,6 +3875,10 @@ input, textarea, select {
     <button class="rail-btn" data-view="dinners" aria-label="Dinners">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h18M5 12V8a3 3 0 013-3h8a3 3 0 013 3v4M7 12v6a2 2 0 002 2h6a2 2 0 002-2v-6"/></svg>
       <span>Dinners</span>
+    </button>
+    <button class="rail-btn" data-view="expenses" aria-label="Expenses">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg>
+      <span>Expenses</span>
     </button>
     <button class="rail-btn" data-view="chores" aria-label="Chores">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3 8-8M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg>
@@ -3091,6 +3955,7 @@ input, textarea, select {
         <div class="card">
           <div class="card-title">Today's Schedule</div>
           <div id="dinnerTonight" style="margin-bottom:14px;"></div>
+          <div id="todaysSchedules" style="margin-bottom:10px;"></div>
           <div class="today-list" id="todayEvents"></div>
         </div>
         <div class="card">
@@ -3133,6 +3998,28 @@ input, textarea, select {
       <div id="calBody"></div>
     </section>
 
+    <!-- INVITES -->
+    <section class="view" id="view-invites">
+      <div class="view-header">
+        <div>
+          <h1 class="view-title">Your <em>Invites</em></h1>
+          <div class="view-sub">Events you've been asked to join · RSVP below</div>
+        </div>
+        <select class="settings-input" id="inviteAsMember" onchange="renderInvites()" style="min-width: 0; max-width: 180px;">
+        </select>
+      </div>
+
+      <div class="cal-toolbar" style="margin-bottom: 14px;">
+        <div class="view-toggle">
+          <button class="active" id="invPendingToggle" onclick="setInviteFilter('pending')">Pending</button>
+          <button id="invAllToggle" onclick="setInviteFilter('all')">All</button>
+          <button id="invSentToggle" onclick="setInviteFilter('sent')">Sent</button>
+        </div>
+      </div>
+
+      <div id="invitesList"></div>
+    </section>
+
     <!-- GROCERIES -->
     <section class="view" id="view-groceries">
       <div class="view-header">
@@ -3144,6 +4031,7 @@ input, textarea, select {
 
       <div class="gro-add">
         <input type="text" id="groInput" placeholder="Add an item — milk, bread, paper towels..." onkeydown="if(event.key==='Enter') addGrocery()">
+        <input type="number" id="groPrice" step="0.01" min="0" placeholder="$ (optional)" style="max-width: 110px; padding: 10px 12px; background: var(--surface-2); border-radius: var(--radius-sm); font-size: 14px;" onkeydown="if(event.key==='Enter') addGrocery()">
         <select id="groCat">
           <option value="produce">🥬 Produce</option>
           <option value="dairy">🥛 Dairy</option>
@@ -3170,9 +4058,12 @@ input, textarea, select {
 
       <div class="gro-toolbar">
         <div class="gro-stats">
-          <strong id="groTotal">0</strong> items, <strong id="groDone">0</strong> checked off
+          <strong id="groTotal">0</strong> items, <strong id="groDone">0</strong> checked off · <strong id="groTotalPrice">$0</strong>
         </div>
-        <button class="btn" onclick="clearChecked()">Clear Checked</button>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn" onclick="logShoppingTrip()" id="logTripBtn">📋 Log Trip</button>
+          <button class="btn" onclick="clearChecked()">Clear Checked</button>
+        </div>
       </div>
     </section>
 
@@ -3199,6 +4090,66 @@ input, textarea, select {
       <div class="dinner-grid" id="dinnerIdeas"></div>
     </section>
 
+    <!-- EXPENSES -->
+    <section class="view" id="view-expenses">
+      <div class="view-header">
+        <div>
+          <h1 class="view-title">House <em>Expenses</em></h1>
+          <div class="view-sub">Rent, bills, groceries · Track & split costs</div>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="openExpenseModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Add Expense
+          </button>
+          <button class="btn" onclick="openRecurringExpensesModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0118 0M21 12a9 9 0 01-18 0M3 4v5h5M21 20v-5h-5"/></svg>
+            Recurring
+          </button>
+        </div>
+      </div>
+
+      <!-- Summary cards -->
+      <div class="exp-summary">
+        <div class="exp-stat-card amber">
+          <div class="exp-stat-label">This Month</div>
+          <div class="exp-stat-value" id="expMonthTotal">$0</div>
+          <div class="exp-stat-meta" id="expMonthCount">0 expenses</div>
+        </div>
+        <div class="exp-stat-card sage">
+          <div class="exp-stat-label">Recurring Monthly</div>
+          <div class="exp-stat-value" id="expRecurringTotal">$0</div>
+          <div class="exp-stat-meta" id="expRecurringCount">0 active</div>
+        </div>
+        <div class="exp-stat-card sky">
+          <div class="exp-stat-label">Groceries This Month</div>
+          <div class="exp-stat-value" id="expGroceriesTotal">$0</div>
+          <div class="exp-stat-meta">Auto-tracked</div>
+        </div>
+      </div>
+
+      <!-- Month navigation -->
+      <div class="cal-toolbar" style="margin: 20px 0 14px;">
+        <div class="cal-nav">
+          <button onclick="navExpMonth(-1)" aria-label="Previous">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <div class="month-label" id="expMonthLabel">January 2026</div>
+          <button onclick="navExpMonth(1)" aria-label="Next">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+        <button class="btn" onclick="goExpToday()">This Month</button>
+        <div class="view-toggle">
+          <button class="active" id="expListToggle" onclick="setExpView('list')">List</button>
+          <button id="expCatToggle" onclick="setExpView('category')">Category</button>
+          <button id="expWhoToggle" onclick="setExpView('person')">Who Owes</button>
+        </div>
+      </div>
+
+      <div id="expBody"></div>
+    </section>
+
     <!-- CHORES -->
     <section class="view" id="view-chores">
       <div class="view-header">
@@ -3214,6 +4165,14 @@ input, textarea, select {
           <button class="btn" onclick="openSuggestionsModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17.5 6.5 21 8 13.5 3 9l6.5-.5z"/></svg>
             Library
+          </button>
+          <button class="btn" onclick="openRotationsModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0118 0M21 12a9 9 0 01-18 0M3 4v5h5M21 20v-5h-5"/></svg>
+            Rotations
+          </button>
+          <button class="btn" onclick="autoDelegateChores()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+            Auto-Balance
           </button>
           <button class="btn" onclick="resetChoresManual()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0118 0M21 12a9 9 0 01-18 0M3 4v5h5M21 20v-5h-5"/></svg>
@@ -3346,6 +4305,23 @@ input, textarea, select {
         <input class="field-input" id="evTime" type="time">
       </div>
     </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Repeats</label>
+        <select class="field-select" id="evRecur" onchange="onRecurChange()">
+          <option value="none">Doesn't repeat</option>
+          <option value="daily">Every day</option>
+          <option value="weekly">Every week (same day)</option>
+          <option value="weekdays">Every weekday (Mon–Fri)</option>
+          <option value="biweekly">Every 2 weeks</option>
+          <option value="monthly">Every month (same date)</option>
+        </select>
+      </div>
+      <div class="field" id="evRecurEndField" style="display:none;">
+        <label class="field-label">Until (optional)</label>
+        <input class="field-input" id="evRecurEnd" type="date">
+      </div>
+    </div>
     <div class="field">
       <label class="field-label">Who's involved</label>
       <div class="member-picker" id="evMembers"></div>
@@ -3353,6 +4329,10 @@ input, textarea, select {
     <div class="field">
       <label class="field-label">Notes (optional)</label>
       <textarea class="field-textarea" id="evNotes" placeholder="Any details..."></textarea>
+    </div>
+    <div class="invite-controls" id="evInviteControls" style="display:none;">
+      <label>Send invitations to selected members?</label>
+      <select class="field-select" id="evInviteFrom" style="flex:1; min-width: 0;"></select>
     </div>
     <div class="modal-actions">
       <button class="btn btn-danger" id="evDelete" style="display:none" onclick="deleteEvent()">Delete</button>
@@ -3363,20 +4343,71 @@ input, textarea, select {
 </div>
 
 <div class="modal-backdrop" id="memberModal">
-  <div class="modal">
+  <div class="modal" style="max-width: 580px;">
     <h2 class="modal-title" id="memModalTitle">Add <em>Member</em></h2>
-    <div class="field">
-      <label class="field-label">Name</label>
-      <input class="field-input" id="memName" type="text" placeholder="Zach, Mom, Dad...">
+
+    <div class="profile-tabs">
+      <button class="profile-tab active" onclick="setProfileTab('basics')" id="ptBasics">Basics</button>
+      <button class="profile-tab" onclick="setProfileTab('details')" id="ptDetails">Details</button>
+      <button class="profile-tab" onclick="setProfileTab('schedule')" id="ptSchedule">Schedule</button>
     </div>
-    <div class="field">
-      <label class="field-label">Color</label>
-      <div class="color-picker" id="memColors"></div>
+
+    <!-- BASICS PANE -->
+    <div class="profile-pane active" id="ppBasics">
+      <div class="field">
+        <label class="field-label">Name</label>
+        <input class="field-input" id="memName" type="text" placeholder="Zach, Mom, Dad...">
+      </div>
+      <div class="field">
+        <label class="field-label">Color</label>
+        <div class="color-picker" id="memColors"></div>
+      </div>
+      <div class="field">
+        <label class="field-label">Avatar Emoji</label>
+        <div class="emoji-picker" id="memEmojis"></div>
+      </div>
     </div>
-    <div class="field">
-      <label class="field-label">Avatar Emoji</label>
-      <div class="emoji-picker" id="memEmojis"></div>
+
+    <!-- DETAILS PANE -->
+    <div class="profile-pane" id="ppDetails">
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Role</label>
+          <input class="field-input" id="memRole" type="text" placeholder="Mom, Dad, Son, Daughter...">
+        </div>
+        <div class="field">
+          <label class="field-label">Birthday</label>
+          <input class="field-input" id="memBirthday" type="date">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Phone</label>
+          <input class="field-input" id="memPhone" type="tel" placeholder="(555) 123-4567">
+        </div>
+        <div class="field">
+          <label class="field-label">Email</label>
+          <input class="field-input" id="memEmail" type="email" placeholder="zach@example.com">
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Workplace / School</label>
+        <input class="field-input" id="memWorkplace" type="text" placeholder="Priority Waste, Macomb HS...">
+      </div>
+      <div class="field">
+        <label class="field-label">Notes</label>
+        <textarea class="field-textarea" id="memNotes" placeholder="Allergies, preferences, anything good to know..."></textarea>
+      </div>
     </div>
+
+    <!-- SCHEDULE PANE -->
+    <div class="profile-pane" id="ppSchedule">
+      <div style="font-size: 13px; color: var(--text-3); margin-bottom: 10px; line-height: 1.5;">
+        Recurring weekly schedule (work, school, gym, etc.) — shows on the dashboard so the family knows where everyone is.
+      </div>
+      <div class="schedule-grid" id="scheduleGrid"></div>
+    </div>
+
     <div class="modal-actions">
       <button class="btn btn-danger" id="memDelete" style="display:none" onclick="deleteMember()">Delete</button>
       <button class="btn" onclick="closeModal('memberModal')">Cancel</button>
@@ -3533,6 +4564,178 @@ input, textarea, select {
       <button class="btn btn-danger" id="mealAssignClear" onclick="clearMealAssignment()">Clear</button>
       <button class="btn" onclick="closeModal('mealAssignModal')">Cancel</button>
       <button class="btn btn-primary" onclick="saveMealAssignment()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPENSE MODAL -->
+<div class="modal-backdrop" id="expenseModal">
+  <div class="modal" style="max-width: 560px;">
+    <h2 class="modal-title" id="expModalTitle">New <em>Expense</em></h2>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Description</label>
+        <input class="field-input" id="expName" type="text" placeholder="Rent, electric, Costco run...">
+      </div>
+      <div class="field">
+        <label class="field-label">Amount</label>
+        <input class="field-input" id="expAmount" type="number" step="0.01" min="0" placeholder="0.00">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Category</label>
+        <select class="field-select" id="expCategory">
+          <option value="rent">🏠 Rent / Mortgage</option>
+          <option value="utilities">💡 Utilities</option>
+          <option value="internet">📡 Internet / Cable</option>
+          <option value="phone">📱 Phone</option>
+          <option value="insurance">🛡️ Insurance</option>
+          <option value="groceries">🛒 Groceries</option>
+          <option value="dining">🍽️ Dining Out</option>
+          <option value="transport">🚗 Transportation</option>
+          <option value="subscriptions">📺 Subscriptions</option>
+          <option value="household">🧻 Household Supplies</option>
+          <option value="entertainment">🎮 Entertainment</option>
+          <option value="medical">⚕️ Medical</option>
+          <option value="personal">👤 Personal</option>
+          <option value="other">📦 Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">Date</label>
+        <input class="field-input" id="expDate" type="date">
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Paid by</label>
+      <div class="member-picker" id="expPaidBy"></div>
+    </div>
+    <div class="field">
+      <label class="field-label">Split with</label>
+      <div class="member-picker" id="expSplitWith"></div>
+      <div style="font-size: 11px; color: var(--text-3); margin-top: 6px;">
+        <span id="expSplitInfo">Cost will be split equally among selected people</span>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Notes (optional)</label>
+      <textarea class="field-textarea" id="expNotes" placeholder="Reference number, vendor, anything..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="expDelete" style="display:none" onclick="deleteExpense()">Delete</button>
+      <button class="btn" onclick="closeModal('expenseModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveExpense()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- RECURRING EXPENSES MODAL -->
+<div class="modal-backdrop" id="recurringModal">
+  <div class="modal" style="max-width: 640px;">
+    <h2 class="modal-title">Recurring <em>Expenses</em></h2>
+    <p style="color: var(--text-3); font-size: 13px; margin-top: -12px; margin-bottom: 16px;">
+      Bills that hit every month — rent, utilities, subscriptions. The "This Month" total auto-includes all active recurring expenses for the current month.
+    </p>
+
+    <div id="recurringList" style="margin-bottom: 16px;"></div>
+
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px;">
+      <div class="card-title" style="margin-bottom: 12px;">Add a Recurring Bill</div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Name</label>
+          <input class="field-input" id="recName" type="text" placeholder="DTE Energy, Comcast...">
+        </div>
+        <div class="field">
+          <label class="field-label">Amount</label>
+          <input class="field-input" id="recAmount" type="number" step="0.01" min="0" placeholder="0.00">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Category</label>
+          <select class="field-select" id="recCategory">
+            <option value="rent">🏠 Rent / Mortgage</option>
+            <option value="utilities">💡 Utilities</option>
+            <option value="internet">📡 Internet / Cable</option>
+            <option value="phone">📱 Phone</option>
+            <option value="insurance">🛡️ Insurance</option>
+            <option value="subscriptions">📺 Subscriptions</option>
+            <option value="other">📦 Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Day of Month</label>
+          <input class="field-input" id="recDay" type="number" min="1" max="31" value="1">
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Split between</label>
+        <div class="member-picker" id="recSplitPicker"></div>
+      </div>
+      <button class="btn btn-primary" style="width: 100%;" onclick="addRecurringExpense()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg>
+        Add Recurring Bill
+      </button>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('recurringModal')">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ROTATIONS MODAL -->
+<div class="modal-backdrop" id="rotationsModal">
+  <div class="modal" style="max-width: 640px;">
+    <h2 class="modal-title"><em>Rotations</em></h2>
+    <p style="color: var(--text-3); font-size: 13px; margin-top: -12px; margin-bottom: 16px;">
+      Auto-rotate cooking, dishes, taking out trash, etc. Set a list, pick a method, and it cycles through your family automatically each week.
+    </p>
+
+    <div id="rotationsList" style="margin-bottom: 16px;"></div>
+
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px;">
+      <div class="card-title" style="margin-bottom: 12px;">Add a Rotation</div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">What's rotating?</label>
+          <input class="field-input" id="rotName" type="text" placeholder="Cooking dinner, dishes, trash...">
+        </div>
+        <div class="field">
+          <label class="field-label">Frequency</label>
+          <select class="field-select" id="rotFreq">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Method</label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div class="proj-type-btn selected" id="rotMethodRR" onclick="setRotMethod('round_robin')">
+            <div class="pt-emoji">🔄</div>
+            <div class="pt-label">Round-Robin<br><span style="font-weight: 400; opacity: 0.7;">In order, each in turn</span></div>
+          </div>
+          <div class="proj-type-btn" id="rotMethodAB" onclick="setRotMethod('auto_balance')">
+            <div class="pt-emoji">⚖️</div>
+            <div class="pt-label">Auto-Balance<br><span style="font-weight: 400; opacity: 0.7;">Whoever's done it least</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Who's in the rotation?</label>
+        <div class="member-picker" id="rotMembers"></div>
+      </div>
+      <button class="btn btn-primary" style="width: 100%;" onclick="addRotation()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg>
+        Add Rotation
+      </button>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('rotationsModal')">Done</button>
     </div>
   </div>
 </div>
@@ -3711,6 +4914,10 @@ const defaultState = () => ({
   projects: [],
   dinners: [],
   mealPlan: {},
+  invitations: [],
+  expenses: [],
+  recurringExpenses: [],
+  rotations: [],
   lastDailyReset: null,
   lastWeeklyReset: null,
   lastMonthlyReset: null,
@@ -3910,6 +5117,10 @@ async function startSyncListener() {
       if (Array.isArray(data.chores)) state.chores = data.chores;
       if (Array.isArray(data.projects)) state.projects = data.projects;
       if (Array.isArray(data.dinners)) state.dinners = data.dinners;
+      if (Array.isArray(data.invitations)) state.invitations = data.invitations;
+      if (Array.isArray(data.expenses)) state.expenses = data.expenses;
+      if (Array.isArray(data.recurringExpenses)) state.recurringExpenses = data.recurringExpenses;
+      if (Array.isArray(data.rotations)) state.rotations = data.rotations;
       if (data.mealPlan && typeof data.mealPlan === 'object') state.mealPlan = data.mealPlan;
       isApplyingRemoteUpdate = false;
       saveLocal();
@@ -3935,6 +5146,10 @@ async function pushToCloud() {
       projects: state.projects,
       dinners: state.dinners,
       mealPlan: state.mealPlan,
+      invitations: state.invitations,
+      expenses: state.expenses,
+      recurringExpenses: state.recurringExpenses,
+      rotations: state.rotations,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     }, { merge: true });
     setSyncStatus('connected', 'Synced');
@@ -4036,6 +5251,10 @@ async function syncCreate() {
       projects: state.projects,
       dinners: state.dinners,
       mealPlan: state.mealPlan,
+      invitations: state.invitations,
+      expenses: state.expenses,
+      recurringExpenses: state.recurringExpenses,
+      rotations: state.rotations,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
@@ -4080,6 +5299,10 @@ async function syncJoin() {
     state.projects = data.projects || [];
     state.dinners = data.dinners || [];
     state.mealPlan = data.mealPlan || {};
+    state.invitations = data.invitations || [];
+    state.expenses = data.expenses || [];
+    state.recurringExpenses = data.recurringExpenses || [];
+    state.rotations = data.rotations || [];
     state.sync.enabled = true;
     state.sync.familyId = code;
     saveLocal();
@@ -4117,6 +5340,60 @@ async function disconnectSync() {
   toast('Disconnected from sync');
 }
 
+// ---------- RECURRENCE ----------
+function isoToDate(iso) {
+  if (!iso) return null;
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+// Returns true if event "occurs" on the given ISO date (handles recurrence)
+function eventOccursOn(ev, iso) {
+  if (ev.date === iso) return true;
+  if (!ev.recurrence) return false;
+  const startDate = isoToDate(ev.date);
+  const targetDate = isoToDate(iso);
+  if (!startDate || !targetDate) return false;
+  // Don't recur before the start
+  if (targetDate < startDate) return false;
+  // Honor end date
+  if (ev.recurrenceEnd) {
+    const endDate = isoToDate(ev.recurrenceEnd);
+    if (endDate && targetDate > endDate) return false;
+  }
+  const dayMs = 24 * 60 * 60 * 1000;
+  const daysDiff = Math.round((targetDate - startDate) / dayMs);
+  switch (ev.recurrence) {
+    case 'daily':
+      return daysDiff > 0;
+    case 'weekly':
+      return daysDiff > 0 && daysDiff % 7 === 0;
+    case 'biweekly':
+      return daysDiff > 0 && daysDiff % 14 === 0;
+    case 'weekdays': {
+      if (daysDiff <= 0) return false;
+      const dow = targetDate.getDay();
+      return dow >= 1 && dow <= 5;
+    }
+    case 'monthly':
+      return daysDiff > 0 && targetDate.getDate() === startDate.getDate();
+    default:
+      return false;
+  }
+}
+
+function eventsOnDate(iso) {
+  return state.events.filter(e => eventOccursOn(e, iso));
+}
+
+const RECUR_LABELS = {
+  daily: 'Daily',
+  weekly: 'Weekly',
+  weekdays: 'Weekdays',
+  biweekly: 'Bi-weekly',
+  monthly: 'Monthly',
+};
+
 // ---------- NAVIGATION ----------
 function setView(view) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -4128,8 +5405,10 @@ function setView(view) {
   switch (view) {
     case 'dashboard': renderDashboard(); renderPhotoWidget(); break;
     case 'calendar': renderCalendar(); break;
+    case 'invites': renderInvites(); break;
     case 'groceries': renderGroceries(); break;
     case 'dinners': renderDinners(); break;
+    case 'expenses': renderExpenses(); break;
     case 'chores': renderChores(); break;
     case 'projects': renderProjects(); break;
     case 'family': renderFamily(); renderPhotoAlbum(); break;
@@ -4151,7 +5430,7 @@ function renderDashboard() {
 
   // Stats
   const today = fmt.iso(now);
-  const todayEvents = state.events.filter(e => e.date === today);
+  const todayEvents = eventsOnDate(today);
   document.getElementById('statEvents').textContent = todayEvents.length;
   document.getElementById('statChores').textContent = state.chores.filter(c => c.done).length;
   document.getElementById('statGroceries').textContent = state.groceries.filter(g => !g.done).length;
@@ -4192,16 +5471,51 @@ function renderDashboard() {
       <div class="today-item" onclick="openEventModal('${e.id}')">
         <div class="dot" style="background:${colorOf(e.memberIds?.[0]) || 'var(--accent)'}"></div>
         <div class="time">${e.time ? fmt.shortTime(e.time) : 'All day'}</div>
-        <div class="name">${escapeHtml(e.title)}</div>
+        <div class="name">${escapeHtml(e.title)}${e.recurrence ? '<span class="recur-badge">' + RECUR_LABELS[e.recurrence] + '</span>' : ''}</div>
         ${e.memberIds?.[0] ? `<div class="who">${escapeHtml(memberById(e.memberIds[0])?.name || '')}</div>` : ''}
       </div>
     `).join('');
   }
 
+  // Today's family schedules (work, school, etc.)
+  const todaysScheduleEl = document.getElementById('todaysSchedules');
+  if (todaysScheduleEl) {
+    const dowKey = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][now.getDay()];
+    const withSchedule = state.members.filter(m => m.schedule && m.schedule[dowKey]);
+    if (withSchedule.length === 0) {
+      todaysScheduleEl.innerHTML = '';
+    } else {
+      todaysScheduleEl.innerHTML = withSchedule.map(m => `
+        <div class="today-schedule-mini">
+          <div class="tsm-avatar" style="background:${m.color}">${m.emoji || m.name[0]}</div>
+          <div class="tsm-info">
+            <div class="tsm-name">${escapeHtml(m.name)}</div>
+            <div class="tsm-text">${escapeHtml(m.schedule[dowKey])}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
   // Today's chores summary
   const todayChores = document.getElementById('todayChores');
+
+  // Today's rotations (whose turn it is)
+  const rotationsHtml = (state.rotations || []).length > 0 ? state.rotations.map(rot => {
+    const m = getCurrentRotationMember(rot);
+    if (!m) return '';
+    return `
+      <div class="today-item">
+        <div class="dot" style="background:${m.color}"></div>
+        <div class="time">${rot.frequency === 'daily' ? 'Today' : 'This wk'}</div>
+        <div class="name">${escapeHtml(rot.name)}</div>
+        <div class="who">${escapeHtml(m.name)}</div>
+      </div>
+    `;
+  }).join('') : '';
+
   const dailyChores = state.chores.filter(c => c.frequency === 'daily' || c.frequency === 'weekly' || c.frequency === 'once');
-  if (dailyChores.length === 0) {
+  if (dailyChores.length === 0 && !rotationsHtml) {
     todayChores.innerHTML = '<div class="empty-mini">No chores set up yet</div>';
   } else {
     const byPerson = {};
@@ -4210,7 +5524,7 @@ function renderDashboard() {
       byPerson[c.memberId].total++;
       if (c.done) byPerson[c.memberId].done++;
     });
-    todayChores.innerHTML = Object.keys(byPerson).map(mid => {
+    const personHtml = Object.keys(byPerson).map(mid => {
       const m = memberById(mid);
       if (!m) return '';
       const s = byPerson[mid];
@@ -4222,7 +5536,8 @@ function renderDashboard() {
           <div class="who">${s.done}/${s.total} · ${pct}%</div>
         </div>
       `;
-    }).join('') || '<div class="empty-mini">No chores assigned to family yet</div>';
+    }).join('');
+    todayChores.innerHTML = (personHtml || '<div class="empty-mini" style="margin-bottom:6px;">No chores assigned to family yet</div>') + rotationsHtml;
   }
 }
 
@@ -4290,7 +5605,7 @@ function renderWeek() {
 
   const html = `<div class="week-grid">${days.map((d, i) => {
     const iso = fmt.iso(d);
-    const dayEvents = state.events.filter(e => e.date === iso).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+    const dayEvents = eventsOnDate(iso).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
     const isToday = iso === todayIso;
     return `
       <div class="week-day ${isToday ? 'today' : ''}" onclick="openEventModalForDate('${iso}')">
@@ -4301,7 +5616,7 @@ function renderWeek() {
         ${dayEvents.map(e => `
           <div class="event-pill" style="border-left-color:${colorOf(e.memberIds?.[0]) || 'var(--accent)'}" onclick="event.stopPropagation(); openEventModal('${e.id}')">
             ${e.time ? `<div class="ev-time">${fmt.shortTime(e.time)}</div>` : ''}
-            <div class="ev-title">${escapeHtml(e.title)}</div>
+            <div class="ev-title">${escapeHtml(e.title)}${e.recurrence ? '<span class="recur-badge">' + RECUR_LABELS[e.recurrence] + '</span>' : ''}</div>
             ${e.memberIds?.length ? `<div class="ev-who">${e.memberIds.map(id => {
               const m = memberById(id);
               return m ? `<span class="ev-avatar" style="background:${m.color}">${m.name[0]}</span>` : '';
@@ -4339,7 +5654,7 @@ function renderMonth() {
 
   const cells = days.map(d => {
     const iso = fmt.iso(d);
-    const dayEvents = state.events.filter(e => e.date === iso);
+    const dayEvents = eventsOnDate(iso);
     const otherMonth = d.getMonth() !== month;
     const isToday = iso === todayIso;
     const visible = dayEvents.slice(0, 3);
@@ -4366,6 +5681,11 @@ function renderMonth() {
 let editingEventId = null;
 let evSelectedMembers = [];
 
+function onRecurChange() {
+  const v = document.getElementById('evRecur').value;
+  document.getElementById('evRecurEndField').style.display = v === 'none' ? 'none' : 'block';
+}
+
 function openEventModal(id) {
   editingEventId = id || null;
   evSelectedMembers = [];
@@ -4379,6 +5699,8 @@ function openEventModal(id) {
       document.getElementById('evDate').value = e.date;
       document.getElementById('evTime').value = e.time || '';
       document.getElementById('evNotes').value = e.notes || '';
+      document.getElementById('evRecur').value = e.recurrence || 'none';
+      document.getElementById('evRecurEnd').value = e.recurrenceEnd || '';
       evSelectedMembers = [...(e.memberIds || [])];
     }
   } else {
@@ -4386,9 +5708,14 @@ function openEventModal(id) {
     document.getElementById('evDate').value = fmt.iso(new Date());
     document.getElementById('evTime').value = '';
     document.getElementById('evNotes').value = '';
+    document.getElementById('evRecur').value = 'none';
+    document.getElementById('evRecurEnd').value = '';
   }
 
+  onRecurChange();
   renderMemberPicker();
+  renderInviteFromPicker();
+  updateInviteControlsVisibility();
   openModal('eventModal');
   setTimeout(() => document.getElementById('evTitle').focus(), 100);
 }
@@ -4412,11 +5739,28 @@ function renderMemberPicker() {
   }).join('');
 }
 
+function renderInviteFromPicker() {
+  const sel = document.getElementById('evInviteFrom');
+  if (!sel) return;
+  const opts = ['<option value="">Don\'t send invitations</option>'];
+  state.members.forEach(m => {
+    opts.push(`<option value="${m.id}">Invite from ${escapeHtml(m.name)}</option>`);
+  });
+  sel.innerHTML = opts.join('');
+}
+
+function updateInviteControlsVisibility() {
+  const ctrl = document.getElementById('evInviteControls');
+  // Show only when 2+ members selected (otherwise no point)
+  ctrl.style.display = evSelectedMembers.length >= 2 ? 'flex' : 'none';
+}
+
 function toggleEvMember(id) {
   const i = evSelectedMembers.indexOf(id);
   if (i >= 0) evSelectedMembers.splice(i, 1);
   else evSelectedMembers.push(id);
   renderMemberPicker();
+  updateInviteControlsVisibility();
 }
 
 function saveEvent() {
@@ -4425,6 +5769,10 @@ function saveEvent() {
   if (!title) { toast('Add a title', 'error'); return; }
   if (!date) { toast('Pick a date', 'error'); return; }
 
+  const recurrence = document.getElementById('evRecur').value;
+  const recurrenceEnd = document.getElementById('evRecurEnd').value;
+  const inviteFrom = document.getElementById('evInviteFrom').value;
+
   const ev = {
     id: editingEventId || uid(),
     title,
@@ -4432,6 +5780,8 @@ function saveEvent() {
     time: document.getElementById('evTime').value,
     notes: document.getElementById('evNotes').value,
     memberIds: [...evSelectedMembers],
+    recurrence: recurrence === 'none' ? null : recurrence,
+    recurrenceEnd: recurrenceEnd || null,
   };
 
   if (editingEventId) {
@@ -4440,22 +5790,43 @@ function saveEvent() {
     toast('Event updated', 'success');
   } else {
     state.events.push(ev);
-    toast('Event added', 'success');
+    // Send invitations if requested
+    if (inviteFrom && evSelectedMembers.length >= 2) {
+      const fromMember = memberById(inviteFrom);
+      const toMembers = evSelectedMembers.filter(id => id !== inviteFrom);
+      toMembers.forEach(toId => {
+        state.invitations.push({
+          id: uid(),
+          eventId: ev.id,
+          fromId: inviteFrom,
+          toId,
+          status: 'pending',
+          createdAt: Date.now(),
+        });
+      });
+      toast(`Event added · ${toMembers.length} invite${toMembers.length === 1 ? '' : 's'} sent`, 'success');
+    } else {
+      toast('Event added', 'success');
+    }
   }
   saveState();
   closeModal('eventModal');
   renderCalendar();
   renderDashboard();
+  renderInvites();
 }
 
 function deleteEvent() {
   if (!editingEventId) return;
-  if (!confirm('Delete this event?')) return;
+  if (!confirm('Delete this event? Any invitations linked to it will also be removed.')) return;
   state.events = state.events.filter(e => e.id !== editingEventId);
+  // Cascade delete invitations
+  state.invitations = state.invitations.filter(inv => inv.eventId !== editingEventId);
   saveState();
   closeModal('eventModal');
   renderCalendar();
   renderDashboard();
+  renderInvites();
   toast('Event deleted');
 }
 
@@ -4508,18 +5879,22 @@ function toggleGroAll() {
 
 function addGrocery() {
   const inp = document.getElementById('groInput');
+  const priceInp = document.getElementById('groPrice');
   const cat = document.getElementById('groCat').value;
   const name = inp.value.trim();
   if (!name) return;
+  const price = parseFloat(priceInp.value) || 0;
   state.groceries.push({
     id: uid(),
     name,
     category: cat,
     done: false,
     addedAt: Date.now(),
-    forMembers: [...groSelectedMembers], // empty array = for everyone
+    forMembers: [...groSelectedMembers],
+    price,
   });
   inp.value = '';
+  priceInp.value = '';
   saveState();
   renderGroceries();
   renderDashboard();
@@ -4556,8 +5931,11 @@ function renderGroceries() {
   const list = document.getElementById('groList');
   const total = state.groceries.length;
   const done = state.groceries.filter(g => g.done).length;
+  const totalPrice = state.groceries.reduce((s, g) => s + (parseFloat(g.price) || 0), 0);
   document.getElementById('groTotal').textContent = total;
   document.getElementById('groDone').textContent = done;
+  const priceEl = document.getElementById('groTotalPrice');
+  if (priceEl) priceEl.textContent = fmtMoney(totalPrice);
 
   if (total === 0) {
     list.innerHTML = `<div class="empty-mini" style="padding:60px 20px;font-size:15px;">Nothing on the list yet — add your first item above</div>`;
@@ -4593,12 +5971,13 @@ function renderGroceries() {
               const m = memberById(mid);
               return m ? `<span class="gro-tag-avatar" style="background:${m.color}" title="${escapeHtml(m.name)}">${m.emoji || m.name[0]}</span>` : '';
             }).join('');
+            const priceTag = g.price ? `<span style="font-size:11px; color:var(--text-3); font-family:var(--mono); margin-left:8px;">${fmtMoney(parseFloat(g.price))}</span>` : '';
             return `
               <div class="gro-item ${g.done ? 'done' : ''}" onclick="toggleGrocery('${g.id}')">
                 <div class="gro-check">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5L20 7"/></svg>
                 </div>
-                <div class="gro-name">${escapeHtml(g.name)}</div>
+                <div class="gro-name">${escapeHtml(g.name)}${priceTag}</div>
                 ${tags ? `<div class="gro-tags">${tags}</div>` : ''}
                 <button class="gro-del" onclick="event.stopPropagation(); deleteGrocery('${g.id}')">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -4744,6 +6123,19 @@ function checkAutoReset() {
         c.done = false;
       }
     });
+    // Auto-advance daily rotations
+    (state.rotations || []).forEach(rot => {
+      if (rot.frequency === 'daily') {
+        const current = getCurrentRotationMember(rot);
+        if (current) {
+          if (!rot.history) rot.history = [];
+          rot.history.push(current.id);
+          if (rot.history.length > 50) rot.history = rot.history.slice(-50);
+        }
+        rot.cycleIndex = (rot.cycleIndex || 0) + 1;
+        rot.lastAdvanced = Date.now();
+      }
+    });
     state.lastDailyReset = todayKey;
   }
 
@@ -4757,6 +6149,19 @@ function checkAutoReset() {
       if (!c.done) return true;
       const age = Date.now() - (c.lastDone || 0);
       return age < 7 * 24 * 60 * 60 * 1000;
+    });
+    // Auto-advance weekly rotations
+    (state.rotations || []).forEach(rot => {
+      if (rot.frequency === 'weekly') {
+        const current = getCurrentRotationMember(rot);
+        if (current) {
+          if (!rot.history) rot.history = [];
+          rot.history.push(current.id);
+          if (rot.history.length > 50) rot.history = rot.history.slice(-50);
+        }
+        rot.cycleIndex = (rot.cycleIndex || 0) + 1;
+        rot.lastAdvanced = Date.now();
+      }
     });
     state.lastWeeklyReset = weekKey;
   }
@@ -5977,32 +7382,930 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && ssActive) exitScreensaver();
 });
 
+// ---------- INVITATIONS ----------
+let inviteFilter = 'pending';
+let inviteAsMemberId = null; // who am I (whose invites am I viewing)
+
+function setInviteFilter(f) {
+  inviteFilter = f;
+  ['pending', 'all', 'sent'].forEach(k => {
+    const el = document.getElementById('inv' + k.charAt(0).toUpperCase() + k.slice(1) + 'Toggle');
+    if (el) el.classList.toggle('active', k === f);
+  });
+  renderInvites();
+}
+
+function renderInviteAsPicker() {
+  const sel = document.getElementById('inviteAsMember');
+  if (!sel) return;
+  if (state.members.length === 0) {
+    sel.innerHTML = '<option>Add family first</option>';
+    return;
+  }
+  if (!inviteAsMemberId || !memberById(inviteAsMemberId)) {
+    inviteAsMemberId = state.members[0].id;
+  }
+  sel.innerHTML = state.members.map(m =>
+    `<option value="${m.id}" ${m.id === inviteAsMemberId ? 'selected' : ''}>Viewing as ${escapeHtml(m.name)}</option>`
+  ).join('');
+  sel.value = inviteAsMemberId;
+  sel.onchange = () => { inviteAsMemberId = sel.value; renderInvites(); };
+}
+
+function pendingInviteCount(memberId) {
+  if (!memberId) return 0;
+  return state.invitations.filter(inv => inv.toId === memberId && inv.status === 'pending').length;
+}
+
+function updateInviteBadge() {
+  const railBtn = document.getElementById('railInvites');
+  if (!railBtn) return;
+  // Show badge for total pending across the whole family
+  const total = state.invitations.filter(i => i.status === 'pending').length;
+  let badge = railBtn.querySelector('.badge');
+  if (total > 0) {
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.className = 'badge';
+      railBtn.appendChild(badge);
+    }
+    badge.textContent = total > 9 ? '9+' : total;
+  } else if (badge) {
+    badge.remove();
+  }
+}
+
+function renderInvites() {
+  renderInviteAsPicker();
+  updateInviteBadge();
+  const c = document.getElementById('invitesList');
+  if (!c) return;
+
+  if (state.members.length === 0) {
+    c.innerHTML = '<div class="empty-mini" style="padding:60px 20px; font-size:15px;">Add family members first to send and receive invitations</div>';
+    return;
+  }
+
+  let invites = [];
+  if (inviteFilter === 'pending') {
+    invites = state.invitations.filter(i => i.toId === inviteAsMemberId && i.status === 'pending');
+  } else if (inviteFilter === 'all') {
+    invites = state.invitations.filter(i => i.toId === inviteAsMemberId);
+  } else {
+    invites = state.invitations.filter(i => i.fromId === inviteAsMemberId);
+  }
+
+  // Sort: pending first, then by event date
+  invites.sort((a, b) => {
+    if (a.status !== b.status) return a.status === 'pending' ? -1 : 1;
+    const ea = state.events.find(e => e.id === a.eventId);
+    const eb = state.events.find(e => e.id === b.eventId);
+    return (ea?.date || '').localeCompare(eb?.date || '');
+  });
+
+  if (invites.length === 0) {
+    const messages = {
+      pending: 'No pending invites — you\'re all caught up!',
+      all: 'No invitations yet',
+      sent: 'You haven\'t sent any invitations yet',
+    };
+    c.innerHTML = `<div class="empty-mini" style="padding:60px 20px; font-size:14px;">${messages[inviteFilter]}</div>`;
+    return;
+  }
+
+  c.innerHTML = invites.map(inv => {
+    const event = state.events.find(e => e.id === inv.eventId);
+    if (!event) return ''; // Event was deleted
+    const fromMem = memberById(inv.fromId);
+    const toMem = memberById(inv.toId);
+    const isSent = inviteFilter === 'sent';
+    const otherParty = isSent ? toMem : fromMem;
+    const otherLabel = isSent ? `To ${otherParty?.name || '?'}` : `From ${otherParty?.name || '?'}`;
+
+    // RSVPs from other invitees of the same event
+    const allInvitesForEvent = state.invitations.filter(i => i.eventId === inv.eventId);
+    const rsvpDisplay = allInvitesForEvent.length > 1 ? `
+      <div class="invite-rsvps">
+        ${allInvitesForEvent.map(i2 => {
+          const m = memberById(i2.toId);
+          if (!m) return '';
+          return `<div class="rsvp-chip ${i2.status}">
+            <div class="rc-dot" style="background:${m.color}"></div>${escapeHtml(m.name)}: ${i2.status}
+          </div>`;
+        }).join('')}
+      </div>
+    ` : '';
+
+    const eventDate = event.date ? new Date(event.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : '';
+    const eventTime = event.time ? fmt.shortTime(event.time) : '';
+    const whenStr = eventDate + (eventTime ? ' · ' + eventTime : '') + (event.recurrence ? ' · ' + RECUR_LABELS[event.recurrence] : '');
+
+    const showActions = !isSent && inv.status === 'pending';
+
+    return `
+      <div class="invite-card ${inv.status}">
+        <div class="invite-head">
+          <div class="invite-head-info">
+            <div class="invite-event-name">${escapeHtml(event.title)}</div>
+            <div class="invite-when">${whenStr}</div>
+            ${otherParty ? `<div style="margin-top: 6px;"><span class="invite-from">
+              <span class="if-dot" style="background:${otherParty.color}"></span>${otherLabel}
+            </span></div>` : ''}
+          </div>
+          <div class="invite-status-pill ${inv.status}">${inv.status}</div>
+        </div>
+        ${event.notes ? `<div style="font-size: 12px; color: var(--text-3); line-height: 1.4;">${escapeHtml(event.notes)}</div>` : ''}
+        ${rsvpDisplay}
+        ${showActions ? `
+          <div class="invite-actions">
+            <button class="invite-btn accept" onclick="respondInvite('${inv.id}', 'accepted')">✓ Accept</button>
+            <button class="invite-btn" onclick="respondInvite('${inv.id}', 'maybe')">? Maybe</button>
+            <button class="invite-btn decline" onclick="respondInvite('${inv.id}', 'declined')">✕ Decline</button>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function respondInvite(inviteId, status) {
+  const inv = state.invitations.find(i => i.id === inviteId);
+  if (!inv) return;
+  inv.status = status;
+  inv.respondedAt = Date.now();
+  // If accepting, ensure the member is in the event's memberIds
+  if (status === 'accepted') {
+    const ev = state.events.find(e => e.id === inv.eventId);
+    if (ev && !ev.memberIds.includes(inv.toId)) {
+      ev.memberIds.push(inv.toId);
+    }
+  } else if (status === 'declined') {
+    // Remove from event's memberIds if declined
+    const ev = state.events.find(e => e.id === inv.eventId);
+    if (ev) {
+      ev.memberIds = ev.memberIds.filter(id => id !== inv.toId);
+    }
+  }
+  saveState();
+  renderInvites();
+  renderCalendar();
+  renderDashboard();
+  toast(`Marked as ${status}`, 'success');
+}
+
+// ---------- EXPENSES ----------
+const EXP_CATEGORIES = {
+  rent: { name: 'Rent / Mortgage', emoji: '🏠' },
+  utilities: { name: 'Utilities', emoji: '💡' },
+  internet: { name: 'Internet / Cable', emoji: '📡' },
+  phone: { name: 'Phone', emoji: '📱' },
+  insurance: { name: 'Insurance', emoji: '🛡️' },
+  groceries: { name: 'Groceries', emoji: '🛒' },
+  dining: { name: 'Dining Out', emoji: '🍽️' },
+  transport: { name: 'Transportation', emoji: '🚗' },
+  subscriptions: { name: 'Subscriptions', emoji: '📺' },
+  household: { name: 'Household Supplies', emoji: '🧻' },
+  entertainment: { name: 'Entertainment', emoji: '🎮' },
+  medical: { name: 'Medical', emoji: '⚕️' },
+  personal: { name: 'Personal', emoji: '👤' },
+  other: { name: 'Other', emoji: '📦' },
+};
+
+let expCursor = new Date();
+let expViewMode = 'list';
+let editingExpenseId = null;
+let expSelectedPaidBy = null;
+let expSelectedSplitWith = new Set();
+let recSelectedSplitWith = new Set();
+
+function fmtMoney(n) {
+  if (typeof n !== 'number' || isNaN(n)) n = 0;
+  return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function expMonthKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function isInMonth(iso, d) {
+  if (!iso) return false;
+  return iso.startsWith(expMonthKey(d));
+}
+
+function navExpMonth(dir) {
+  expCursor.setMonth(expCursor.getMonth() + dir);
+  renderExpenses();
+}
+
+function goExpToday() {
+  expCursor = new Date();
+  renderExpenses();
+}
+
+function setExpView(mode) {
+  expViewMode = mode;
+  document.getElementById('expListToggle').classList.toggle('active', mode === 'list');
+  document.getElementById('expCatToggle').classList.toggle('active', mode === 'category');
+  document.getElementById('expWhoToggle').classList.toggle('active', mode === 'person');
+  renderExpenses();
+}
+
+// Expand recurring expenses into virtual expense entries for a given month
+function expandedExpensesForMonth(d) {
+  const monthKey = expMonthKey(d);
+  const real = state.expenses.filter(e => isInMonth(e.date, d));
+  // Synthesize virtual recurring entries for this month
+  const lastDayOfMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  const virtual = (state.recurringExpenses || []).map(r => {
+    const day = Math.min(r.dayOfMonth || 1, lastDayOfMonth);
+    const iso = `${monthKey}-${String(day).padStart(2, '0')}`;
+    return {
+      id: 'rec_' + r.id + '_' + monthKey,
+      _isRecurring: true,
+      _recurringId: r.id,
+      name: r.name,
+      amount: r.amount,
+      category: r.category,
+      date: iso,
+      paidBy: r.paidBy || null,
+      splitWith: r.splitWith || [],
+      notes: 'Recurring monthly',
+    };
+  });
+  return [...real, ...virtual].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+}
+
+function renderExpenses() {
+  const monthLabel = expCursor.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  document.getElementById('expMonthLabel').textContent = monthLabel;
+
+  const monthExpenses = expandedExpensesForMonth(expCursor);
+  const monthTotal = monthExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+  document.getElementById('expMonthTotal').textContent = fmtMoney(monthTotal);
+  document.getElementById('expMonthCount').textContent = `${monthExpenses.length} expense${monthExpenses.length === 1 ? '' : 's'}`;
+
+  const recurringTotal = (state.recurringExpenses || []).reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0);
+  document.getElementById('expRecurringTotal').textContent = fmtMoney(recurringTotal);
+  document.getElementById('expRecurringCount').textContent = `${(state.recurringExpenses || []).length} active`;
+
+  const groceriesTotal = monthExpenses
+    .filter(e => e.category === 'groceries')
+    .reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+  document.getElementById('expGroceriesTotal').textContent = fmtMoney(groceriesTotal);
+
+  const body = document.getElementById('expBody');
+  if (monthExpenses.length === 0) {
+    body.innerHTML = `<div class="empty-mini" style="padding: 60px 20px; font-size: 15px;">No expenses for ${monthLabel} yet. Tap "Add Expense" to log one.</div>`;
+    return;
+  }
+
+  if (expViewMode === 'list') renderExpListView(body, monthExpenses);
+  else if (expViewMode === 'category') renderExpCategoryView(body, monthExpenses);
+  else renderExpPersonView(body, monthExpenses);
+}
+
+function renderExpListView(body, expenses) {
+  body.innerHTML = `<div class="exp-list">${expenses.map(e => renderExpenseRow(e)).join('')}</div>`;
+}
+
+function renderExpenseRow(e) {
+  const cat = EXP_CATEGORIES[e.category] || EXP_CATEGORIES.other;
+  const paidBy = e.paidBy ? memberById(e.paidBy) : null;
+  const splitCount = (e.splitWith || []).length;
+  const perPerson = splitCount > 0 ? (parseFloat(e.amount) || 0) / splitCount : null;
+  const dateStr = e.date ? new Date(e.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+  const isRec = e._isRecurring;
+  const onclick = isRec ? `openRecurringExpensesModal()` : `openExpenseModal('${e.id}')`;
+
+  return `
+    <div class="exp-item" onclick="${onclick}">
+      <div class="exp-cat-icon ${isRec ? 'recurring' : ''}">${cat.emoji}</div>
+      <div class="exp-info">
+        <div class="exp-name">${escapeHtml(e.name)}${isRec ? '<span class="exp-recurring-badge">↻ Recurring</span>' : ''}</div>
+        <div class="exp-meta">
+          <span>${dateStr}</span>
+          <span>•</span>
+          <span>${cat.name}</span>
+          ${paidBy ? `<span>•</span><span class="exp-paid-by"><span class="pb-dot" style="background:${paidBy.color}"></span>${escapeHtml(paidBy.name)}</span>` : ''}
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <div class="exp-amount">${fmtMoney(parseFloat(e.amount) || 0)}</div>
+        ${perPerson !== null && splitCount > 1 ? `<div class="exp-split-info">${fmtMoney(perPerson)}/each (${splitCount})</div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderExpCategoryView(body, expenses) {
+  const byCat = {};
+  expenses.forEach(e => {
+    if (!byCat[e.category]) byCat[e.category] = [];
+    byCat[e.category].push(e);
+  });
+  const sortedKeys = Object.keys(byCat).sort((a, b) => {
+    const totA = byCat[a].reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
+    const totB = byCat[b].reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
+    return totB - totA;
+  });
+  body.innerHTML = sortedKeys.map(k => {
+    const cat = EXP_CATEGORIES[k] || EXP_CATEGORIES.other;
+    const total = byCat[k].reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
+    return `
+      <div class="exp-cat-section">
+        <div class="exp-cat-head">
+          <div class="exp-cat-name">${cat.emoji} ${cat.name}</div>
+          <div class="exp-cat-total">${fmtMoney(total)}</div>
+        </div>
+        <div class="exp-cat-body">
+          <div class="exp-list">${byCat[k].map(e => renderExpenseRow(e)).join('')}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderExpPersonView(body, expenses) {
+  if (state.members.length === 0) {
+    body.innerHTML = '<div class="empty-mini" style="padding: 40px 20px;">Add family members to see who owes what</div>';
+    return;
+  }
+
+  // For each member: paid (sum where they paid), owes (their share of expenses they didn't pay)
+  const totals = {};
+  state.members.forEach(m => { totals[m.id] = { paid: 0, share: 0 }; });
+
+  expenses.forEach(e => {
+    const amount = parseFloat(e.amount) || 0;
+    const splitWith = (e.splitWith && e.splitWith.length > 0) ? e.splitWith : (e.paidBy ? [e.paidBy] : []);
+    if (splitWith.length === 0) return;
+    const perPerson = amount / splitWith.length;
+
+    if (e.paidBy && totals[e.paidBy]) {
+      totals[e.paidBy].paid += amount;
+    }
+    splitWith.forEach(memberId => {
+      if (totals[memberId]) totals[memberId].share += perPerson;
+    });
+  });
+
+  body.innerHTML = `<div class="owes-grid">${state.members.map(m => {
+    const t = totals[m.id];
+    const balance = t.paid - t.share;
+    const balanceClass = balance > 0.01 ? 'positive' : (balance < -0.01 ? 'negative' : 'zero');
+    const sign = balance > 0.01 ? '+' : '';
+    return `
+      <div class="owes-card">
+        <div class="owes-head">
+          <div class="avatar" style="background:${m.color}; width: 40px; height: 40px; font-size: 18px;">${m.emoji || m.name[0]}</div>
+          <div class="owes-name">${escapeHtml(m.name)}</div>
+          <div class="owes-balance ${balanceClass}">${sign}${fmtMoney(balance)}</div>
+        </div>
+        <div class="owes-line">
+          <span class="who">Paid this month</span>
+          <span class="amt">${fmtMoney(t.paid)}</span>
+        </div>
+        <div class="owes-line">
+          <span class="who">Their share</span>
+          <span class="amt">${fmtMoney(t.share)}</span>
+        </div>
+        <div class="owes-line">
+          <span class="who" style="font-weight: 600;">Net balance</span>
+          <span class="amt ${balanceClass}">${sign}${fmtMoney(balance)}</span>
+        </div>
+        <div style="margin-top: 12px; font-size: 11px; color: var(--text-3); text-align: center; line-height: 1.5;">
+          ${balance > 0.01 ? `<strong style="color: var(--c-sage);">${escapeHtml(m.name)}</strong> is owed ${fmtMoney(balance)} this month`
+           : balance < -0.01 ? `<strong style="color: var(--c-coral);">${escapeHtml(m.name)}</strong> owes ${fmtMoney(Math.abs(balance))} to the household`
+           : 'Even this month'}
+        </div>
+      </div>
+    `;
+  }).join('')}</div>`;
+}
+
+// Expense modal
+function openExpenseModal(id) {
+  editingExpenseId = id || null;
+  document.getElementById('expDelete').style.display = id ? 'inline-flex' : 'none';
+  document.getElementById('expModalTitle').innerHTML = id ? 'Edit <em>Expense</em>' : 'New <em>Expense</em>';
+
+  if (id) {
+    const e = state.expenses.find(x => x.id === id);
+    if (e) {
+      document.getElementById('expName').value = e.name || '';
+      document.getElementById('expAmount').value = e.amount || '';
+      document.getElementById('expCategory').value = e.category || 'other';
+      document.getElementById('expDate').value = e.date || fmt.iso(new Date());
+      document.getElementById('expNotes').value = e.notes || '';
+      expSelectedPaidBy = e.paidBy || null;
+      expSelectedSplitWith = new Set(e.splitWith || []);
+    }
+  } else {
+    document.getElementById('expName').value = '';
+    document.getElementById('expAmount').value = '';
+    document.getElementById('expCategory').value = 'other';
+    document.getElementById('expDate').value = fmt.iso(new Date());
+    document.getElementById('expNotes').value = '';
+    expSelectedPaidBy = state.members[0]?.id || null;
+    expSelectedSplitWith = new Set(state.members.map(m => m.id));
+  }
+
+  renderExpPaidByPicker();
+  renderExpSplitPicker();
+  openModal('expenseModal');
+  setTimeout(() => document.getElementById('expName').focus(), 100);
+}
+
+function renderExpPaidByPicker() {
+  const c = document.getElementById('expPaidBy');
+  if (!c) return;
+  if (state.members.length === 0) {
+    c.innerHTML = '<div style="font-size:12px; color:var(--text-3); font-style:italic;">Add family members first</div>';
+    return;
+  }
+  c.innerHTML = state.members.map(m => {
+    const sel = m.id === expSelectedPaidBy;
+    return `<div class="member-chip ${sel ? 'selected' : ''}" onclick="expSelectedPaidBy='${m.id}'; renderExpPaidByPicker()">
+      <div class="mc-dot" style="background:${m.color}"></div>${escapeHtml(m.name)}
+    </div>`;
+  }).join('');
+}
+
+function renderExpSplitPicker() {
+  const c = document.getElementById('expSplitWith');
+  if (!c) return;
+  if (state.members.length === 0) {
+    c.innerHTML = '<div style="font-size:12px; color:var(--text-3); font-style:italic;">Add family members first</div>';
+    return;
+  }
+  const allSelected = expSelectedSplitWith.size === state.members.length;
+  const everyoneChip = `<div class="member-chip everyone ${allSelected ? 'selected' : ''}" onclick="toggleExpSplitAll()">
+    <span style="font-size:14px;">👨‍👩‍👧‍👦</span> Everyone
+  </div>`;
+  const memberChips = state.members.map(m => {
+    const sel = expSelectedSplitWith.has(m.id);
+    return `<div class="member-chip ${sel ? 'selected' : ''}" onclick="toggleExpSplit('${m.id}')">
+      <div class="mc-dot" style="background:${m.color}"></div>${escapeHtml(m.name)}
+    </div>`;
+  }).join('');
+  c.innerHTML = everyoneChip + memberChips;
+  updateExpSplitInfo();
+}
+
+function toggleExpSplit(id) {
+  if (expSelectedSplitWith.has(id)) expSelectedSplitWith.delete(id);
+  else expSelectedSplitWith.add(id);
+  renderExpSplitPicker();
+}
+
+function toggleExpSplitAll() {
+  if (expSelectedSplitWith.size === state.members.length) {
+    expSelectedSplitWith.clear();
+  } else {
+    expSelectedSplitWith = new Set(state.members.map(m => m.id));
+  }
+  renderExpSplitPicker();
+}
+
+function updateExpSplitInfo() {
+  const info = document.getElementById('expSplitInfo');
+  if (!info) return;
+  const count = expSelectedSplitWith.size;
+  const amount = parseFloat(document.getElementById('expAmount').value) || 0;
+  if (count === 0) {
+    info.textContent = 'No one selected — pick at least one person';
+  } else if (count === 1) {
+    info.textContent = `Cost goes 100% to that person`;
+  } else if (amount > 0) {
+    info.textContent = `${fmtMoney(amount / count)} each (split ${count} ways)`;
+  } else {
+    info.textContent = `Cost will be split equally among ${count} people`;
+  }
+}
+
+function saveExpense() {
+  const name = document.getElementById('expName').value.trim();
+  const amount = parseFloat(document.getElementById('expAmount').value);
+  if (!name) { toast('Add a description', 'error'); return; }
+  if (!amount || amount <= 0) { toast('Enter a valid amount', 'error'); return; }
+  if (!expSelectedPaidBy) { toast('Pick who paid', 'error'); return; }
+  if (expSelectedSplitWith.size === 0) { toast('Pick who to split with', 'error'); return; }
+
+  const data = {
+    name,
+    amount,
+    category: document.getElementById('expCategory').value,
+    date: document.getElementById('expDate').value || fmt.iso(new Date()),
+    paidBy: expSelectedPaidBy,
+    splitWith: [...expSelectedSplitWith],
+    notes: document.getElementById('expNotes').value.trim(),
+  };
+
+  if (editingExpenseId) {
+    const e = state.expenses.find(x => x.id === editingExpenseId);
+    Object.assign(e, data);
+    toast('Expense updated', 'success');
+  } else {
+    state.expenses.push({ id: uid(), ...data, createdAt: Date.now() });
+    toast('Expense added', 'success');
+  }
+  saveState();
+  closeModal('expenseModal');
+  renderExpenses();
+}
+
+function deleteExpense() {
+  if (!editingExpenseId) return;
+  if (!confirm('Delete this expense?')) return;
+  state.expenses = state.expenses.filter(e => e.id !== editingExpenseId);
+  saveState();
+  closeModal('expenseModal');
+  renderExpenses();
+  toast('Expense deleted');
+}
+
+// Recurring expenses
+function openRecurringExpensesModal() {
+  recSelectedSplitWith = new Set(state.members.map(m => m.id));
+  renderRecurringList();
+  renderRecSplitPicker();
+  openModal('recurringModal');
+}
+
+function renderRecurringList() {
+  const c = document.getElementById('recurringList');
+  if ((state.recurringExpenses || []).length === 0) {
+    c.innerHTML = '<div class="empty-mini" style="padding: 24px; font-size: 13px;">No recurring bills set up yet.</div>';
+    return;
+  }
+  c.innerHTML = state.recurringExpenses.map(r => {
+    const cat = EXP_CATEGORIES[r.category] || EXP_CATEGORIES.other;
+    return `
+      <div class="recur-item">
+        <div class="exp-cat-icon recurring" style="width: 32px; height: 32px; font-size: 16px;">${cat.emoji}</div>
+        <div class="recur-item-info">
+          <div class="recur-item-name">${escapeHtml(r.name)}</div>
+          <div class="recur-item-meta">${cat.name} · Day ${r.dayOfMonth} of each month · ${(r.splitWith || []).length} split</div>
+        </div>
+        <div class="recur-item-amount">${fmtMoney(parseFloat(r.amount) || 0)}</div>
+        <button class="recur-item-del" onclick="deleteRecurringExpense('${r.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderRecSplitPicker() {
+  const c = document.getElementById('recSplitPicker');
+  if (!c) return;
+  if (state.members.length === 0) {
+    c.innerHTML = '<div style="font-size:12px; color:var(--text-3); font-style:italic;">Add family members first</div>';
+    return;
+  }
+  const allSelected = recSelectedSplitWith.size === state.members.length;
+  const everyoneChip = `<div class="member-chip everyone ${allSelected ? 'selected' : ''}" onclick="toggleRecSplitAll()">
+    <span style="font-size:14px;">👨‍👩‍👧‍👦</span> Everyone
+  </div>`;
+  const memberChips = state.members.map(m => {
+    const sel = recSelectedSplitWith.has(m.id);
+    return `<div class="member-chip ${sel ? 'selected' : ''}" onclick="toggleRecSplit('${m.id}')">
+      <div class="mc-dot" style="background:${m.color}"></div>${escapeHtml(m.name)}
+    </div>`;
+  }).join('');
+  c.innerHTML = everyoneChip + memberChips;
+}
+
+function toggleRecSplit(id) {
+  if (recSelectedSplitWith.has(id)) recSelectedSplitWith.delete(id);
+  else recSelectedSplitWith.add(id);
+  renderRecSplitPicker();
+}
+
+function toggleRecSplitAll() {
+  if (recSelectedSplitWith.size === state.members.length) {
+    recSelectedSplitWith.clear();
+  } else {
+    recSelectedSplitWith = new Set(state.members.map(m => m.id));
+  }
+  renderRecSplitPicker();
+}
+
+function addRecurringExpense() {
+  const name = document.getElementById('recName').value.trim();
+  const amount = parseFloat(document.getElementById('recAmount').value);
+  const day = parseInt(document.getElementById('recDay').value);
+  if (!name) { toast('Add a name', 'error'); return; }
+  if (!amount || amount <= 0) { toast('Enter a valid amount', 'error'); return; }
+  if (!day || day < 1 || day > 31) { toast('Day must be 1–31', 'error'); return; }
+
+  if (!state.recurringExpenses) state.recurringExpenses = [];
+  state.recurringExpenses.push({
+    id: uid(),
+    name,
+    amount,
+    category: document.getElementById('recCategory').value,
+    dayOfMonth: day,
+    paidBy: state.members[0]?.id || null,
+    splitWith: [...recSelectedSplitWith],
+    createdAt: Date.now(),
+  });
+
+  document.getElementById('recName').value = '';
+  document.getElementById('recAmount').value = '';
+  document.getElementById('recDay').value = '1';
+  saveState();
+  renderRecurringList();
+  renderExpenses();
+  toast('Recurring bill added', 'success');
+}
+
+function deleteRecurringExpense(id) {
+  if (!confirm('Delete this recurring bill?')) return;
+  state.recurringExpenses = state.recurringExpenses.filter(r => r.id !== id);
+  saveState();
+  renderRecurringList();
+  renderExpenses();
+  toast('Removed');
+}
+
+// Update expense amount field listener
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'expAmount') updateExpSplitInfo();
+});
+
+// ---------- ROTATIONS ----------
+let rotMethod = 'round_robin';
+let rotSelectedMembers = new Set();
+
+function setRotMethod(method) {
+  rotMethod = method;
+  document.getElementById('rotMethodRR').classList.toggle('selected', method === 'round_robin');
+  document.getElementById('rotMethodAB').classList.toggle('selected', method === 'auto_balance');
+}
+
+function openRotationsModal() {
+  if (state.members.length < 2) {
+    toast('Add at least 2 family members first', 'error');
+    return;
+  }
+  rotSelectedMembers = new Set(state.members.map(m => m.id));
+  rotMethod = 'round_robin';
+  document.getElementById('rotName').value = '';
+  document.getElementById('rotFreq').value = 'weekly';
+  setRotMethod('round_robin');
+  renderRotMembers();
+  renderRotationsList();
+  openModal('rotationsModal');
+}
+
+function renderRotMembers() {
+  const c = document.getElementById('rotMembers');
+  c.innerHTML = state.members.map(m => {
+    const sel = rotSelectedMembers.has(m.id);
+    return `<div class="member-chip ${sel ? 'selected' : ''}" onclick="toggleRotMember('${m.id}')">
+      <div class="mc-dot" style="background:${m.color}"></div>${escapeHtml(m.name)}
+    </div>`;
+  }).join('');
+}
+
+function toggleRotMember(id) {
+  if (rotSelectedMembers.has(id)) rotSelectedMembers.delete(id);
+  else rotSelectedMembers.add(id);
+  renderRotMembers();
+}
+
+function getCurrentRotationMember(rot) {
+  if (!rot.memberIds || rot.memberIds.length === 0) return null;
+  if (rot.method === 'round_robin') {
+    const index = (rot.cycleIndex || 0) % rot.memberIds.length;
+    return memberById(rot.memberIds[index]);
+  } else {
+    // Auto-balance: pick member with fewest completions
+    const counts = {};
+    rot.memberIds.forEach(id => {
+      counts[id] = (rot.history || []).filter(h => h === id).length;
+    });
+    const min = Math.min(...Object.values(counts));
+    const candidates = rot.memberIds.filter(id => counts[id] === min);
+    // If tie, use round-robin among tied candidates
+    return memberById(candidates[(rot.cycleIndex || 0) % candidates.length]);
+  }
+}
+
+function renderRotationsList() {
+  const c = document.getElementById('rotationsList');
+  if (!state.rotations || state.rotations.length === 0) {
+    c.innerHTML = '<div class="empty-mini" style="padding: 24px; font-size: 13px;">No rotations set up yet.</div>';
+    return;
+  }
+  c.innerHTML = state.rotations.map(rot => {
+    const current = getCurrentRotationMember(rot);
+    const memberCount = rot.memberIds.length;
+    return `
+      <div class="rot-item">
+        <div class="rot-item-head">
+          <div class="rot-item-name">${escapeHtml(rot.name)}</div>
+          <div class="rot-item-actions">
+            <span class="rot-method-tag ${rot.method}">${rot.method === 'round_robin' ? '🔄 Round-Robin' : '⚖️ Auto-Balance'}</span>
+            <button class="rot-mini-btn" onclick="advanceRotation('${rot.id}')" title="Advance">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <button class="rot-mini-btn danger" onclick="deleteRotation('${rot.id}')" title="Delete">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-2 14a2 2 0 01-2 2H9a2 2 0 01-2-2L5 6"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="rot-current">
+          ${rot.frequency === 'daily' ? "Today's turn:" : "This week's turn:"}
+          ${current ? `<span class="now"><span class="dot" style="background:${current.color}"></span>${escapeHtml(current.name)}</span>` : '<em>No one assigned</em>'}
+          <span style="margin-left: auto; font-size: 11px; color: var(--text-3);">${memberCount} in rotation</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function addRotation() {
+  const name = document.getElementById('rotName').value.trim();
+  if (!name) { toast('Add a name', 'error'); return; }
+  if (rotSelectedMembers.size < 2) { toast('Pick at least 2 people', 'error'); return; }
+
+  if (!state.rotations) state.rotations = [];
+  state.rotations.push({
+    id: uid(),
+    name,
+    method: rotMethod,
+    frequency: document.getElementById('rotFreq').value,
+    memberIds: [...rotSelectedMembers],
+    cycleIndex: 0,
+    history: [],
+    lastAdvanced: null,
+    createdAt: Date.now(),
+  });
+
+  document.getElementById('rotName').value = '';
+  saveState();
+  renderRotationsList();
+  renderDashboard();
+  toast('Rotation added', 'success');
+}
+
+function advanceRotation(id) {
+  const rot = state.rotations.find(r => r.id === id);
+  if (!rot) return;
+  const current = getCurrentRotationMember(rot);
+  if (current) {
+    if (!rot.history) rot.history = [];
+    rot.history.push(current.id);
+    // Keep history bounded
+    if (rot.history.length > 50) rot.history = rot.history.slice(-50);
+  }
+  rot.cycleIndex = (rot.cycleIndex || 0) + 1;
+  rot.lastAdvanced = Date.now();
+  saveState();
+  renderRotationsList();
+  renderDashboard();
+  toast('Advanced to next person', 'success');
+}
+
+function deleteRotation(id) {
+  if (!confirm('Delete this rotation?')) return;
+  state.rotations = state.rotations.filter(r => r.id !== id);
+  saveState();
+  renderRotationsList();
+  renderDashboard();
+  toast('Rotation deleted');
+}
+
+// Auto-delegate: re-balance unassigned/uneven chores across family
+function autoDelegateChores() {
+  if (state.members.length < 2) {
+    toast('Need at least 2 family members', 'error');
+    return;
+  }
+  if (state.chores.length === 0) {
+    toast('No chores to delegate yet', 'error');
+    return;
+  }
+  if (!confirm('Auto-balance chores so everyone has roughly equal points? This will reassign chores across the family.')) return;
+
+  // Get total points per chore, sort by value (descending) for greedy bin-packing
+  const choresSorted = [...state.chores].sort((a, b) => (b.points || 0) - (a.points || 0));
+  const memberPoints = {};
+  state.members.forEach(m => { memberPoints[m.id] = 0; });
+
+  // Greedy assignment: each chore goes to the member with current lowest total
+  choresSorted.forEach(ch => {
+    let lowest = state.members[0].id;
+    state.members.forEach(m => {
+      if (memberPoints[m.id] < memberPoints[lowest]) lowest = m.id;
+    });
+    ch.memberId = lowest;
+    memberPoints[lowest] += (ch.points || 0);
+  });
+
+  saveState();
+  renderChores();
+  renderDashboard();
+
+  // Show toast with fairness info
+  const totals = state.members.map(m => `${m.name}: ${memberPoints[m.id]}pt`).join(' · ');
+  toast(`Chores rebalanced! ${totals}`, 'success');
+}
+
+// ---------- GROCERIES → EXPENSES ----------
+function logShoppingTrip() {
+  const checked = state.groceries.filter(g => g.done);
+  if (checked.length === 0) {
+    toast('Check off some grocery items first', 'error');
+    return;
+  }
+  const total = checked.reduce((sum, g) => sum + (parseFloat(g.price) || 0), 0);
+  // Open expense modal pre-filled
+  openExpenseModal();
+  document.getElementById('expName').value = `Grocery trip · ${checked.length} items`;
+  document.getElementById('expAmount').value = total > 0 ? total.toFixed(2) : '';
+  document.getElementById('expCategory').value = 'groceries';
+  // Notes: list all items
+  document.getElementById('expNotes').value = checked.map(g => `${g.name}${g.price ? ` (${fmtMoney(parseFloat(g.price))})` : ''}`).join('\n');
+  toast('Review and save the shopping trip expense');
+}
+
 // ---------- FAMILY / SETTINGS ----------
 let editingMemberId = null;
 let memSelectedColor = COLORS[0].val;
 let memSelectedEmoji = '';
+let memSchedule = {}; // { mon: 'Work 9-5', tue: '...' }
+
+const SCHEDULE_DAYS = [
+  { key: 'mon', label: 'Mon' },
+  { key: 'tue', label: 'Tue' },
+  { key: 'wed', label: 'Wed' },
+  { key: 'thu', label: 'Thu' },
+  { key: 'fri', label: 'Fri' },
+  { key: 'sat', label: 'Sat' },
+  { key: 'sun', label: 'Sun' },
+];
+
+function setProfileTab(tab) {
+  ['Basics', 'Details', 'Schedule'].forEach(t => {
+    const lower = t.toLowerCase();
+    document.getElementById('pt' + t).classList.toggle('active', lower === tab);
+    document.getElementById('pp' + t).classList.toggle('active', lower === tab);
+  });
+}
+
+function renderScheduleGrid() {
+  const c = document.getElementById('scheduleGrid');
+  c.innerHTML = SCHEDULE_DAYS.map(d => `
+    <div class="sched-day-label">${d.label}</div>
+    <div class="sched-day-cell">
+      <input type="text" placeholder="e.g. Work 9–5, Gym 6pm, Off"
+             value="${escapeHtml(memSchedule[d.key] || '')}"
+             oninput="memSchedule['${d.key}'] = this.value">
+    </div>
+  `).join('');
+}
 
 function openMemberModal(id) {
   editingMemberId = id || null;
   document.getElementById('memDelete').style.display = id ? 'inline-flex' : 'none';
   document.getElementById('memModalTitle').innerHTML = id ? 'Edit <em>Member</em>' : 'Add <em>Member</em>';
 
+  // Reset to basics tab
+  setProfileTab('basics');
+
   if (id) {
     const m = memberById(id);
-    document.getElementById('memName').value = m.name;
+    document.getElementById('memName').value = m.name || '';
     memSelectedColor = m.color;
     memSelectedEmoji = m.emoji || '';
+    document.getElementById('memRole').value = m.role || '';
+    document.getElementById('memBirthday').value = m.birthday || '';
+    document.getElementById('memPhone').value = m.phone || '';
+    document.getElementById('memEmail').value = m.email || '';
+    document.getElementById('memWorkplace').value = m.workplace || '';
+    document.getElementById('memNotes').value = m.notes || '';
+    memSchedule = { ...(m.schedule || {}) };
   } else {
     document.getElementById('memName').value = '';
-    // Pick a color not yet used
     const usedColors = state.members.map(m => m.color);
     const free = COLORS.find(c => !usedColors.includes(c.val));
     memSelectedColor = free ? free.val : COLORS[0].val;
     memSelectedEmoji = '';
+    document.getElementById('memRole').value = '';
+    document.getElementById('memBirthday').value = '';
+    document.getElementById('memPhone').value = '';
+    document.getElementById('memEmail').value = '';
+    document.getElementById('memWorkplace').value = '';
+    document.getElementById('memNotes').value = '';
+    memSchedule = {};
   }
 
   renderColorPicker();
   renderEmojiPicker();
+  renderScheduleGrid();
   openModal('memberModal');
   setTimeout(() => document.getElementById('memName').focus(), 100);
 }
@@ -6025,18 +8328,27 @@ function saveMember() {
   const name = document.getElementById('memName').value.trim();
   if (!name) { toast('Add a name', 'error'); return; }
 
+  const profileFields = {
+    name,
+    color: memSelectedColor,
+    emoji: memSelectedEmoji,
+    role: document.getElementById('memRole').value.trim(),
+    birthday: document.getElementById('memBirthday').value,
+    phone: document.getElementById('memPhone').value.trim(),
+    email: document.getElementById('memEmail').value.trim(),
+    workplace: document.getElementById('memWorkplace').value.trim(),
+    notes: document.getElementById('memNotes').value.trim(),
+    schedule: { ...memSchedule },
+  };
+
   if (editingMemberId) {
     const m = memberById(editingMemberId);
-    m.name = name;
-    m.color = memSelectedColor;
-    m.emoji = memSelectedEmoji;
+    Object.assign(m, profileFields);
     toast('Member updated', 'success');
   } else {
     state.members.push({
       id: uid(),
-      name,
-      color: memSelectedColor,
-      emoji: memSelectedEmoji,
+      ...profileFields,
       totalPoints: 0,
       choresDone: 0,
     });
@@ -6179,6 +8491,10 @@ function importData(input) {
       state.projects = state.projects || [];
       state.dinners = state.dinners || [];
       state.mealPlan = state.mealPlan || {};
+      state.invitations = state.invitations || [];
+      state.expenses = state.expenses || [];
+      state.recurringExpenses = state.recurringExpenses || [];
+      state.rotations = state.rotations || [];
       saveState();
       renderAll();
       toast('Backup restored', 'success');
@@ -6331,9 +8647,12 @@ function renderAll() {
   renderDinners();
   renderChores();
   renderProjects();
+  renderExpenses();
+  renderInvites();
   renderFamily();
   renderPhotoAlbum();
   renderPhotoWidget();
+  updateInviteBadge();
 }
 
 function init() {
