@@ -7,6 +7,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0f0e0d">
 <title>Goff Family Hub</title>
+<!-- Firebase SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore-compat.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Geist:wght@300..900&family=Geist+Mono:wght@300..700&display=swap" rel="stylesheet">
@@ -2130,6 +2134,257 @@ input, textarea, select {
 .proj-complete-btn.completed { background: var(--accent-soft); color: var(--accent); }
 
 /* ============================================
+   FIREBASE SYNC UI
+   ============================================ */
+.sync-indicator {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+  z-index: 5;
+  transition: all 0.3s var(--ease);
+}
+
+.sync-indicator.connected {
+  color: var(--success);
+  border-color: rgba(134, 239, 172, 0.3);
+}
+
+.sync-indicator.syncing {
+  color: var(--accent);
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.sync-indicator.error {
+  color: var(--danger);
+  border-color: rgba(251, 113, 133, 0.3);
+}
+
+.sync-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.sync-indicator.connected .sync-dot {
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+.sync-indicator.syncing .sync-dot {
+  animation: pulseDot 0.8s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Sync section in settings */
+.sync-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.sync-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.sync-section-title {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 500;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sync-section-title .icon { font-style: normal; }
+
+.sync-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sync-status-pill.on { color: var(--success); }
+.sync-status-pill.off { color: var(--text-3); }
+
+.sync-section p {
+  color: var(--text-3);
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.family-code-display {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin: 16px 0;
+  text-align: center;
+}
+
+.family-code-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+  margin-bottom: 8px;
+}
+
+.family-code-value {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  margin-bottom: 12px;
+  user-select: all;
+  -webkit-user-select: all;
+}
+
+.sync-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+/* Setup wizard */
+.setup-step {
+  display: none;
+}
+.setup-step.active { display: block; }
+
+.setup-progress {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.setup-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border-strong);
+  transition: all 0.3s;
+}
+
+.setup-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+.setup-dot.done { background: var(--success); }
+
+.setup-instructions {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin: 16px 0;
+}
+
+.setup-instructions ol {
+  padding-left: 20px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-2);
+}
+
+.setup-instructions li { margin-bottom: 4px; }
+.setup-instructions a { color: var(--accent); text-decoration: none; }
+.setup-instructions a:hover { text-decoration: underline; }
+
+.setup-instructions code {
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: var(--mono);
+  color: var(--accent);
+}
+
+.setup-choice {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.setup-choice-btn {
+  padding: 24px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.setup-choice-btn:hover {
+  background: var(--surface-2);
+  border-color: var(--accent);
+}
+
+.setup-choice-btn .sc-icon { font-size: 32px; line-height: 1; }
+.setup-choice-btn .sc-title {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 18px;
+}
+.setup-choice-btn .sc-desc {
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.code-input {
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 18px;
+}
+
+@media (max-width: 880px) {
+  .sync-indicator {
+    top: auto;
+    bottom: 88px;
+    right: 16px;
+  }
+  .setup-choice { grid-template-columns: 1fr; }
+}
+
+/* ============================================
    RESPONSIVE
    ============================================ */
 @media (max-width: 880px) {
@@ -2224,6 +2479,10 @@ input, textarea, select {
 </head>
 <body>
 <div class="app" id="app">
+  <div class="sync-indicator" id="syncIndicator" style="display:none;">
+    <div class="sync-dot"></div>
+    <span id="syncIndicatorText">Synced</span>
+  </div>
   <!-- Side Rail Navigation -->
   <nav class="rail">
     <div class="rail-logo">G</div>
@@ -2445,6 +2704,8 @@ input, textarea, select {
       </div>
       <div class="fam-grid" id="famList"></div>
 
+      <div class="sync-section" id="syncSection" style="margin-top: 32px;"></div>
+
       <div class="settings-section">
         <h2 class="card-title">Settings</h2>
         <div class="settings-row">
@@ -2650,6 +2911,97 @@ input, textarea, select {
 </div>
 
 <!-- ============================================
+     SYNC SETUP MODAL
+     ============================================ -->
+<div class="modal-backdrop" id="syncModal">
+  <div class="modal" style="max-width: 560px;">
+    <div class="setup-progress">
+      <div class="setup-dot active" id="syncDot1"></div>
+      <div class="setup-dot" id="syncDot2"></div>
+      <div class="setup-dot" id="syncDot3"></div>
+    </div>
+
+    <!-- Step 1: Firebase Config -->
+    <div class="setup-step active" id="syncStep1">
+      <h2 class="modal-title">Connect to <em>Firebase</em></h2>
+      <p style="color:var(--text-3); font-size:13px; margin-top:-12px; margin-bottom:8px;">One-time setup — about 5 minutes. You'll never have to do this again.</p>
+
+      <div class="setup-instructions">
+        <ol>
+          <li>Open <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a> and sign in with Google</li>
+          <li>Click <strong>Add Project</strong> → name it (e.g. "goff-family") → skip Analytics</li>
+          <li>In your project: <strong>Build → Firestore Database → Create database</strong> → start in <strong>test mode</strong></li>
+          <li>Then: <strong>Build → Authentication → Get started</strong> → enable <strong>Anonymous</strong></li>
+          <li>Click the gear icon → <strong>Project Settings</strong> → scroll to "Your apps" → click <code>&lt;/&gt;</code> Web icon → register app</li>
+          <li>Copy the entire <code>firebaseConfig</code> object and paste it below</li>
+        </ol>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Firebase Config</label>
+        <textarea class="field-textarea" id="syncConfigInput" placeholder='Paste the firebaseConfig object, e.g.:&#10;{&#10;  apiKey: "...",&#10;  authDomain: "...",&#10;  projectId: "...",&#10;  ...&#10;}' style="font-family: var(--mono); font-size: 12px; min-height: 140px;"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal('syncModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="syncStep1Continue()">Continue</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Create or Join -->
+    <div class="setup-step" id="syncStep2">
+      <h2 class="modal-title">Create or <em>Join</em></h2>
+      <p style="color:var(--text-3); font-size:13px; margin-top:-12px; margin-bottom:8px;">First family member creates. Everyone else joins with the code.</p>
+
+      <div class="setup-choice">
+        <div class="setup-choice-btn" onclick="syncCreate()">
+          <div class="sc-icon">✨</div>
+          <div class="sc-title">Create New Family</div>
+          <div class="sc-desc">Upload your current data and generate a code to share</div>
+        </div>
+        <div class="setup-choice-btn" onclick="syncShowJoin()">
+          <div class="sc-icon">🔗</div>
+          <div class="sc-title">Join Existing</div>
+          <div class="sc-desc">Enter a family code shared by someone else</div>
+        </div>
+      </div>
+
+      <div id="syncJoinPanel" style="display:none; margin-top:20px;">
+        <div class="field">
+          <label class="field-label">Family Code</label>
+          <input class="field-input code-input" id="syncCodeInput" type="text" placeholder="XXXX-XXXX" maxlength="9">
+        </div>
+        <button class="btn btn-primary" style="width:100%;" onclick="syncJoin()">Join Family</button>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn" onclick="syncBack(1)">Back</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Success -->
+    <div class="setup-step" id="syncStep3">
+      <h2 class="modal-title">You're <em>connected</em> 🎉</h2>
+      <p style="color:var(--text-3); font-size:13px; margin-top:-12px; margin-bottom:16px;" id="syncSuccessSub">Share this code with your family. They'll need it to join.</p>
+
+      <div class="family-code-display">
+        <div class="family-code-label">Family Code</div>
+        <div class="family-code-value" id="syncSuccessCode">XXXX-XXXX</div>
+        <button class="btn" onclick="copyFamilyCode()">📋 Copy Code</button>
+      </div>
+
+      <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; font-size: 12px; color: var(--text-3); line-height: 1.5;">
+        💡 <strong style="color: var(--text);">Tip:</strong> Family members visit the same URL on their device, click "Setup Family Sync" in Settings, paste the same Firebase config, and enter this code to join.
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="closeModal('syncModal')">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
      ONBOARDING
      ============================================ -->
 <div class="welcome" id="welcome" style="display:none;">
@@ -2685,6 +3037,17 @@ input, textarea, select {
 // ---------- STORAGE ----------
 const STORAGE_KEY = 'goff_family_hub_v1';
 
+// Optional: bake in your Firebase config here so family members don't need to paste it.
+// Leave as null to require manual entry on each device.
+// Example:
+// const FIREBASE_CONFIG = {
+//   apiKey: "AIza...",
+//   authDomain: "yourproject.firebaseapp.com",
+//   projectId: "yourproject",
+//   ...
+// };
+const FIREBASE_CONFIG = null;
+
 const defaultState = () => ({
   settings: {
     familyName: 'Goff Family',
@@ -2699,6 +3062,12 @@ const defaultState = () => ({
   lastDailyReset: null,
   lastWeeklyReset: null,
   lastMonthlyReset: null,
+  // Sync (kept locally only)
+  sync: {
+    enabled: false,
+    familyId: null,
+    config: null, // Firebase config object
+  },
 });
 
 let state = defaultState();
@@ -2709,20 +3078,34 @@ function loadState() {
     if (raw) {
       const parsed = JSON.parse(raw);
       state = { ...defaultState(), ...parsed };
-      // Merge settings defaults
+      // Merge nested defaults
       state.settings = { ...defaultState().settings, ...(parsed.settings || {}) };
+      state.sync = { ...defaultState().sync, ...(parsed.sync || {}) };
     }
   } catch (e) {
     console.error('Failed to load state', e);
   }
 }
 
-function saveState() {
+function saveLocal() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (e) {
     console.error('Failed to save state', e);
     toast('Could not save — storage may be full', 'error');
+  }
+}
+
+let cloudPushTimer = null;
+let isApplyingRemoteUpdate = false;
+
+function saveState() {
+  saveLocal();
+  // Debounced cloud push
+  if (state.sync.enabled && state.sync.familyId && db && !isApplyingRemoteUpdate) {
+    setSyncStatus('syncing');
+    if (cloudPushTimer) clearTimeout(cloudPushTimer);
+    cloudPushTimer = setTimeout(pushToCloud, 600);
   }
 }
 
@@ -2781,6 +3164,297 @@ function toast(msg, type = '') {
     t.style.transform = 'translateY(10px)';
     setTimeout(() => t.remove(), 300);
   }, 2400);
+}
+
+// ---------- FIREBASE SYNC ----------
+let firebaseApp = null;
+let db = null;
+let unsubscribeListener = null;
+
+function setSyncStatus(status, msg) {
+  const el = document.getElementById('syncIndicator');
+  const txt = document.getElementById('syncIndicatorText');
+  if (!el) return;
+  if (!state.sync.enabled) {
+    el.style.display = 'none';
+    return;
+  }
+  el.style.display = 'flex';
+  el.classList.remove('connected', 'syncing', 'error');
+  if (status === 'connected') {
+    el.classList.add('connected');
+    txt.textContent = msg || 'Synced';
+  } else if (status === 'syncing') {
+    el.classList.add('syncing');
+    txt.textContent = msg || 'Syncing…';
+  } else if (status === 'error') {
+    el.classList.add('error');
+    txt.textContent = msg || 'Offline';
+  } else {
+    txt.textContent = msg || 'Connecting…';
+  }
+}
+
+function generateFamilyCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // omit I, O, 0, 1
+  let s = '';
+  for (let i = 0; i < 8; i++) s += chars[Math.floor(Math.random() * chars.length)];
+  return s;
+}
+
+function formatFamilyCode(code) {
+  if (!code) return '';
+  return code.length === 8 ? code.slice(0, 4) + '-' + code.slice(4) : code;
+}
+
+function unformatFamilyCode(input) {
+  return (input || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
+async function initFirebase(config) {
+  if (firebaseApp) {
+    try { await firebaseApp.delete(); } catch (e) {}
+    firebaseApp = null;
+  }
+  firebaseApp = firebase.initializeApp(config);
+  db = firebase.firestore();
+  // Enable offline persistence for the wall tablet
+  try {
+    await db.enablePersistence({ synchronizeTabs: true });
+  } catch (e) {
+    // Persistence may fail in private mode or multiple tabs - non-critical
+    console.warn('Firestore persistence not enabled:', e.code);
+  }
+  await firebase.auth().signInAnonymously();
+}
+
+async function startSyncListener() {
+  if (unsubscribeListener) {
+    unsubscribeListener();
+    unsubscribeListener = null;
+  }
+  if (!state.sync.familyId || !db) return;
+
+  setSyncStatus('connecting', 'Connecting…');
+
+  unsubscribeListener = db.collection('families').doc(state.sync.familyId).onSnapshot(
+    (doc) => {
+      if (!doc.exists) {
+        setSyncStatus('error', 'Family missing');
+        return;
+      }
+      const data = doc.data();
+      // Only apply remote changes that aren't from our own pending writes
+      const fromCache = doc.metadata.hasPendingWrites;
+      if (fromCache) {
+        setSyncStatus('syncing');
+        return;
+      }
+      isApplyingRemoteUpdate = true;
+      if (data.settings) state.settings = { ...state.settings, ...data.settings };
+      if (Array.isArray(data.members)) state.members = data.members;
+      if (Array.isArray(data.events)) state.events = data.events;
+      if (Array.isArray(data.groceries)) state.groceries = data.groceries;
+      if (Array.isArray(data.chores)) state.chores = data.chores;
+      if (Array.isArray(data.projects)) state.projects = data.projects;
+      isApplyingRemoteUpdate = false;
+      saveLocal();
+      renderAll();
+      setSyncStatus('connected', 'Synced');
+    },
+    (err) => {
+      console.error('Sync listener error:', err);
+      setSyncStatus('error', 'Sync error');
+    }
+  );
+}
+
+async function pushToCloud() {
+  if (!state.sync.enabled || !state.sync.familyId || !db || isApplyingRemoteUpdate) return;
+  try {
+    await db.collection('families').doc(state.sync.familyId).set({
+      settings: state.settings,
+      members: state.members,
+      events: state.events,
+      groceries: state.groceries,
+      chores: state.chores,
+      projects: state.projects,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+    setSyncStatus('connected', 'Synced');
+  } catch (e) {
+    console.error('Cloud push failed:', e);
+    setSyncStatus('error', 'Saved locally');
+  }
+}
+
+// ---------- SYNC MODAL FLOW ----------
+function openSyncModal() {
+  // If already connected, show step 3 directly
+  if (state.sync.enabled && state.sync.familyId) {
+    showSyncStep(3);
+    document.getElementById('syncSuccessCode').textContent = formatFamilyCode(state.sync.familyId);
+    document.getElementById('syncSuccessSub').textContent = 'You are connected to this family. Share the code with anyone you want to add.';
+  } else {
+    // Pre-fill if we have config baked in or saved
+    showSyncStep(1);
+    const existing = FIREBASE_CONFIG || state.sync.config;
+    if (existing) {
+      document.getElementById('syncConfigInput').value = JSON.stringify(existing, null, 2);
+    }
+  }
+  openModal('syncModal');
+}
+
+function showSyncStep(n) {
+  for (let i = 1; i <= 3; i++) {
+    document.getElementById('syncStep' + i).classList.toggle('active', i === n);
+    const dot = document.getElementById('syncDot' + i);
+    dot.classList.toggle('active', i === n);
+    dot.classList.toggle('done', i < n);
+  }
+}
+
+function syncBack(n) { showSyncStep(n); }
+
+function parseFirebaseConfig(text) {
+  // Accept either pure JSON or a JS object literal
+  text = text.trim();
+  // Strip leading "const firebaseConfig = " or similar
+  text = text.replace(/^(const|var|let)\s+\w+\s*=\s*/, '').replace(/;?\s*$/, '');
+  // Try JSON first
+  try {
+    return JSON.parse(text);
+  } catch (e1) {
+    // Try eval-like parse for JS object literals (with unquoted keys)
+    try {
+      // Use Function constructor to safely parse object literal
+      return new Function('return (' + text + ')')();
+    } catch (e2) {
+      throw new Error('Could not parse config — make sure it includes apiKey, projectId, etc.');
+    }
+  }
+}
+
+async function syncStep1Continue() {
+  const text = document.getElementById('syncConfigInput').value;
+  if (!text.trim()) { toast('Paste your Firebase config', 'error'); return; }
+
+  let config;
+  try {
+    config = parseFirebaseConfig(text);
+  } catch (e) {
+    toast(e.message, 'error');
+    return;
+  }
+
+  if (!config.apiKey || !config.projectId) {
+    toast('Config missing apiKey or projectId', 'error');
+    return;
+  }
+
+  toast('Connecting to Firebase…');
+  try {
+    await initFirebase(config);
+    state.sync.config = config;
+    saveLocal();
+    showSyncStep(2);
+    document.getElementById('syncJoinPanel').style.display = 'none';
+  } catch (e) {
+    console.error(e);
+    toast('Firebase connection failed: ' + e.message, 'error');
+  }
+}
+
+async function syncCreate() {
+  if (!db) { toast('Firebase not connected', 'error'); return; }
+  const code = generateFamilyCode();
+  toast('Creating family…');
+  try {
+    await db.collection('families').doc(code).set({
+      settings: state.settings,
+      members: state.members,
+      events: state.events,
+      groceries: state.groceries,
+      chores: state.chores,
+      projects: state.projects,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    state.sync.enabled = true;
+    state.sync.familyId = code;
+    saveLocal();
+    await startSyncListener();
+    showSyncStep(3);
+    document.getElementById('syncSuccessCode').textContent = formatFamilyCode(code);
+    document.getElementById('syncSuccessSub').textContent = 'Share this code with your family. They\'ll need it to join.';
+    renderFamily();
+    toast('Family created!', 'success');
+  } catch (e) {
+    console.error(e);
+    toast('Failed to create: ' + e.message, 'error');
+  }
+}
+
+function syncShowJoin() {
+  document.getElementById('syncJoinPanel').style.display = 'block';
+  setTimeout(() => document.getElementById('syncCodeInput').focus(), 100);
+}
+
+async function syncJoin() {
+  if (!db) { toast('Firebase not connected', 'error'); return; }
+  const code = unformatFamilyCode(document.getElementById('syncCodeInput').value);
+  if (code.length !== 8) { toast('Code should be 8 characters', 'error'); return; }
+
+  toast('Joining family…');
+  try {
+    const doc = await db.collection('families').doc(code).get();
+    if (!doc.exists) {
+      toast('No family found with that code', 'error');
+      return;
+    }
+    const data = doc.data();
+    if (data.settings) state.settings = { ...state.settings, ...data.settings };
+    state.members = data.members || [];
+    state.events = data.events || [];
+    state.groceries = data.groceries || [];
+    state.chores = data.chores || [];
+    state.projects = data.projects || [];
+    state.sync.enabled = true;
+    state.sync.familyId = code;
+    saveLocal();
+    await startSyncListener();
+    showSyncStep(3);
+    document.getElementById('syncSuccessCode').textContent = formatFamilyCode(code);
+    document.getElementById('syncSuccessSub').textContent = 'You\'re connected! All data has been synced from your family.';
+    renderAll();
+    toast('Joined family!', 'success');
+  } catch (e) {
+    console.error(e);
+    toast('Failed to join: ' + e.message, 'error');
+  }
+}
+
+async function copyFamilyCode() {
+  const code = formatFamilyCode(state.sync.familyId);
+  try {
+    await navigator.clipboard.writeText(code);
+    toast('Code copied!', 'success');
+  } catch (e) {
+    toast('Copy failed — code: ' + code);
+  }
+}
+
+async function disconnectSync() {
+  if (!confirm('Disconnect from family sync? Your data stays on this device, but won\'t sync anymore.')) return;
+  if (unsubscribeListener) { unsubscribeListener(); unsubscribeListener = null; }
+  state.sync.enabled = false;
+  state.sync.familyId = null;
+  saveLocal();
+  setSyncStatus('disabled');
+  document.getElementById('syncIndicator').style.display = 'none';
+  renderFamily();
+  toast('Disconnected from sync');
 }
 
 // ---------- NAVIGATION ----------
@@ -4179,6 +4853,39 @@ function renderFamily() {
   `;
 
   c.innerHTML = cards + addCard;
+
+  // Render sync section
+  const synced = state.sync.enabled && state.sync.familyId;
+  const syncEl = document.getElementById('syncSection');
+  if (syncEl) {
+    syncEl.innerHTML = `
+      <div class="sync-section-head">
+        <div class="sync-section-title"><span class="icon">☁️</span>Family Sync</div>
+        <div class="sync-status-pill ${synced ? 'on' : 'off'}">
+          <div class="sync-dot" style="background: currentColor; width: 6px; height: 6px; border-radius: 50%;"></div>
+          ${synced ? 'Connected' : 'Not connected'}
+        </div>
+      </div>
+      ${synced ? `
+        <p>All devices using this family code see the same data, updated in real time. Currently connected to:</p>
+        <div class="family-code-display">
+          <div class="family-code-label">Family Code</div>
+          <div class="family-code-value">${formatFamilyCode(state.sync.familyId)}</div>
+          <div class="sync-actions" style="justify-content: center;">
+            <button class="btn" onclick="copyFamilyCode()">📋 Copy</button>
+            <button class="btn" onclick="openSyncModal()">Show Setup</button>
+            <button class="btn btn-danger" onclick="disconnectSync()">Disconnect</button>
+          </div>
+        </div>
+      ` : `
+        <p>Sync your data across devices in real time using Firebase (free tier). Your wall tablet, phone, and your partner's phone will all show the same data, updating instantly when anyone makes a change. Takes about 5 minutes to set up once.</p>
+        <button class="btn btn-primary" onclick="openSyncModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path d="M12 8v4l3 2"/></svg>
+          Setup Family Sync
+        </button>
+      `}
+    `;
+  }
 }
 
 function saveSetting(key, val) {
@@ -4346,6 +5053,18 @@ function init() {
     fetchWeather();
   }
 
+  // Resume Firebase sync if previously enabled
+  const cfg = FIREBASE_CONFIG || state.sync.config;
+  if (state.sync.enabled && state.sync.familyId && cfg) {
+    setSyncStatus('connecting', 'Connecting…');
+    initFirebase(cfg)
+      .then(() => startSyncListener())
+      .catch(err => {
+        console.error('Sync resume failed:', err);
+        setSyncStatus('error', 'Offline');
+      });
+  }
+
   // Clock ticks every second
   tickClock();
   setInterval(tickClock, 1000);
@@ -4374,6 +5093,15 @@ function init() {
       e.preventDefault();
     }
   });
+
+  // Auto-format family code input as user types
+  const codeInput = document.getElementById('syncCodeInput');
+  if (codeInput) {
+    codeInput.addEventListener('input', (e) => {
+      const raw = unformatFamilyCode(e.target.value).slice(0, 8);
+      e.target.value = raw.length > 4 ? raw.slice(0, 4) + '-' + raw.slice(4) : raw;
+    });
+  }
 }
 
 init();
