@@ -13,7 +13,7 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore-compat.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Geist:wght@300..900&family=Geist+Mono:wght@300..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Geist:wght@300..900&family=Geist+Mono:wght@300..700&family=Inter:ital,wght@0,400..900;1,400..900&family=Inter+Tight:ital,wght@0,500..900;1,500..900&family=Playfair+Display:ital,wght@0,500..900;1,500..900&family=Archivo+Black&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&family=Space+Grotesk:wght@400..700&display=swap" rel="stylesheet">
 <style>
 /* ============================================
    GOFF FAMILY HUB
@@ -65,6 +65,86 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* ============================================
+   FONT THEMES — switch the look of headlines & body
+   Default (no attr) = Classic editorial (Fraunces + Geist)
+   ============================================ */
+[data-font-theme="modern"] {
+  --display: "Inter Tight", -apple-system, system-ui, sans-serif;
+  --body: "Inter", -apple-system, system-ui, sans-serif;
+}
+[data-font-theme="magazine"] {
+  --display: "Playfair Display", Georgia, ui-serif, serif;
+  --body: "Inter", -apple-system, system-ui, sans-serif;
+}
+[data-font-theme="stadium"] {
+  --display: "Archivo Black", "Inter Tight", -apple-system, system-ui, sans-serif;
+  --body: "Inter", -apple-system, system-ui, sans-serif;
+}
+[data-font-theme="rounded"] {
+  --display: "Plus Jakarta Sans", -apple-system, system-ui, sans-serif;
+  --body: "Plus Jakarta Sans", -apple-system, system-ui, sans-serif;
+}
+[data-font-theme="techy"] {
+  --display: "Space Grotesk", "Inter Tight", -apple-system, system-ui, sans-serif;
+  --body: "Space Grotesk", -apple-system, system-ui, sans-serif;
+}
+
+/* Per-theme tweaks where the default sizing/spacing was tuned for Fraunces */
+
+/* Modern: Inter Tight is naturally narrower; allow the clock to breathe */
+[data-font-theme="modern"] .k-clock,
+[data-font-theme="techy"] .k-clock {
+  letter-spacing: -0.04em;
+}
+[data-font-theme="modern"] .k-greet em,
+[data-font-theme="modern"] .view-title em,
+[data-font-theme="techy"] .k-greet em,
+[data-font-theme="techy"] .view-title em {
+  font-style: normal;
+  font-weight: 700;
+}
+
+/* Magazine: Playfair has dramatic high-contrast strokes — needs a bit more weight on small text */
+[data-font-theme="magazine"] .kw-temp,
+[data-font-theme="magazine"] .kstat-num {
+  font-weight: 700;
+}
+
+/* Stadium: Archivo Black is always weight 900, condensed and uppercase-friendly */
+[data-font-theme="stadium"] .k-clock {
+  letter-spacing: -0.01em;
+  font-weight: 900;
+}
+[data-font-theme="stadium"] .kstat-num,
+[data-font-theme="stadium"] .kw-temp,
+[data-font-theme="stadium"] .view-title,
+[data-font-theme="stadium"] .modal-title,
+[data-font-theme="stadium"] .person-name,
+[data-font-theme="stadium"] .fam-name,
+[data-font-theme="stadium"] .proj-name,
+[data-font-theme="stadium"] .dinner-card-name,
+[data-font-theme="stadium"] .gro-cat-head .cat-name,
+[data-font-theme="stadium"] .month-label,
+[data-font-theme="stadium"] .week-day-num,
+[data-font-theme="stadium"] .month-cell .cell-num,
+[data-font-theme="stadium"] .meal-day-num,
+[data-font-theme="stadium"] .welcome-title,
+[data-font-theme="stadium"] .welcome-mark { font-weight: 900; }
+[data-font-theme="stadium"] .view-title em,
+[data-font-theme="stadium"] .k-greet em,
+[data-font-theme="stadium"] .person-name,
+[data-font-theme="stadium"] .fam-name,
+[data-font-theme="stadium"] .modal-title,
+[data-font-theme="stadium"] .proj-name,
+[data-font-theme="stadium"] .gro-cat-head .cat-name,
+[data-font-theme="stadium"] .dinner-card-name { font-style: normal; }
+
+/* Rounded: Plus Jakarta is friendly — keep italic for emphasis but boost weight */
+[data-font-theme="rounded"] .k-greet em,
+[data-font-theme="rounded"] .view-title em { font-weight: 800; }
+[data-font-theme="rounded"] .k-clock { letter-spacing: -0.035em; }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -3247,11 +3327,14 @@ input, textarea, select {
 .ss-photo {
   position: absolute;
   inset: 0;
-  background-size: cover;
+  background-image: var(--ss-img);
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+  background-color: #000;
   opacity: 0;
-  transition: opacity 1.5s ease, transform 12s ease-out;
+  transition: opacity 1.5s ease, transform 14s ease-out;
+  overflow: hidden;
 }
 
 .ss-photo.visible {
@@ -3259,7 +3342,20 @@ input, textarea, select {
 }
 
 .ss-photo.zooming {
-  transform: scale(1.08);
+  transform: scale(1.04);
+}
+
+/* Blurred ambient backdrop fill behind the contained photo so empty bars
+   pick up the colors of the image instead of being pure black. */
+.ss-photo::before {
+  content: "";
+  position: absolute;
+  inset: -8%;
+  background-image: var(--ss-img);
+  background-size: cover;
+  background-position: center;
+  filter: blur(40px) brightness(0.55) saturate(1.2);
+  z-index: -1;
 }
 
 .ss-overlay {
@@ -3906,10 +4002,11 @@ input, textarea, select {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 22px 30px 24px;
+  padding: 16px 28px 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: stretch;
   position: relative;
   overflow: hidden;
 }
@@ -3925,50 +4022,56 @@ input, textarea, select {
 }
 .k-greet {
   font-family: var(--display);
-  font-size: 30px;
-  font-weight: 300;
+  font-size: 24px;
+  font-weight: 400;
   font-style: italic;
   color: var(--text-2);
   letter-spacing: -0.01em;
   position: relative;
   z-index: 1;
+  flex-shrink: 0;
 }
 .k-greet em {
   font-style: italic;
   color: var(--accent);
   font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
-  font-weight: 500;
+  font-weight: 600;
 }
 .k-clock {
   font-family: var(--display);
-  font-weight: 300;
-  font-size: clamp(108px, 15.5vw, 200px);
-  line-height: 0.88;
-  letter-spacing: -0.045em;
-  font-variation-settings: "opsz" 144, "SOFT" 30;
+  font-weight: 600;
+  font-size: clamp(150px, 19.5vw, 260px);
+  line-height: 0.86;
+  letter-spacing: -0.03em;
+  font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  justify-content: center;
+  gap: 4px;
   position: relative;
   z-index: 1;
   color: var(--text);
+  flex: 1;
+  margin: 4px 0;
 }
-.k-clock .colon { color: var(--text-3); animation: blink 2s infinite; }
+.k-clock .colon { color: var(--text-3); animation: blink 2s infinite; font-weight: 500; }
 .k-clock .ampm {
   font-size: 0.24em;
   color: var(--text-3);
-  font-weight: 500;
+  font-weight: 700;
   font-variation-settings: "opsz" 9;
-  margin-left: 4px;
+  margin-left: 6px;
+  letter-spacing: 0.02em;
 }
 .k-date {
   font-family: var(--display);
-  font-size: 22px;
+  font-size: 20px;
   font-style: italic;
-  font-weight: 400;
+  font-weight: 500;
   color: var(--text-2);
   position: relative;
   z-index: 1;
+  flex-shrink: 0;
 }
 
 .kiosk-weather {
@@ -4009,11 +4112,11 @@ input, textarea, select {
 }
 .kw-temp {
   font-family: var(--display);
-  font-size: clamp(72px, 9vw, 130px);
+  font-size: clamp(78px, 9.5vw, 140px);
   line-height: 0.9;
-  font-weight: 300;
-  letter-spacing: -0.04em;
-  font-variation-settings: "opsz" 144, "SOFT" 30;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  font-variation-settings: "opsz" 144, "SOFT" 0;
   color: var(--text);
   display: flex;
   align-items: flex-start;
@@ -4025,32 +4128,34 @@ input, textarea, select {
   margin-top: 0.05em;
 }
 .kw-desc {
-  font-size: 19px;
+  font-size: 22px;
   color: var(--text);
-  font-weight: 500;
+  font-weight: 600;
   margin-top: 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  letter-spacing: -0.005em;
 }
 .kw-loc {
-  font-size: 13px;
-  color: var(--text-3);
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  font-size: 14px;
+  color: var(--text-2);
+  font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 .kw-extra {
   display: flex;
   gap: 18px;
-  font-size: 16px;
+  font-size: 17px;
   color: var(--text-2);
+  font-weight: 600;
   margin-top: 10px;
   flex-wrap: wrap;
 }
 .kw-extra span { display: inline-flex; align-items: center; gap: 6px; }
-.kw-extra strong { color: var(--text); font-weight: 600; }
+.kw-extra strong { color: var(--text); font-weight: 700; }
 .kw-extra .kw-hi strong { color: var(--c-coral); }
 .kw-extra .kw-lo strong { color: var(--c-sky); }
 
@@ -4076,17 +4181,17 @@ input, textarea, select {
 .kstat:hover { background: var(--surface-2); border-color: var(--border-strong); transform: translateY(-2px); }
 .kstat-num {
   font-family: var(--display);
-  font-size: 50px;
+  font-size: 56px;
   line-height: 1;
-  font-weight: 400;
-  letter-spacing: -0.02em;
+  font-weight: 600;
+  letter-spacing: -0.025em;
   flex-shrink: 0;
   font-variation-settings: "opsz" 144;
 }
 .kstat-label {
-  font-size: 14px;
-  color: var(--text-2);
-  font-weight: 500;
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 600;
   letter-spacing: 0.01em;
   line-height: 1.15;
 }
@@ -4119,6 +4224,26 @@ input, textarea, select {
   height: 100%;
   border-radius: var(--radius-lg);
   margin: 0;
+  background: #000;
+}
+/* Apple-style "ambient" blur backdrop so photo shows in full without crop */
+.kiosk-bottom .photo-widget .pw-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(28px) brightness(0.7) saturate(1.15);
+  transform: scale(1.18);
+  z-index: 0;
+}
+.kiosk-bottom .photo-widget img.pw-fg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+  image-rendering: auto;
 }
 .kiosk-bottom .photo-widget-empty .pw-icon { font-size: 56px; }
 .kiosk-bottom .photo-widget-empty .pw-text {
@@ -4128,6 +4253,7 @@ input, textarea, select {
   padding: 0 24px;
 }
 .kiosk-bottom .photo-widget-label { font-size: 22px; }
+.kiosk-bottom .photo-widget-overlay { z-index: 2; }
 .kcard-head {
   display: flex;
   align-items: center;
@@ -4137,20 +4263,20 @@ input, textarea, select {
   flex-shrink: 0;
 }
 .kcard-title {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--text-3);
+  letter-spacing: 0.14em;
+  color: var(--text-2);
 }
 .kcard-badge {
   font-family: var(--mono);
-  font-size: 11px;
-  color: var(--text-3);
+  font-size: 12px;
+  color: var(--text-2);
   background: var(--surface-2);
   padding: 4px 10px;
   border-radius: 999px;
-  font-weight: 500;
+  font-weight: 600;
 }
 .kcard-body {
   flex: 1;
@@ -4164,28 +4290,30 @@ input, textarea, select {
 .kcard-body::-webkit-scrollbar { width: 4px; }
 
 /* Compact today-items for the narrower dashboard cards */
-.kiosk-bottom .kcard-title { font-size: 11px; letter-spacing: 0.14em; }
+.kiosk-bottom .kcard-title { font-size: 12px; letter-spacing: 0.14em; }
 .kiosk-bottom .kcard-head { margin-bottom: 10px; }
-.kiosk-bottom .kcard-badge { font-size: 10px; padding: 3px 8px; }
+.kiosk-bottom .kcard-badge { font-size: 11px; padding: 3px 9px; font-weight: 600; }
 
 .kiosk-bottom .today-item {
-  padding: 9px 12px;
+  padding: 10px 13px;
   gap: 10px;
   background: var(--surface-2);
   border-radius: 10px;
   border: 1px solid var(--border);
 }
-.kiosk-bottom .today-item .dot { width: 8px; height: 8px; }
+.kiosk-bottom .today-item .dot { width: 9px; height: 9px; }
 .kiosk-bottom .today-item .time {
-  font-size: 11px;
-  min-width: 56px;
-  font-weight: 600;
+  font-size: 12px;
+  min-width: 58px;
+  font-weight: 700;
+  color: var(--text-2);
 }
-.kiosk-bottom .today-item .name { font-size: 14px; font-weight: 500; }
+.kiosk-bottom .today-item .name { font-size: 16px; font-weight: 600; color: var(--text); }
 .kiosk-bottom .today-item .who {
-  font-size: 10px;
-  font-weight: 500;
-  padding: 2px 7px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  color: var(--text-2);
 }
 .kiosk-bottom .today-schedule-mini {
   background: var(--surface-2);
@@ -4217,24 +4345,24 @@ input, textarea, select {
   margin-bottom: 10px;
 }
 .k-next-label {
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   color: var(--accent);
   margin-bottom: 3px;
 }
 .k-next-title {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 19px;
+  font-weight: 700;
   color: var(--text);
   line-height: 1.2;
 }
 .k-next-time {
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-2);
-  font-weight: 600;
+  font-weight: 700;
   margin-top: 2px;
 }
 .k-next-icon {
@@ -4246,21 +4374,21 @@ input, textarea, select {
 @media (min-width: 881px) and (max-height: 760px) {
   #view-dashboard.view { padding: 14px 18px; }
   .dash-kiosk { gap: 10px; grid-template-rows: minmax(180px, 0.95fr) auto minmax(180px, 1.3fr); }
-  .kiosk-time { padding: 16px 22px; }
-  .k-greet { font-size: 22px; }
-  .k-clock { font-size: clamp(88px, 13vw, 160px); }
-  .k-date { font-size: 18px; }
+  .kiosk-time { padding: 12px 22px 14px; }
+  .k-greet { font-size: 20px; }
+  .k-clock { font-size: clamp(120px, 16vw, 200px); }
+  .k-date { font-size: 17px; }
   .kiosk-weather { padding: 16px 20px; gap: 14px; }
   .kw-icon { font-size: clamp(60px, 7.5vw, 100px); }
-  .kw-temp { font-size: clamp(60px, 7.8vw, 110px); }
-  .kw-desc { font-size: 16px; }
+  .kw-temp { font-size: clamp(60px, 7.8vw, 110px); font-weight: 500; }
+  .kw-desc { font-size: 17px; font-weight: 600; }
   .kw-extra { font-size: 14px; gap: 14px; margin-top: 6px; }
   .kstat { padding: 10px 14px; gap: 10px; }
-  .kstat-num { font-size: 38px; }
-  .kstat-label { font-size: 12px; }
+  .kstat-num { font-size: 42px; font-weight: 600; }
+  .kstat-label { font-size: 13px; font-weight: 600; }
   .kcard { padding: 14px 16px; }
   .kcard-title { font-size: 11px; }
-  .kiosk-bottom .today-item .name { font-size: 15px; }
+  .kiosk-bottom .today-item .name { font-size: 15px; font-weight: 600; }
 }
 
 @media (max-width: 880px) {
@@ -4617,6 +4745,43 @@ body::before {
   };
   window.getGoffTheme = function() {
     try { return localStorage.getItem('goff_theme') || 'default'; } catch (e) { return 'default'; }
+  };
+
+  /* ============================================
+     FONT THEME SYSTEM (independent of color theme)
+     Activate via setGoffFont('modern'|'magazine'|'stadium'|'rounded'|'techy')
+     or via URL ?font=modern. Default (null) = Classic editorial.
+     ============================================ */
+  const VALID_FONTS = ['modern', 'magazine', 'stadium', 'rounded', 'techy'];
+  function applyFont(name) {
+    if (name && VALID_FONTS.indexOf(name) !== -1) {
+      document.documentElement.setAttribute('data-font-theme', name);
+    } else {
+      document.documentElement.removeAttribute('data-font-theme');
+    }
+  }
+  const urlFont = params.get('font');
+  if (urlFont !== null) {
+    if (urlFont && VALID_FONTS.indexOf(urlFont) !== -1) {
+      try { localStorage.setItem('goff_font', urlFont); } catch (e) {}
+    } else {
+      try { localStorage.removeItem('goff_font'); } catch (e) {}
+    }
+  }
+  let font = null;
+  try { font = localStorage.getItem('goff_font'); } catch (e) {}
+  applyFont(font);
+
+  window.setGoffFont = function(name) {
+    if (name && VALID_FONTS.indexOf(name) !== -1) {
+      try { localStorage.setItem('goff_font', name); } catch (e) {}
+    } else {
+      try { localStorage.removeItem('goff_font'); } catch (e) {}
+    }
+    applyFont(name);
+  };
+  window.getGoffFont = function() {
+    try { return localStorage.getItem('goff_font') || 'classic'; } catch (e) { return 'classic'; }
   };
 })();
 </script>
@@ -5043,6 +5208,20 @@ body::before {
             <option value="summer">☀️ Summer · Sunset &amp; Tropical</option>
             <option value="fall">🍂 Fall · Harvest &amp; Spice</option>
             <option value="winter">❄️ Winter · Snowy Evergreen</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Font Style</div>
+            <div class="settings-desc">Pick a typography vibe — same data, different look</div>
+          </div>
+          <select class="settings-input" id="setFont" onchange="setGoffFont(this.value === 'classic' ? null : this.value)">
+            <option value="classic">✒️ Classic · Editorial Serif</option>
+            <option value="modern">◉ Modern · Clean &amp; Bold</option>
+            <option value="stadium">🏟️ Stadium · Heavy Display</option>
+            <option value="magazine">📰 Magazine · Dramatic Serif</option>
+            <option value="rounded">✨ Rounded · Soft &amp; Friendly</option>
+            <option value="techy">⌬ Techy · Geometric Mono</option>
           </select>
         </div>
         <div class="settings-row">
@@ -8032,7 +8211,7 @@ function savePhotos() {
   return true;
 }
 
-function compressImage(file, maxDim = 1400, quality = 0.78) {
+function compressImage(file, maxDim = 2000, quality = 0.90) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -8153,11 +8332,15 @@ function renderPhotoWidget() {
     return;
   }
 
-  // Random photo, with rotation
+  // Random photo, with rotation. Two-layer render:
+  //   .pw-bg = blurred, scaled-up backdrop fill (Apple-style)
+  //   .pw-fg = main image with object-fit:contain so nothing gets cropped
   const showPhoto = () => {
     const photo = photoAlbum[widgetPhotoIdx % photoAlbum.length];
+    const safeUrl = photo.dataUrl.replace(/'/g, "\\'");
     widget.innerHTML = `
-      <img src="${photo.dataUrl}" alt="Family">
+      <div class="pw-bg" style="background-image:url('${safeUrl}')"></div>
+      <img class="pw-fg" src="${photo.dataUrl}" alt="Family">
       <div class="photo-widget-overlay">
         <div class="photo-widget-label">Tap for slideshow →</div>
       </div>
@@ -8185,8 +8368,8 @@ function enterScreensaver() {
   const empty = document.getElementById('ssEmptyState');
   if (photoAlbum.length === 0) {
     empty.style.display = 'flex';
-    document.getElementById('ssPhotoA').style.background = '';
-    document.getElementById('ssPhotoB').style.background = '';
+    document.getElementById('ssPhotoA').style.removeProperty('--ss-img');
+    document.getElementById('ssPhotoB').style.removeProperty('--ss-img');
   } else {
     empty.style.display = 'none';
     ssIdx = Math.floor(Math.random() * photoAlbum.length);
@@ -8228,7 +8411,7 @@ function showSSPhoto(initial) {
   const showEl = document.getElementById(showId);
   const hideEl = document.getElementById(hideId);
 
-  showEl.style.backgroundImage = `url('${photo.dataUrl}')`;
+  showEl.style.setProperty('--ss-img', `url('${photo.dataUrl}')`);
   showEl.classList.remove('zooming');
   // Force reflow so CSS transition runs
   void showEl.offsetWidth;
@@ -9262,6 +9445,10 @@ function renderFamily() {
   const themeSel = document.getElementById('setTheme');
   if (themeSel && typeof getGoffTheme === 'function') {
     themeSel.value = getGoffTheme();
+  }
+  const fontSel = document.getElementById('setFont');
+  if (fontSel && typeof getGoffFont === 'function') {
+    fontSel.value = getGoffFont();
   }
 
   const cards = state.members.map(m => {
