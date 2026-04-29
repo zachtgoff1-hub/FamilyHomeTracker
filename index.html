@@ -4294,6 +4294,37 @@ input, textarea, select {
    To revert: ?theme=default  or  setGoffTheme(null)
    ============================================ */
 (function() {
+  /* Shared overrides for ALL light seasonal themes.
+     Fixes hardcoded dark text-on-accent (#1a1410) -> white,
+     plus a few palette-agnostic accents. */
+  const LIGHT_BASE = `
+.btn-primary,
+.gro-add button,
+.task-add button,
+.avatar,
+.fam-avatar,
+.event-pill .ev-avatar,
+.kanban-chore-avatar,
+.proj-card-avatars .avatar-mini,
+.gro-tag-avatar,
+.tsm-avatar,
+.profile-tab.active,
+.invite-btn.accept { color: #ffffff; }
+.view-toggle button.active { color: #ffffff; }
+.chore-item.done .chore-check svg,
+.kanban-chore.done .kanban-chore-check svg,
+.lib-item.selected .lib-item-check svg,
+.task-item.done .task-check svg,
+.gro-item.done .gro-check svg { color: #ffffff; }
+.dinner-add-grocery:hover { color: #ffffff; }
+.proj-complete-btn:hover { color: #ffffff; }
+.welcome { background: var(--bg); }
+.person-streak .flame { color: var(--c-coral); }
+.exp-cat-icon.recurring { background: color-mix(in srgb, var(--c-violet) 14%, transparent); }
+.exp-recurring-badge { color: var(--c-violet); background: color-mix(in srgb, var(--c-violet) 12%, transparent); }
+.btn-danger:hover { background: color-mix(in srgb, var(--danger) 10%, transparent); }
+`;
+
   const THEMES = {
     spring: `
 /* === SPRING - soft cream + cheerful pastels === */
@@ -4323,104 +4354,238 @@ input, textarea, select {
   --success: #10b981;
   --danger: #ef4444;
 }
-
-/* Side rail: light cream blur */
 .rail { background: rgba(255, 253, 246, 0.72); }
-
-/* Ambient page gradients - spring green + blossom pink */
 body::before {
   background:
     radial-gradient(900px 600px at 90% 10%, rgba(16, 185, 129, 0.10), transparent 60%),
     radial-gradient(700px 500px at 5% 95%, rgba(236, 72, 153, 0.07), transparent 60%);
 }
-
-/* Hero / kiosk-time gradient: amber -> spring green */
 .hero::before, .kiosk-time::before {
   background: radial-gradient(closest-side, rgba(16, 185, 129, 0.16), transparent);
 }
-
-/* Weather panel: bright cream with blossom glow */
-.kiosk-weather {
-  background: linear-gradient(135deg, #ffffff 0%, #f5efe1 100%);
-}
-.kiosk-weather::before {
-  background: radial-gradient(closest-side, rgba(236, 72, 153, 0.16), transparent 70%);
-}
-
-/* Dinner card: amber -> spring green */
-.dinner-card::before {
-  background: radial-gradient(closest-side, rgba(16, 185, 129, 0.14), transparent);
-}
+.kiosk-weather { background: linear-gradient(135deg, #ffffff 0%, #f5efe1 100%); }
+.kiosk-weather::before { background: radial-gradient(closest-side, rgba(236, 72, 153, 0.16), transparent 70%); }
+.dinner-card::before { background: radial-gradient(closest-side, rgba(16, 185, 129, 0.14), transparent); }
 .dinner-tonight {
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), transparent);
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
-
-/* Coming-up-next pill: cherry blossom */
 .k-next {
   background: linear-gradient(135deg, rgba(236, 72, 153, 0.16), rgba(236, 72, 153, 0.04));
   border: 1px solid rgba(236, 72, 153, 0.4);
 }
 .k-next-label { color: #ec4899; }
-
-/* All hard-coded dark text-on-accent (#1a1410) becomes white */
-.btn-primary,
-.gro-add button,
-.task-add button,
-.avatar,
-.fam-avatar,
-.event-pill .ev-avatar,
-.kanban-chore-avatar,
-.proj-card-avatars .avatar-mini,
-.gro-tag-avatar,
-.tsm-avatar,
-.profile-tab.active,
-.invite-btn.accept { color: #ffffff; }
-
-.view-toggle button.active { color: #ffffff; }
-
-.chore-item.done .chore-check svg,
-.kanban-chore.done .kanban-chore-check svg,
-.lib-item.selected .lib-item-check svg,
-.task-item.done .task-check svg,
-.gro-item.done .gro-check svg { color: #ffffff; }
-
 .btn-primary:hover { background: #34d399; border-color: #34d399; }
 .gro-add button:hover { background: #34d399; }
-.dinner-add-grocery:hover { color: #ffffff; }
-.proj-complete-btn:hover { color: #ffffff; }
 .invite-btn.accept:hover { background: #34d399; }
-
-/* Expense stat colors */
 .exp-stat-card.amber { --exp-color: rgba(245, 158, 11, 0.18); }
 .exp-stat-card.sage  { --exp-color: rgba(16, 185, 129, 0.18); }
 .exp-stat-card.sky   { --exp-color: rgba(14, 165, 233, 0.18); }
-.exp-cat-icon.recurring { background: rgba(139, 92, 246, 0.14); }
-.exp-recurring-badge { color: #8b5cf6; background: rgba(139, 92, 246, 0.12); }
-
-/* Modal backdrop & toasts: soft warm overlay (not pure black) */
 .modal-backdrop { background: rgba(60, 50, 35, 0.42); }
 .toast { box-shadow: 0 12px 40px rgba(60, 50, 35, 0.18); }
-
-/* Misc */
-.btn-danger:hover { background: rgba(239, 68, 68, 0.10); }
-.welcome { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: rgba(101, 81, 52, 0.22); }
-.person-streak .flame { color: var(--c-coral); }
-`
+` + LIGHT_BASE,
+
+    summer: `
+/* === SUMMER - sunset peach + tropical brights === */
+:root {
+  --bg: #fff7e8;
+  --bg-elevated: #fffdf6;
+  --surface: #ffffff;
+  --surface-2: #fdf0d8;
+  --surface-3: #f7debc;
+  --border: rgba(180, 100, 30, 0.10);
+  --border-strong: rgba(180, 100, 30, 0.22);
+
+  --text: #3a2418;
+  --text-2: #6b4530;
+  --text-3: #a07555;
+  --text-4: #c9a78a;
+
+  --c-amber: #fbbf24;
+  --c-coral: #ec4899;
+  --c-sage: #84cc16;
+  --c-sky: #06b6d4;
+  --c-violet: #a855f7;
+  --c-rose: #f97316;
+
+  --accent: #f97316;
+  --accent-soft: rgba(249, 115, 22, 0.14);
+  --success: #84cc16;
+  --danger: #ef4444;
+}
+.rail { background: rgba(255, 247, 232, 0.72); }
+body::before {
+  background:
+    radial-gradient(900px 600px at 88% 12%, rgba(249, 115, 22, 0.12), transparent 60%),
+    radial-gradient(700px 500px at 8% 92%, rgba(6, 182, 212, 0.10), transparent 60%);
+}
+.hero::before, .kiosk-time::before {
+  background: radial-gradient(closest-side, rgba(249, 115, 22, 0.18), transparent);
+}
+.kiosk-weather { background: linear-gradient(135deg, #ffffff 0%, #fdf0d8 100%); }
+.kiosk-weather::before { background: radial-gradient(closest-side, rgba(6, 182, 212, 0.18), transparent 70%); }
+.dinner-card::before { background: radial-gradient(closest-side, rgba(249, 115, 22, 0.16), transparent); }
+.dinner-tonight {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.14), transparent);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+.k-next {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.18), rgba(236, 72, 153, 0.04));
+  border: 1px solid rgba(236, 72, 153, 0.42);
+}
+.k-next-label { color: #ec4899; }
+.btn-primary:hover { background: #fb923c; border-color: #fb923c; }
+.gro-add button:hover { background: #fb923c; }
+.invite-btn.accept:hover { background: #a3e635; }
+.exp-stat-card.amber { --exp-color: rgba(251, 191, 36, 0.20); }
+.exp-stat-card.sage  { --exp-color: rgba(132, 204, 22, 0.18); }
+.exp-stat-card.sky   { --exp-color: rgba(6, 182, 212, 0.20); }
+.modal-backdrop { background: rgba(70, 40, 20, 0.45); }
+.toast { box-shadow: 0 12px 40px rgba(70, 40, 20, 0.20); }
+::-webkit-scrollbar-thumb { background: rgba(180, 100, 30, 0.22); }
+` + LIGHT_BASE,
+
+    fall: `
+/* === FALL - harvest parchment + cozy spice === */
+:root {
+  --bg: #f7eed5;
+  --bg-elevated: #fdf6e0;
+  --surface: #fffaeb;
+  --surface-2: #efe0bd;
+  --surface-3: #ddc899;
+  --border: rgba(110, 60, 20, 0.12);
+  --border-strong: rgba(110, 60, 20, 0.26);
+
+  --text: #2d1f12;
+  --text-2: #5a4530;
+  --text-3: #8a704f;
+  --text-4: #b39977;
+
+  --c-amber: #d97706;
+  --c-coral: #be123c;
+  --c-sage: #65a30d;
+  --c-sky: #0369a1;
+  --c-violet: #7c3aed;
+  --c-rose: #ca8a04;
+
+  --accent: #c2410c;
+  --accent-soft: rgba(194, 65, 12, 0.14);
+  --success: #65a30d;
+  --danger: #dc2626;
+}
+.rail { background: rgba(247, 238, 213, 0.72); }
+body::before {
+  background:
+    radial-gradient(900px 600px at 90% 10%, rgba(194, 65, 12, 0.12), transparent 60%),
+    radial-gradient(700px 500px at 6% 94%, rgba(190, 18, 60, 0.10), transparent 60%),
+    radial-gradient(500px 400px at 50% 50%, rgba(217, 119, 6, 0.06), transparent 65%);
+}
+.hero::before, .kiosk-time::before {
+  background: radial-gradient(closest-side, rgba(194, 65, 12, 0.18), transparent);
+}
+.kiosk-weather { background: linear-gradient(135deg, #fffaeb 0%, #efe0bd 100%); }
+.kiosk-weather::before { background: radial-gradient(closest-side, rgba(217, 119, 6, 0.20), transparent 70%); }
+.dinner-card::before { background: radial-gradient(closest-side, rgba(194, 65, 12, 0.16), transparent); }
+.dinner-tonight {
+  background: linear-gradient(135deg, rgba(194, 65, 12, 0.14), transparent);
+  border: 1px solid rgba(194, 65, 12, 0.3);
+}
+.k-next {
+  background: linear-gradient(135deg, rgba(190, 18, 60, 0.16), rgba(190, 18, 60, 0.04));
+  border: 1px solid rgba(190, 18, 60, 0.4);
+}
+.k-next-label { color: #be123c; }
+.btn-primary:hover { background: #ea580c; border-color: #ea580c; }
+.gro-add button:hover { background: #ea580c; }
+.invite-btn.accept:hover { background: #84cc16; }
+.exp-stat-card.amber { --exp-color: rgba(217, 119, 6, 0.20); }
+.exp-stat-card.sage  { --exp-color: rgba(101, 163, 13, 0.18); }
+.exp-stat-card.sky   { --exp-color: rgba(3, 105, 161, 0.18); }
+.modal-backdrop { background: rgba(50, 28, 12, 0.50); }
+.toast { box-shadow: 0 12px 40px rgba(50, 28, 12, 0.22); }
+::-webkit-scrollbar-thumb { background: rgba(110, 60, 20, 0.24); }
+` + LIGHT_BASE,
+
+    winter: `
+/* === WINTER - snowy cool + evergreen + holiday red === */
+:root {
+  --bg: #eef4f8;
+  --bg-elevated: #f8fbfd;
+  --surface: #ffffff;
+  --surface-2: #e2ebf1;
+  --surface-3: #c5d3dd;
+  --border: rgba(30, 60, 90, 0.10);
+  --border-strong: rgba(30, 60, 90, 0.22);
+
+  --text: #1a2940;
+  --text-2: #475569;
+  --text-3: #64748b;
+  --text-4: #94a3b8;
+
+  --c-amber: #f59e0b;
+  --c-coral: #dc2626;
+  --c-sage: #0d9488;
+  --c-sky: #2563eb;
+  --c-violet: #7c3aed;
+  --c-rose: #be185d;
+
+  --accent: #0d9488;
+  --accent-soft: rgba(13, 148, 136, 0.14);
+  --success: #0d9488;
+  --danger: #dc2626;
+}
+.rail { background: rgba(238, 244, 248, 0.72); }
+body::before {
+  background:
+    radial-gradient(900px 600px at 88% 10%, rgba(37, 99, 235, 0.10), transparent 60%),
+    radial-gradient(700px 500px at 8% 92%, rgba(220, 38, 38, 0.07), transparent 60%);
+}
+.hero::before, .kiosk-time::before {
+  background: radial-gradient(closest-side, rgba(13, 148, 136, 0.16), transparent);
+}
+.kiosk-weather { background: linear-gradient(135deg, #ffffff 0%, #e2ebf1 100%); }
+.kiosk-weather::before { background: radial-gradient(closest-side, rgba(37, 99, 235, 0.18), transparent 70%); }
+.dinner-card::before { background: radial-gradient(closest-side, rgba(245, 158, 11, 0.18), transparent); }
+.dinner-tonight {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), transparent);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+.k-next {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.16), rgba(220, 38, 38, 0.04));
+  border: 1px solid rgba(220, 38, 38, 0.4);
+}
+.k-next-label { color: #dc2626; }
+.btn-primary:hover { background: #14b8a6; border-color: #14b8a6; }
+.gro-add button:hover { background: #14b8a6; }
+.invite-btn.accept:hover { background: #14b8a6; }
+.exp-stat-card.amber { --exp-color: rgba(245, 158, 11, 0.20); }
+.exp-stat-card.sage  { --exp-color: rgba(13, 148, 136, 0.18); }
+.exp-stat-card.sky   { --exp-color: rgba(37, 99, 235, 0.18); }
+.modal-backdrop { background: rgba(20, 35, 55, 0.50); }
+.toast { box-shadow: 0 12px 40px rgba(20, 35, 55, 0.20); }
+::-webkit-scrollbar-thumb { background: rgba(30, 60, 90, 0.22); }
+` + LIGHT_BASE,
+  };
+
+  /* Browser status-bar color per theme */
+  const THEME_META_COLOR = {
+    spring: '#faf6ed',
+    summer: '#fff7e8',
+    fall: '#f7eed5',
+    winter: '#eef4f8',
   };
 
   function applyTheme(name) {
     const overrideEl = document.getElementById('theme-override');
     if (!overrideEl) return;
+    const meta = document.querySelector('meta[name="theme-color"]');
     if (name && THEMES[name]) {
       overrideEl.textContent = THEMES[name];
-      const meta = document.querySelector('meta[name="theme-color"]');
-      if (meta && name === 'spring') meta.content = '#faf6ed';
+      if (meta) meta.content = THEME_META_COLOR[name] || '#0f0e0d';
       document.documentElement.setAttribute('data-theme', name);
     } else {
       overrideEl.textContent = '';
-      const meta = document.querySelector('meta[name="theme-color"]');
       if (meta) meta.content = '#0f0e0d';
       document.documentElement.removeAttribute('data-theme');
     }
@@ -4875,6 +5040,9 @@ body::before {
           <select class="settings-input" id="setTheme" onchange="setGoffTheme(this.value === 'default' ? null : this.value)">
             <option value="default">Default · Warm Dark</option>
             <option value="spring">🌸 Spring · Cream &amp; Pastels</option>
+            <option value="summer">☀️ Summer · Sunset &amp; Tropical</option>
+            <option value="fall">🍂 Fall · Harvest &amp; Spice</option>
+            <option value="winter">❄️ Winter · Snowy Evergreen</option>
           </select>
         </div>
         <div class="settings-row">
