@@ -3327,35 +3327,36 @@ input, textarea, select {
 .ss-photo {
   position: absolute;
   inset: 0;
-  background-image: var(--ss-img);
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
   background-color: #000;
   opacity: 0;
   transition: opacity 1.5s ease, transform 14s ease-out;
   overflow: hidden;
 }
 
-.ss-photo.visible {
-  opacity: 1;
-}
+.ss-photo.visible { opacity: 1; }
+.ss-photo.zooming { transform: scale(1.04); }
 
-.ss-photo.zooming {
-  transform: scale(1.04);
-}
-
-/* Blurred ambient backdrop fill behind the contained photo so empty bars
-   pick up the colors of the image instead of being pure black. */
-.ss-photo::before {
-  content: "";
+/* Blurred ambient backdrop — fills the whole screen behind the photo
+   so empty letterbox area picks up the photo's colors. */
+.ss-photo-bg {
   position: absolute;
-  inset: -8%;
+  inset: -6%;
   background-image: var(--ss-img);
   background-size: cover;
   background-position: center;
-  filter: blur(40px) brightness(0.55) saturate(1.2);
-  z-index: -1;
+  background-repeat: no-repeat;
+  filter: blur(36px) brightness(0.55) saturate(1.2);
+  z-index: 1;
+}
+/* Sharp main photo — contained so nothing is cropped */
+.ss-photo-fg {
+  position: absolute;
+  inset: 0;
+  background-image: var(--ss-img);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 2;
 }
 
 .ss-overlay {
@@ -4332,6 +4333,57 @@ input, textarea, select {
 .kiosk-bottom .dinner-tonight { padding: 10px 12px; gap: 10px; }
 .kiosk-bottom .dinner-tonight-icon { font-size: 22px; }
 .kiosk-bottom .dinner-tonight-name { font-size: 14px; }
+
+/* Quick Tools tiles (replacement for chores card on home screen) */
+.qt-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  height: 100%;
+  align-content: start;
+}
+.qt-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  min-height: 64px;
+}
+.qt-tile:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  color: var(--accent);
+}
+.qt-tile:active { transform: scale(0.97); }
+.qt-tile .qt-icon {
+  font-size: 26px;
+  line-height: 1;
+}
+.qt-tile .qt-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+.qt-tile.qt-lock {
+  background: linear-gradient(135deg, var(--surface-2), var(--surface));
+  border-color: var(--border-strong);
+}
+.qt-tile.qt-lock:hover {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.14), var(--surface-2));
+  border-color: var(--accent);
+  color: var(--accent);
+}
 
 /* Next-up highlight pill (top of schedule) */
 .k-next {
@@ -5562,11 +5614,38 @@ body::before {
           </div>
           <div class="kcard">
             <div class="kcard-head">
-              <div class="kcard-title">Today's Chores</div>
-              <div class="kcard-badge" id="choresBadge">—</div>
+              <div class="kcard-title">Quick Tools</div>
+              <div class="kcard-badge" id="alarmsBadge">—</div>
             </div>
-            <div class="kcard-body">
-              <div class="today-chores" id="todayChores"></div>
+            <div class="kcard-body" style="overflow:visible;">
+              <div class="qt-grid">
+                <button class="qt-tile" onclick="setView('tools'); setTool('stopwatch');">
+                  <span class="qt-icon">⏱️</span><span class="qt-label">Stopwatch</span>
+                </button>
+                <button class="qt-tile" onclick="setView('tools'); setTool('timer');">
+                  <span class="qt-icon">⏲️</span><span class="qt-label">Timer</span>
+                </button>
+                <button class="qt-tile" onclick="setView('tools'); setTool('alarm');">
+                  <span class="qt-icon">🔔</span><span class="qt-label">Alarm</span>
+                </button>
+                <button class="qt-tile" onclick="setView('tools'); setTool('calc');">
+                  <span class="qt-icon">🧮</span><span class="qt-label">Calculator</span>
+                </button>
+                <button class="qt-tile" onclick="setView('tools'); setTool('notes');">
+                  <span class="qt-icon">📝</span><span class="qt-label">Notes</span>
+                </button>
+                <button class="qt-tile" onclick="setView('tools'); setTool('draw');">
+                  <span class="qt-icon">🎨</span><span class="qt-label">Drawing</span>
+                </button>
+                <button class="qt-tile" onclick="setView('tools'); setTool('dice');">
+                  <span class="qt-icon">🎲</span><span class="qt-label">Decide</span>
+                </button>
+                <button class="qt-tile qt-lock" onclick="enterScreensaver()">
+                  <span class="qt-icon">🌙</span><span class="qt-label">Lock</span>
+                </button>
+              </div>
+              <!-- keep todayChores element so renderDashboard's chore code doesn't error -->
+              <div class="today-chores" id="todayChores" style="display:none;"></div>
             </div>
           </div>
         </div>
@@ -6706,8 +6785,14 @@ body::before {
      SCREENSAVER
      ============================================ -->
 <div class="screensaver" id="screensaver">
-  <div class="ss-photo" id="ssPhotoA"></div>
-  <div class="ss-photo" id="ssPhotoB"></div>
+  <div class="ss-photo" id="ssPhotoA">
+    <div class="ss-photo-bg"></div>
+    <div class="ss-photo-fg"></div>
+  </div>
+  <div class="ss-photo" id="ssPhotoB">
+    <div class="ss-photo-bg"></div>
+    <div class="ss-photo-fg"></div>
+  </div>
   <div class="ss-overlay">
     <div class="ss-empty" id="ssEmptyState" style="display:none;">
       <div class="ss-empty-icon">📷</div>
@@ -7315,16 +7400,11 @@ function renderDashboard() {
   if (dayBadge) {
     dayBadge.textContent = now.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
   }
-  const choresBadge = document.getElementById('choresBadge');
-  if (choresBadge) {
-    const dailyChoresAll = state.chores.filter(c => c.frequency === 'daily' || c.frequency === 'weekly' || c.frequency === 'once');
-    const doneCount = dailyChoresAll.filter(c => c.done).length;
-    if (dailyChoresAll.length === 0) {
-      choresBadge.textContent = '—';
-    } else {
-      const pct = Math.round((doneCount / dailyChoresAll.length) * 100);
-      choresBadge.textContent = `${doneCount}/${dailyChoresAll.length} · ${pct}%`;
-    }
+  // Alarms badge — show count of enabled alarms (since chores moved off the dashboard)
+  const alarmsBadge = document.getElementById('alarmsBadge');
+  if (alarmsBadge) {
+    const enabledCount = (typeof alarms !== 'undefined' && alarms) ? alarms.filter(a => a.enabled).length : 0;
+    alarmsBadge.textContent = enabledCount > 0 ? `${enabledCount} ALARM${enabledCount === 1 ? '' : 'S'}` : 'READY';
   }
 
   // "Next Up" pill - show the next upcoming event today
