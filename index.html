@@ -3845,6 +3845,388 @@ input, textarea, select {
   .hero { min-height: auto; padding: 28px; }
   .view { padding: 24px 32px; }
 }
+
+/* ============================================
+   KIOSK DASHBOARD (single-screen, no scroll)
+   Wall-mounted tablet, viewable from a distance
+   ============================================ */
+#view-dashboard.view {
+  padding: 18px 22px;
+  height: 100%;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+#view-dashboard.view.active {
+  display: flex;
+}
+
+.dash-kiosk {
+  flex: 1;
+  display: grid;
+  grid-template-rows: minmax(220px, 1.05fr) auto minmax(220px, 1.4fr);
+  gap: 14px;
+  min-height: 0;
+}
+
+/* ---- TOP ROW: Clock + Weather ---- */
+.kiosk-top {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 14px;
+  min-height: 0;
+}
+
+.kiosk-time {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 22px 30px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+.kiosk-time::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -12%;
+  width: 60%;
+  height: 160%;
+  background: radial-gradient(closest-side, rgba(251, 191, 36, 0.14), transparent);
+  pointer-events: none;
+}
+.k-greet {
+  font-family: var(--display);
+  font-size: 30px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text-2);
+  letter-spacing: -0.01em;
+  position: relative;
+  z-index: 1;
+}
+.k-greet em {
+  font-style: italic;
+  color: var(--accent);
+  font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+  font-weight: 500;
+}
+.k-clock {
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: clamp(108px, 15.5vw, 200px);
+  line-height: 0.88;
+  letter-spacing: -0.045em;
+  font-variation-settings: "opsz" 144, "SOFT" 30;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+  color: var(--text);
+}
+.k-clock .colon { color: var(--text-3); animation: blink 2s infinite; }
+.k-clock .ampm {
+  font-size: 0.24em;
+  color: var(--text-3);
+  font-weight: 500;
+  font-variation-settings: "opsz" 9;
+  margin-left: 4px;
+}
+.k-date {
+  font-family: var(--display);
+  font-size: 22px;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--text-2);
+  position: relative;
+  z-index: 1;
+}
+
+.kiosk-weather {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 22px 26px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  overflow: hidden;
+}
+.kiosk-weather::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 80%;
+  height: 160%;
+  background: radial-gradient(closest-side, rgba(125, 211, 252, 0.18), transparent 70%);
+  pointer-events: none;
+}
+.kw-icon {
+  font-size: clamp(72px, 8.5vw, 124px);
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 4px 18px rgba(0,0,0,0.3));
+}
+.kw-main {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+.kw-temp {
+  font-family: var(--display);
+  font-size: clamp(72px, 9vw, 130px);
+  line-height: 0.9;
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  font-variation-settings: "opsz" 144, "SOFT" 30;
+  color: var(--text);
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+}
+.kw-temp .deg {
+  font-size: 0.55em;
+  color: var(--text-3);
+  margin-top: 0.05em;
+}
+.kw-desc {
+  font-size: 19px;
+  color: var(--text);
+  font-weight: 500;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kw-loc {
+  font-size: 13px;
+  color: var(--text-3);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.kw-extra {
+  display: flex;
+  gap: 18px;
+  font-size: 16px;
+  color: var(--text-2);
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.kw-extra span { display: inline-flex; align-items: center; gap: 6px; }
+.kw-extra strong { color: var(--text); font-weight: 600; }
+.kw-extra .kw-hi strong { color: var(--c-coral); }
+.kw-extra .kw-lo strong { color: var(--c-sky); }
+
+/* ---- STAT STRIP ---- */
+.kiosk-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  flex-shrink: 0;
+}
+.kstat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  min-width: 0;
+}
+.kstat:hover { background: var(--surface-2); border-color: var(--border-strong); transform: translateY(-2px); }
+.kstat-num {
+  font-family: var(--display);
+  font-size: 50px;
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+  font-variation-settings: "opsz" 144;
+}
+.kstat-label {
+  font-size: 14px;
+  color: var(--text-2);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+}
+.kstat.amber .kstat-num { color: var(--c-amber); }
+.kstat.coral .kstat-num { color: var(--c-coral); }
+.kstat.sage .kstat-num { color: var(--c-sage); }
+.kstat.sky .kstat-num { color: var(--c-sky); }
+
+/* ---- BOTTOM ROW: Schedule + Chores ---- */
+.kiosk-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  min-height: 0;
+}
+.kcard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 22px 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+.kcard-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+.kcard-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--text-3);
+}
+.kcard-badge {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-3);
+  background: var(--surface-2);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+.kcard-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  padding-right: 2px;
+}
+.kcard-body::-webkit-scrollbar { width: 4px; }
+
+/* Larger today-items for distance reading inside the kiosk cards */
+.kiosk-bottom .today-item {
+  padding: 12px 14px;
+  gap: 12px;
+  background: var(--surface-2);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.kiosk-bottom .today-item .dot { width: 10px; height: 10px; }
+.kiosk-bottom .today-item .time {
+  font-size: 13px;
+  min-width: 70px;
+  font-weight: 600;
+}
+.kiosk-bottom .today-item .name { font-size: 17px; font-weight: 500; }
+.kiosk-bottom .today-item .who {
+  font-size: 12px;
+  font-weight: 500;
+}
+.kiosk-bottom .today-schedule-mini {
+  background: var(--surface-2);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.kiosk-bottom .empty-mini {
+  padding: 16px;
+  font-size: 14px;
+}
+
+/* Next-up highlight pill (top of schedule) */
+.k-next {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.16), rgba(251, 191, 36, 0.04));
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+.k-next-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  margin-bottom: 3px;
+}
+.k-next-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+.k-next-time {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-2);
+  font-weight: 600;
+  margin-top: 2px;
+}
+.k-next-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+/* Tablet portrait / smaller landscape adaptation */
+@media (min-width: 881px) and (max-height: 760px) {
+  #view-dashboard.view { padding: 14px 18px; }
+  .dash-kiosk { gap: 10px; grid-template-rows: minmax(180px, 0.95fr) auto minmax(180px, 1.3fr); }
+  .kiosk-time { padding: 16px 22px; }
+  .k-greet { font-size: 22px; }
+  .k-clock { font-size: clamp(88px, 13vw, 160px); }
+  .k-date { font-size: 18px; }
+  .kiosk-weather { padding: 16px 20px; gap: 14px; }
+  .kw-icon { font-size: clamp(60px, 7.5vw, 100px); }
+  .kw-temp { font-size: clamp(60px, 7.8vw, 110px); }
+  .kw-desc { font-size: 16px; }
+  .kw-extra { font-size: 14px; gap: 14px; margin-top: 6px; }
+  .kstat { padding: 10px 14px; gap: 10px; }
+  .kstat-num { font-size: 38px; }
+  .kstat-label { font-size: 12px; }
+  .kcard { padding: 14px 16px; }
+  .kcard-title { font-size: 11px; }
+  .kiosk-bottom .today-item .name { font-size: 15px; }
+}
+
+@media (max-width: 880px) {
+  #view-dashboard.view {
+    padding: 12px 12px 16px;
+    height: auto;
+    overflow: visible;
+  }
+  .dash-kiosk {
+    grid-template-rows: auto auto auto;
+    height: auto;
+  }
+  .kiosk-top { grid-template-columns: 1fr; }
+  .kiosk-stats { grid-template-columns: repeat(2, 1fr); }
+  .kiosk-bottom { grid-template-columns: 1fr; }
+  .k-clock { font-size: clamp(76px, 22vw, 120px); }
+  .kw-icon { font-size: 64px; }
+  .kw-temp { font-size: 70px; }
+}
+
 </style>
 </head>
 <body>
@@ -3902,65 +4284,81 @@ input, textarea, select {
   <!-- Main Stage -->
   <main class="stage" id="stage">
 
-    <!-- DASHBOARD -->
+    <!-- DASHBOARD (Kiosk) -->
     <section class="view active" id="view-dashboard">
-      <div class="view-header">
-        <div>
-          <h1 class="view-title" id="dashGreeting">Good <em>evening</em></h1>
-          <div class="view-sub" id="dashSubGreet">Welcome to the Goff Family Hub</div>
-        </div>
-        <div class="weather-chip" id="weatherChip">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M19.07 4.93l-1.41 1.41M6.34 17.66l-1.41 1.41M19.07 19.07l-1.41-1.41M6.34 6.34L4.93 4.93"/></svg>
-          <span><strong id="weatherTemp">—</strong> <span id="weatherDesc">Loading…</span></span>
-        </div>
-      </div>
+      <div class="dash-kiosk">
 
-      <div class="dash-grid">
-        <div class="hero">
-          <div class="clock" id="clock">12<span class="colon">:</span>00<span class="ampm"> PM</span></div>
-          <div class="date-row">
-            <div class="date-text" id="dateText">Monday, January 1</div>
+        <!-- Top: Time block + Big Weather -->
+        <div class="kiosk-top">
+          <div class="kiosk-time">
+            <div class="k-greet" id="dashGreeting">Good <em>afternoon</em></div>
+            <div class="k-clock" id="clock">12<span class="colon">:</span>00<span class="ampm">PM</span></div>
+            <div class="k-date" id="dateText">Monday, January 1</div>
+            <span id="dashSubGreet" style="display:none"></span>
+          </div>
+          <div class="kiosk-weather" onclick="fetchWeather()">
+            <div class="kw-icon" id="weatherIcon">☀️</div>
+            <div class="kw-main">
+              <div class="kw-temp"><span id="weatherTemp">—</span><span class="deg">°</span></div>
+              <div class="kw-desc" id="weatherDesc">Loading…</div>
+              <div class="kw-loc" id="weatherLoc"></div>
+              <div class="kw-extra">
+                <span class="kw-hi">High <strong id="weatherHigh">—</strong>°</span>
+                <span class="kw-lo">Low <strong id="weatherLow">—</strong>°</span>
+                <span id="weatherFeels"></span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="dash-side">
-          <div class="stat-grid">
-            <div class="stat-card amber">
-              <div class="num" id="statEvents">0</div>
-              <div class="label">Today's Events</div>
-            </div>
-            <div class="stat-card sage">
-              <div class="num" id="statChores">0</div>
-              <div class="label">Chores Done</div>
-            </div>
-            <div class="stat-card coral">
-              <div class="num" id="statGroceries">0</div>
-              <div class="label">Grocery Items</div>
-            </div>
-            <div class="stat-card sky">
-              <div class="num" id="statFamily">0</div>
-              <div class="label">Family Members</div>
-            </div>
+        <!-- Stat strip -->
+        <div class="kiosk-stats">
+          <div class="kstat amber" onclick="setView('calendar')">
+            <div class="kstat-num" id="statEvents">0</div>
+            <div class="kstat-label">Events<br>Today</div>
           </div>
-          <div class="photo-widget" id="dashPhotoWidget" onclick="enterScreensaver()">
-            <div class="photo-widget-empty" id="dashPhotoEmpty">
-              <div class="pw-icon">📷</div>
-              <div class="pw-text">Add family photos to start the slideshow</div>
-            </div>
+          <div class="kstat sage" onclick="setView('chores')">
+            <div class="kstat-num" id="statChores">0</div>
+            <div class="kstat-label">Chores<br>Done</div>
+          </div>
+          <div class="kstat coral" onclick="setView('groceries')">
+            <div class="kstat-num" id="statGroceries">0</div>
+            <div class="kstat-label">Grocery<br>Items</div>
+          </div>
+          <div class="kstat sky" onclick="setView('family')">
+            <div class="kstat-num" id="statFamily">0</div>
+            <div class="kstat-label">Family<br>Members</div>
           </div>
         </div>
-      </div>
 
-      <div class="dash-row">
-        <div class="card">
-          <div class="card-title">Today's Schedule</div>
-          <div id="dinnerTonight" style="margin-bottom:14px;"></div>
-          <div id="todaysSchedules" style="margin-bottom:10px;"></div>
-          <div class="today-list" id="todayEvents"></div>
+        <!-- Bottom: Today's Schedule + Today's Chores -->
+        <div class="kiosk-bottom">
+          <div class="kcard">
+            <div class="kcard-head">
+              <div class="kcard-title">Today's Schedule</div>
+              <div class="kcard-badge" id="schedDayBadge">—</div>
+            </div>
+            <div class="kcard-body">
+              <div id="dashNextUp"></div>
+              <div id="dinnerTonight" style="margin-bottom:8px;"></div>
+              <div id="todaysSchedules" style="margin-bottom:8px;"></div>
+              <div class="today-list" id="todayEvents"></div>
+            </div>
+          </div>
+          <div class="kcard">
+            <div class="kcard-head">
+              <div class="kcard-title">Today's Chores</div>
+              <div class="kcard-badge" id="choresBadge">—</div>
+            </div>
+            <div class="kcard-body">
+              <div class="today-chores" id="todayChores"></div>
+            </div>
+          </div>
         </div>
-        <div class="card">
-          <div class="card-title">Today's Chores</div>
-          <div class="today-chores" id="todayChores"></div>
+
+        <!-- Hidden: keep photo widget element so renderPhotoWidget() doesn't error -->
+        <div class="photo-widget" id="dashPhotoWidget" style="display:none;">
+          <div class="photo-widget-empty" id="dashPhotoEmpty"></div>
         </div>
       </div>
     </section>
@@ -4227,11 +4625,11 @@ input, textarea, select {
       <div class="sync-section" style="margin-top: 32px;">
         <div class="sync-section-head">
           <div class="sync-section-title"><span class="icon">📷</span>Family Photos</div>
-          <label class="photo-upload-btn" style="cursor:pointer;">
+          <button type="button" class="photo-upload-btn" onclick="triggerPhotoUpload(event)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
             Add Photos
-            <input type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this)">
-          </label>
+          </button>
+          <input type="file" id="photoFileInput" accept="image/*" multiple onchange="handlePhotoUpload(this)" style="position:absolute;left:-9999px;top:-9999px;opacity:0;width:1px;height:1px;">
         </div>
         <p>Photos are stored on this device only (not synced) — perfect for a wall tablet screensaver. Upload as many as you want; they're auto-compressed to save space.</p>
         <div class="photo-grid" id="photoGrid"></div>
@@ -5425,8 +5823,10 @@ function renderDashboard() {
   const h = now.getHours();
   const greet = h < 5 ? 'Good night' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : h < 21 ? 'Good evening' : 'Good night';
   const greetWord = greet.split(' ')[1];
-  document.getElementById('dashGreeting').innerHTML = `Good <em>${greetWord}</em>`;
-  document.getElementById('dashSubGreet').textContent = `Welcome to the ${state.settings.familyName} Hub`;
+  const dashGreetEl = document.getElementById('dashGreeting');
+  if (dashGreetEl) dashGreetEl.innerHTML = `Good <em>${greetWord}</em>`;
+  const subGreetEl = document.getElementById('dashSubGreet');
+  if (subGreetEl) subGreetEl.textContent = `Welcome to the ${state.settings.familyName} Hub`;
 
   // Stats
   const today = fmt.iso(now);
@@ -5435,6 +5835,53 @@ function renderDashboard() {
   document.getElementById('statChores').textContent = state.chores.filter(c => c.done).length;
   document.getElementById('statGroceries').textContent = state.groceries.filter(g => !g.done).length;
   document.getElementById('statFamily').textContent = state.members.length;
+
+  // Day badge + chores progress badge
+  const dayBadge = document.getElementById('schedDayBadge');
+  if (dayBadge) {
+    dayBadge.textContent = now.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
+  }
+  const choresBadge = document.getElementById('choresBadge');
+  if (choresBadge) {
+    const dailyChoresAll = state.chores.filter(c => c.frequency === 'daily' || c.frequency === 'weekly' || c.frequency === 'once');
+    const doneCount = dailyChoresAll.filter(c => c.done).length;
+    if (dailyChoresAll.length === 0) {
+      choresBadge.textContent = '—';
+    } else {
+      const pct = Math.round((doneCount / dailyChoresAll.length) * 100);
+      choresBadge.textContent = `${doneCount}/${dailyChoresAll.length} · ${pct}%`;
+    }
+  }
+
+  // "Next Up" pill - show the next upcoming event today
+  const nextUpEl = document.getElementById('dashNextUp');
+  if (nextUpEl) {
+    const nowMins = now.getHours() * 60 + now.getMinutes();
+    const upcoming = todayEvents
+      .filter(e => e.time)
+      .map(e => {
+        const [hh, mm] = e.time.split(':').map(Number);
+        return { ev: e, mins: hh * 60 + mm };
+      })
+      .filter(x => x.mins >= nowMins)
+      .sort((a, b) => a.mins - b.mins);
+    if (upcoming.length > 0) {
+      const next = upcoming[0].ev;
+      const m = next.memberIds?.[0] ? memberById(next.memberIds[0]) : null;
+      nextUpEl.innerHTML = `
+        <div class="k-next" onclick="openEventModal('${next.id}')" style="cursor:pointer;">
+          <div class="k-next-icon">⏰</div>
+          <div style="flex:1; min-width:0;">
+            <div class="k-next-label">Coming up next</div>
+            <div class="k-next-title">${escapeHtml(next.title)}</div>
+            <div class="k-next-time">${fmt.shortTime(next.time)}${m ? ' · ' + escapeHtml(m.name) : ''}</div>
+          </div>
+        </div>
+      `;
+    } else {
+      nextUpEl.innerHTML = '';
+    }
+  }
 
   // Today's events list
   const todayList = document.getElementById('todayEvents');
@@ -5547,9 +5994,13 @@ function tickClock() {
   const m = now.getMinutes();
   const ap = h >= 12 ? 'PM' : 'AM';
   h = h % 12 || 12;
-  document.getElementById('clock').innerHTML = `${h}<span class="colon">:</span>${String(m).padStart(2, '0')}<span class="ampm"> ${ap}</span>`;
+  const clockEl = document.getElementById('clock');
+  if (clockEl) {
+    clockEl.innerHTML = `${h}<span class="colon">:</span>${String(m).padStart(2, '0')}<span class="ampm">${ap}</span>`;
+  }
   const opts = { weekday: 'long', month: 'long', day: 'numeric' };
-  document.getElementById('dateText').textContent = now.toLocaleDateString('en-US', opts);
+  const dateEl = document.getElementById('dateText');
+  if (dateEl) dateEl.textContent = now.toLocaleDateString('en-US', opts);
 }
 
 // ---------- CALENDAR ----------
@@ -7201,6 +7652,26 @@ function compressImage(file, maxDim = 1400, quality = 0.78) {
   });
 }
 
+// Programmatic click on the file input — works reliably inside
+// Android WebViews / Fully Kiosk Browser where hidden labeled inputs
+// often don't trigger.
+function triggerPhotoUpload(ev) {
+  if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+  const input = document.getElementById('photoFileInput');
+  if (!input) {
+    toast('Photo upload not available', 'error');
+    return;
+  }
+  // Reset value so re-selecting the same file fires onchange
+  try { input.value = ''; } catch (e) {}
+  try {
+    input.click();
+  } catch (e) {
+    console.error('File input click failed', e);
+    toast('Could not open file picker. In Fully Kiosk: enable "Web Content Settings → Enable File Uploads".', 'error');
+  }
+}
+
 async function handlePhotoUpload(input) {
   const files = Array.from(input.files || []);
   if (!files.length) return;
@@ -8578,30 +9049,72 @@ async function fetchWeather() {
   if (!coords) coords = MACOMB_FALLBACK;
 
   try {
-    const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,weather_code&temperature_unit=fahrenheit`);
+    const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,weather_code,apparent_temperature,is_day&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=auto&forecast_days=1`);
     const w = await wRes.json();
     if (w.current) {
       const t = Math.round(w.current.temperature_2m);
+      const code = w.current.weather_code;
+      const isDay = w.current.is_day === 1 || w.current.is_day === undefined;
+      const feels = w.current.apparent_temperature != null ? Math.round(w.current.apparent_temperature) : null;
+      const hi = w.daily?.temperature_2m_max?.[0] != null ? Math.round(w.daily.temperature_2m_max[0]) : null;
+      const lo = w.daily?.temperature_2m_min?.[0] != null ? Math.round(w.daily.temperature_2m_min[0]) : null;
+
       const el = document.getElementById('weatherTemp');
       const ed = document.getElementById('weatherDesc');
-      if (el) el.textContent = `${t}°`;
-      if (ed) ed.textContent = `${coords.label} · ${weatherCodeText(w.current.weather_code)}`;
+      const eloc = document.getElementById('weatherLoc');
+      const ehi = document.getElementById('weatherHigh');
+      const elo = document.getElementById('weatherLow');
+      const efeels = document.getElementById('weatherFeels');
+      const eicon = document.getElementById('weatherIcon');
+
+      if (el) el.textContent = `${t}`;
+      if (ed) ed.textContent = weatherCodeText(code);
+      if (eloc) eloc.textContent = coords.label;
+      if (ehi && hi != null) ehi.textContent = hi;
+      if (elo && lo != null) elo.textContent = lo;
+      if (efeels && feels != null && Math.abs(feels - t) >= 2) {
+        efeels.innerHTML = `Feels <strong>${feels}</strong>°`;
+      } else if (efeels) {
+        efeels.innerHTML = '';
+      }
+      if (eicon) eicon.textContent = weatherCodeIcon(code, isDay);
     }
   } catch (e) {
     const ed = document.getElementById('weatherDesc');
-    if (ed) ed.textContent = coords.label;
+    if (ed) ed.textContent = 'Weather unavailable';
+    const eloc = document.getElementById('weatherLoc');
+    if (eloc) eloc.textContent = coords.label;
   }
 }
 
 function weatherCodeText(code) {
   if (code === 0) return 'Clear';
-  if (code <= 3) return 'Cloudy';
+  if (code === 1) return 'Mostly Clear';
+  if (code === 2) return 'Partly Cloudy';
+  if (code === 3) return 'Cloudy';
   if (code <= 49) return 'Foggy';
+  if (code <= 57) return 'Drizzle';
   if (code <= 67) return 'Rain';
   if (code <= 77) return 'Snow';
   if (code <= 82) return 'Showers';
-  if (code <= 99) return 'Storms';
+  if (code <= 86) return 'Snow Showers';
+  if (code <= 99) return 'Thunderstorms';
   return '';
+}
+
+function weatherCodeIcon(code, isDay) {
+  if (code === 0) return isDay ? '☀️' : '🌙';
+  if (code === 1) return isDay ? '🌤️' : '🌙';
+  if (code === 2) return isDay ? '⛅' : '☁️';
+  if (code === 3) return '☁️';
+  if (code <= 49) return '🌫️';
+  if (code <= 57) return '🌦️';
+  if (code <= 67) return '🌧️';
+  if (code <= 77) return '❄️';
+  if (code <= 82) return '🌧️';
+  if (code <= 86) return '🌨️';
+  if (code <= 99) return '⛈️';
+  return '🌡️';
 }
 
 // ---------- ESCAPE ----------
