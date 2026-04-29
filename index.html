@@ -3846,6 +3846,31 @@ input, textarea, select {
   .view { padding: 24px 32px; }
 }
 
+/* Compact side rail when screen height can't fit full-size buttons.
+   Tablets ~800px tall need this so the Lock button isn't cut off. */
+@media (min-width: 881px) and (max-height: 920px) {
+  .app { grid-template-columns: 80px 1fr; }
+  .rail { padding: 14px 8px; gap: 4px; }
+  .rail-logo { font-size: 22px; margin-bottom: 8px; }
+  .rail-btn {
+    width: 60px;
+    height: 52px;
+    border-radius: 14px;
+  }
+  .rail-btn svg { width: 20px; height: 20px; }
+  .rail-btn span { font-size: 9px; }
+  .rail-btn.active::before { height: 22px; left: -8px; }
+  /* Tighter lock button at the bottom */
+  .rail > .rail-btn:last-child { margin-top: 4px !important; }
+}
+@media (min-width: 881px) and (max-height: 760px) {
+  .rail-btn { height: 46px; }
+  .rail-btn svg { width: 18px; height: 18px; }
+  .rail-btn span { font-size: 8px; }
+  .rail-logo { font-size: 18px; margin-bottom: 4px; }
+  .rail { padding: 10px 6px; gap: 3px; }
+}
+
 /* ============================================
    KIOSK DASHBOARD (single-screen, no scroll)
    Wall-mounted tablet, viewable from a distance
@@ -4073,7 +4098,7 @@ input, textarea, select {
 /* ---- BOTTOM ROW: Schedule + Chores ---- */
 .kiosk-bottom {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.4fr 1fr 1fr;
   gap: 14px;
   min-height: 0;
 }
@@ -4081,12 +4106,28 @@ input, textarea, select {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 18px 22px 20px;
+  padding: 14px 16px 16px;
   display: flex;
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
 }
+
+/* Dashboard photo widget (kiosk variant - fills cell, no fixed aspect ratio) */
+.kiosk-bottom .photo-widget {
+  aspect-ratio: auto;
+  height: 100%;
+  border-radius: var(--radius-lg);
+  margin: 0;
+}
+.kiosk-bottom .photo-widget-empty .pw-icon { font-size: 56px; }
+.kiosk-bottom .photo-widget-empty .pw-text {
+  font-size: 16px;
+  font-style: italic;
+  text-align: center;
+  padding: 0 24px;
+}
+.kiosk-bottom .photo-widget-label { font-size: 22px; }
 .kcard-head {
   display: flex;
   align-items: center;
@@ -4122,34 +4163,47 @@ input, textarea, select {
 }
 .kcard-body::-webkit-scrollbar { width: 4px; }
 
-/* Larger today-items for distance reading inside the kiosk cards */
+/* Compact today-items for the narrower dashboard cards */
+.kiosk-bottom .kcard-title { font-size: 11px; letter-spacing: 0.14em; }
+.kiosk-bottom .kcard-head { margin-bottom: 10px; }
+.kiosk-bottom .kcard-badge { font-size: 10px; padding: 3px 8px; }
+
 .kiosk-bottom .today-item {
-  padding: 12px 14px;
-  gap: 12px;
+  padding: 9px 12px;
+  gap: 10px;
   background: var(--surface-2);
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid var(--border);
 }
-.kiosk-bottom .today-item .dot { width: 10px; height: 10px; }
+.kiosk-bottom .today-item .dot { width: 8px; height: 8px; }
 .kiosk-bottom .today-item .time {
-  font-size: 13px;
-  min-width: 70px;
+  font-size: 11px;
+  min-width: 56px;
   font-weight: 600;
 }
-.kiosk-bottom .today-item .name { font-size: 17px; font-weight: 500; }
+.kiosk-bottom .today-item .name { font-size: 14px; font-weight: 500; }
 .kiosk-bottom .today-item .who {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 500;
+  padding: 2px 7px;
 }
 .kiosk-bottom .today-schedule-mini {
   background: var(--surface-2);
-  border-radius: 12px;
-  padding: 10px 12px;
+  border-radius: 10px;
+  padding: 8px 10px;
 }
 .kiosk-bottom .empty-mini {
-  padding: 16px;
-  font-size: 14px;
+  padding: 14px;
+  font-size: 12px;
 }
+.kiosk-bottom .kcard-body { gap: 6px; }
+.kiosk-bottom .k-next { padding: 10px 12px; gap: 10px; margin-bottom: 8px; }
+.kiosk-bottom .k-next-title { font-size: 14px; }
+.kiosk-bottom .k-next-time { font-size: 11px; }
+.kiosk-bottom .k-next-icon { font-size: 22px; }
+.kiosk-bottom .dinner-tonight { padding: 10px 12px; gap: 10px; }
+.kiosk-bottom .dinner-tonight-icon { font-size: 22px; }
+.kiosk-bottom .dinner-tonight-name { font-size: 14px; }
 
 /* Next-up highlight pill (top of schedule) */
 .k-next {
@@ -4228,6 +4282,179 @@ input, textarea, select {
 }
 
 </style>
+<style id="theme-override"></style>
+<script>
+/* ============================================
+   SEASONAL THEME SYSTEM
+   Themes are applied as CSS overrides on top of the base dark theme.
+   Activate via:
+     - URL param: ?theme=spring  (also persists to localStorage)
+     - Settings UI:  setGoffTheme('spring')
+     - Folder shortcut:  /Themes/Spring/index.html  (auto-redirects with the param)
+   To revert: ?theme=default  or  setGoffTheme(null)
+   ============================================ */
+(function() {
+  const THEMES = {
+    spring: `
+/* === SPRING - soft cream + cheerful pastels === */
+:root {
+  --bg: #faf6ed;
+  --bg-elevated: #fffdf6;
+  --surface: #ffffff;
+  --surface-2: #f5efe1;
+  --surface-3: #ebe2cc;
+  --border: rgba(101, 81, 52, 0.10);
+  --border-strong: rgba(101, 81, 52, 0.22);
+
+  --text: #2d2820;
+  --text-2: #5a5043;
+  --text-3: #8a7e6a;
+  --text-4: #b8ac96;
+
+  --c-amber: #f59e0b;
+  --c-coral: #ec4899;
+  --c-sage: #10b981;
+  --c-sky: #0ea5e9;
+  --c-violet: #8b5cf6;
+  --c-rose: #f97316;
+
+  --accent: #10b981;
+  --accent-soft: rgba(16, 185, 129, 0.14);
+  --success: #10b981;
+  --danger: #ef4444;
+}
+
+/* Side rail: light cream blur */
+.rail { background: rgba(255, 253, 246, 0.72); }
+
+/* Ambient page gradients - spring green + blossom pink */
+body::before {
+  background:
+    radial-gradient(900px 600px at 90% 10%, rgba(16, 185, 129, 0.10), transparent 60%),
+    radial-gradient(700px 500px at 5% 95%, rgba(236, 72, 153, 0.07), transparent 60%);
+}
+
+/* Hero / kiosk-time gradient: amber -> spring green */
+.hero::before, .kiosk-time::before {
+  background: radial-gradient(closest-side, rgba(16, 185, 129, 0.16), transparent);
+}
+
+/* Weather panel: bright cream with blossom glow */
+.kiosk-weather {
+  background: linear-gradient(135deg, #ffffff 0%, #f5efe1 100%);
+}
+.kiosk-weather::before {
+  background: radial-gradient(closest-side, rgba(236, 72, 153, 0.16), transparent 70%);
+}
+
+/* Dinner card: amber -> spring green */
+.dinner-card::before {
+  background: radial-gradient(closest-side, rgba(16, 185, 129, 0.14), transparent);
+}
+.dinner-tonight {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), transparent);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Coming-up-next pill: cherry blossom */
+.k-next {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.16), rgba(236, 72, 153, 0.04));
+  border: 1px solid rgba(236, 72, 153, 0.4);
+}
+.k-next-label { color: #ec4899; }
+
+/* All hard-coded dark text-on-accent (#1a1410) becomes white */
+.btn-primary,
+.gro-add button,
+.task-add button,
+.avatar,
+.fam-avatar,
+.event-pill .ev-avatar,
+.kanban-chore-avatar,
+.proj-card-avatars .avatar-mini,
+.gro-tag-avatar,
+.tsm-avatar,
+.profile-tab.active,
+.invite-btn.accept { color: #ffffff; }
+
+.view-toggle button.active { color: #ffffff; }
+
+.chore-item.done .chore-check svg,
+.kanban-chore.done .kanban-chore-check svg,
+.lib-item.selected .lib-item-check svg,
+.task-item.done .task-check svg,
+.gro-item.done .gro-check svg { color: #ffffff; }
+
+.btn-primary:hover { background: #34d399; border-color: #34d399; }
+.gro-add button:hover { background: #34d399; }
+.dinner-add-grocery:hover { color: #ffffff; }
+.proj-complete-btn:hover { color: #ffffff; }
+.invite-btn.accept:hover { background: #34d399; }
+
+/* Expense stat colors */
+.exp-stat-card.amber { --exp-color: rgba(245, 158, 11, 0.18); }
+.exp-stat-card.sage  { --exp-color: rgba(16, 185, 129, 0.18); }
+.exp-stat-card.sky   { --exp-color: rgba(14, 165, 233, 0.18); }
+.exp-cat-icon.recurring { background: rgba(139, 92, 246, 0.14); }
+.exp-recurring-badge { color: #8b5cf6; background: rgba(139, 92, 246, 0.12); }
+
+/* Modal backdrop & toasts: soft warm overlay (not pure black) */
+.modal-backdrop { background: rgba(60, 50, 35, 0.42); }
+.toast { box-shadow: 0 12px 40px rgba(60, 50, 35, 0.18); }
+
+/* Misc */
+.btn-danger:hover { background: rgba(239, 68, 68, 0.10); }
+.welcome { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(101, 81, 52, 0.22); }
+.person-streak .flame { color: var(--c-coral); }
+`
+  };
+
+  function applyTheme(name) {
+    const overrideEl = document.getElementById('theme-override');
+    if (!overrideEl) return;
+    if (name && THEMES[name]) {
+      overrideEl.textContent = THEMES[name];
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta && name === 'spring') meta.content = '#faf6ed';
+      document.documentElement.setAttribute('data-theme', name);
+    } else {
+      overrideEl.textContent = '';
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.content = '#0f0e0d';
+      document.documentElement.removeAttribute('data-theme');
+    }
+  }
+
+  // Determine theme: URL param wins (and persists), else fall back to localStorage
+  const params = new URLSearchParams(window.location.search);
+  const urlTheme = params.get('theme');
+  if (urlTheme !== null) {
+    if (urlTheme && THEMES[urlTheme]) {
+      try { localStorage.setItem('goff_theme', urlTheme); } catch (e) {}
+    } else {
+      try { localStorage.removeItem('goff_theme'); } catch (e) {}
+    }
+  }
+  let theme = null;
+  try { theme = localStorage.getItem('goff_theme'); } catch (e) {}
+  applyTheme(theme);
+
+  // Public API
+  window.GoffThemes = THEMES;
+  window.setGoffTheme = function(name) {
+    if (name && THEMES[name]) {
+      try { localStorage.setItem('goff_theme', name); } catch (e) {}
+    } else {
+      try { localStorage.removeItem('goff_theme'); } catch (e) {}
+    }
+    applyTheme(name);
+  };
+  window.getGoffTheme = function() {
+    try { return localStorage.getItem('goff_theme') || 'default'; } catch (e) { return 'default'; }
+  };
+})();
+</script>
 </head>
 <body>
 <div class="app" id="app">
@@ -4331,8 +4558,14 @@ input, textarea, select {
           </div>
         </div>
 
-        <!-- Bottom: Today's Schedule + Today's Chores -->
+        <!-- Bottom: Big rotating Photo widget + compact Schedule + Chores -->
         <div class="kiosk-bottom">
+          <div class="photo-widget" id="dashPhotoWidget" onclick="enterScreensaver()">
+            <div class="photo-widget-empty" id="dashPhotoEmpty">
+              <div class="pw-icon">📷</div>
+              <div class="pw-text">Add family photos to start the slideshow</div>
+            </div>
+          </div>
           <div class="kcard">
             <div class="kcard-head">
               <div class="kcard-title">Today's Schedule</div>
@@ -4340,8 +4573,8 @@ input, textarea, select {
             </div>
             <div class="kcard-body">
               <div id="dashNextUp"></div>
-              <div id="dinnerTonight" style="margin-bottom:8px;"></div>
-              <div id="todaysSchedules" style="margin-bottom:8px;"></div>
+              <div id="dinnerTonight" style="margin-bottom:6px;"></div>
+              <div id="todaysSchedules" style="margin-bottom:6px;"></div>
               <div class="today-list" id="todayEvents"></div>
             </div>
           </div>
@@ -4354,11 +4587,6 @@ input, textarea, select {
               <div class="today-chores" id="todayChores"></div>
             </div>
           </div>
-        </div>
-
-        <!-- Hidden: keep photo widget element so renderPhotoWidget() doesn't error -->
-        <div class="photo-widget" id="dashPhotoWidget" style="display:none;">
-          <div class="photo-widget-empty" id="dashPhotoEmpty"></div>
         </div>
       </div>
     </section>
@@ -4639,6 +4867,16 @@ input, textarea, select {
 
       <div class="settings-section">
         <h2 class="card-title">Settings</h2>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Theme</div>
+            <div class="settings-desc">Seasonal color palette (changes look only — data unaffected)</div>
+          </div>
+          <select class="settings-input" id="setTheme" onchange="setGoffTheme(this.value === 'default' ? null : this.value)">
+            <option value="default">Default · Warm Dark</option>
+            <option value="spring">🌸 Spring · Cream &amp; Pastels</option>
+          </select>
+        </div>
         <div class="settings-row">
           <div>
             <div class="settings-label">Family Name</div>
@@ -8853,6 +9091,10 @@ function renderFamily() {
   const c = document.getElementById('famList');
   document.getElementById('setFamilyName').value = state.settings.familyName;
   document.getElementById('setWeatherLoc').value = state.settings.weatherLocation;
+  const themeSel = document.getElementById('setTheme');
+  if (themeSel && typeof getGoffTheme === 'function') {
+    themeSel.value = getGoffTheme();
+  }
 
   const cards = state.members.map(m => {
     const myChores = state.chores.filter(ch => ch.memberId === m.id);
