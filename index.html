@@ -3359,6 +3359,22 @@ input, textarea, select {
   z-index: 2;
 }
 
+/* --- Screensaver display modes (driven by data-mode attribute set by JS) --- */
+.screensaver[data-mode="cover"] .ss-photo-fg { background-size: cover; }
+.screensaver[data-mode="cover"] .ss-photo-bg { display: none; }
+.screensaver[data-mode="sharp"] .ss-photo-bg { display: none; }
+.screensaver[data-mode="sharp"] .ss-photo { background-color: #000; }
+/* Disable Ken Burns zoom when user turns it off */
+.screensaver[data-kb="off"] .ss-photo.zooming { transform: none; }
+/* Hide clock overlay when disabled */
+.screensaver[data-clock="off"] .ss-clock-row { display: none; }
+
+/* Dashboard photo widget — respond to data-mode set by renderPhotoWidget */
+.kiosk-bottom .photo-widget[data-mode="cover"] img.pw-fg { object-fit: cover; }
+.kiosk-bottom .photo-widget[data-mode="cover"] .pw-bg { display: none; }
+.kiosk-bottom .photo-widget[data-mode="sharp"] .pw-bg { display: none; }
+.kiosk-bottom .photo-widget[data-mode="sharp"] { background: #000; }
+
 .ss-overlay {
   position: relative;
   z-index: 2;
@@ -5096,6 +5112,154 @@ input, textarea, select {
   font-weight: 600;
 }
 
+/* --- SPORTS (ESPN) --- */
+.sports-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.sports-updated { font-size: 12px; color: var(--text-3); margin-left: auto; }
+.sports-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 16px;
+}
+.sports-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+.sports-section-head {
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.sports-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-2);
+}
+.sports-scoreboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  align-content: start;
+}
+.game-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.game-card.live { border-color: var(--c-coral); box-shadow: 0 0 0 1px rgba(251, 113, 133, 0.4); }
+.game-card.final { opacity: 0.85; }
+.game-status {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+}
+.game-card.live .game-status { color: var(--c-coral); }
+.game-card.final .game-status { color: var(--success); }
+.game-teams {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.game-team {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.game-team img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.game-team-name {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.game-team.loser .game-team-name { color: var(--text-3); font-weight: 500; }
+.game-score {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  min-width: 36px;
+  text-align: right;
+}
+.game-team.loser .game-score { color: var(--text-3); font-weight: 500; }
+
+.sports-news {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+.news-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.2s var(--ease);
+  cursor: pointer;
+}
+.news-item:hover { background: var(--surface-3); border-color: var(--border-strong); }
+.news-thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.news-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+}
+.news-headline {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.news-meta { font-size: 11px; color: var(--text-3); }
+
 /* Tablet portrait / smaller landscape */
 @media (max-width: 880px) {
   .notes-shell { grid-template-columns: 1fr; height: auto; min-height: 0; }
@@ -5640,8 +5804,11 @@ body::before {
                 <button class="qt-tile" onclick="setView('tools'); setTool('dice');">
                   <span class="qt-icon">🎲</span><span class="qt-label">Decide</span>
                 </button>
-                <button class="qt-tile qt-lock" onclick="enterScreensaver()">
-                  <span class="qt-icon">🌙</span><span class="qt-label">Lock</span>
+                <button class="qt-tile" onclick="setView('tools'); setTool('sports');">
+                  <span class="qt-icon">📺</span><span class="qt-label">Sports</span>
+                </button>
+                <button class="qt-tile qt-lock" onclick="enterScreensaver()" style="grid-column: 1 / -1;">
+                  <span class="qt-icon">🌙</span><span class="qt-label">Lock Screen</span>
                 </button>
               </div>
               <!-- keep todayChores element so renderDashboard's chore code doesn't error -->
@@ -5918,6 +6085,7 @@ body::before {
         <button class="tool-tab" data-tool="notes" onclick="setTool('notes')"><span class="tt-icon">📝</span> Notes</button>
         <button class="tool-tab" data-tool="draw" onclick="setTool('draw')"><span class="tt-icon">🎨</span> Drawing</button>
         <button class="tool-tab" data-tool="dice" onclick="setTool('dice')"><span class="tt-icon">🎲</span> Decide</button>
+        <button class="tool-tab" data-tool="sports" onclick="setTool('sports')"><span class="tt-icon">📺</span> Sports</button>
       </div>
 
       <!-- STOPWATCH -->
@@ -6101,6 +6269,44 @@ body::before {
         </div>
       </div>
 
+      <!-- SPORTS (ESPN scores + headlines) -->
+      <div class="tool-pane" id="tool-sports">
+        <div class="sports-toolbar">
+          <select class="settings-input" id="espnLeague" onchange="changeESPNLeague(this.value)" style="min-width:200px;">
+            <option value="football/nfl">🏈 NFL</option>
+            <option value="basketball/nba">🏀 NBA</option>
+            <option value="baseball/mlb">⚾ MLB</option>
+            <option value="hockey/nhl">🏒 NHL</option>
+            <option value="football/college-football">🏈 College Football</option>
+            <option value="basketball/mens-college-basketball">🏀 Men's CBB</option>
+            <option value="basketball/womens-college-basketball">🏀 Women's CBB</option>
+            <option value="basketball/wnba">🏀 WNBA</option>
+            <option value="soccer/usa.1">⚽ MLS</option>
+            <option value="soccer/eng.1">⚽ Premier League</option>
+          </select>
+          <button class="tool-btn" onclick="fetchSports(true)">↻ Refresh</button>
+          <span class="sports-updated" id="sportsUpdated"></span>
+        </div>
+        <div class="sports-grid">
+          <div class="sports-section">
+            <div class="sports-section-head">
+              <div class="sports-section-title">📅 Today's Games</div>
+            </div>
+            <div class="sports-scoreboard" id="sportsScoreboard">
+              <div class="empty-mini">Pick a league above to load scores</div>
+            </div>
+          </div>
+          <div class="sports-section">
+            <div class="sports-section-head">
+              <div class="sports-section-title">📰 Headlines</div>
+            </div>
+            <div class="sports-news" id="sportsNews">
+              <div class="empty-mini">Loading…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </section>
 
     <!-- FAMILY -->
@@ -6171,6 +6377,79 @@ body::before {
           </div>
           <input class="settings-input" id="setWeatherLoc" type="text" onchange="saveSetting('weatherLocation', this.value); fetchWeather();">
         </div>
+
+        <div class="settings-row" style="border-top: 1px solid var(--border-strong); padding-top: 24px; margin-top: 8px;">
+          <div>
+            <div class="settings-label" style="font-weight: 700;">📷 Slideshow &amp; Screensaver</div>
+            <div class="settings-desc">How photos display on the dashboard widget &amp; in lock mode</div>
+          </div>
+          <span></span>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Picture Speed</div>
+            <div class="settings-desc">How long each photo stays on screen</div>
+          </div>
+          <select class="settings-input" id="setPhotoSpeed" onchange="saveSetting('photoSpeed', parseInt(this.value, 10)); applyPhotoSettings();">
+            <option value="3">3 seconds · zippy</option>
+            <option value="5">5 seconds</option>
+            <option value="8" selected>8 seconds · default</option>
+            <option value="12">12 seconds</option>
+            <option value="20">20 seconds</option>
+            <option value="30">30 seconds · slow</option>
+            <option value="60">1 minute · static</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Display Mode</div>
+            <div class="settings-desc">How photos fit the screen</div>
+          </div>
+          <select class="settings-input" id="setPhotoMode" onchange="saveSetting('photoMode', this.value); applyPhotoSettings();">
+            <option value="contain" selected>Whole photo + blurred backdrop</option>
+            <option value="cover">Cropped to fill (no bars)</option>
+            <option value="sharp">Whole photo + black bars</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Ken Burns Zoom</div>
+            <div class="settings-desc">Subtle slow zoom effect on screensaver photos</div>
+          </div>
+          <select class="settings-input" id="setPhotoKB" onchange="saveSetting('photoKenBurns', this.value === 'on'); applyPhotoSettings();">
+            <option value="on" selected>On</option>
+            <option value="off">Off</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Clock Overlay</div>
+            <div class="settings-desc">Show the time on top of slideshow photos</div>
+          </div>
+          <select class="settings-input" id="setPhotoClock" onchange="saveSetting('photoShowClock', this.value === 'on'); applyPhotoSettings();">
+            <option value="on" selected>Show clock</option>
+            <option value="off">Hide clock</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Photo Order</div>
+            <div class="settings-desc">How the slideshow picks the next photo</div>
+          </div>
+          <select class="settings-input" id="setPhotoOrder" onchange="saveSetting('photoOrder', this.value); applyPhotoSettings();">
+            <option value="random" selected>Shuffle</option>
+            <option value="chrono">Newest first → oldest</option>
+            <option value="oldest">Oldest first → newest</option>
+          </select>
+        </div>
+
+        <div class="settings-row" style="border-top: 1px solid var(--border-strong); padding-top: 24px; margin-top: 8px;">
+          <div>
+            <div class="settings-label" style="font-weight: 700;">📊 Data</div>
+            <div class="settings-desc">Backup &amp; restore</div>
+          </div>
+          <span></span>
+        </div>
         <div class="settings-row">
           <div>
             <div class="settings-label">Export Backup</div>
@@ -6224,6 +6503,18 @@ body::before {
     <div class="modal-actions">
       <button class="btn" onclick="closeModal('alarmModal')">Cancel</button>
       <button class="btn btn-primary" onclick="saveAlarm()">Save Alarm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Universal confirm modal (replaces window.confirm which Fully Kiosk blocks) -->
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal" style="max-width: 440px;">
+    <h2 class="modal-title" id="confirmModalTitle">Are you <em>sure?</em></h2>
+    <p id="confirmModalMessage" style="color: var(--text-2); font-size: 16px; line-height: 1.55; margin-bottom: 28px;"></p>
+    <div class="modal-actions">
+      <button class="btn" id="confirmModalCancel">Cancel</button>
+      <button class="btn btn-primary" id="confirmModalOk">Confirm</button>
     </div>
   </div>
 </div>
@@ -6862,6 +7153,14 @@ const defaultState = () => ({
     familyName: 'Goff Family',
     weatherLocation: '48044',
     onboarded: false,
+    // Slideshow / screensaver presentation
+    photoSpeed: 8,            // seconds per photo
+    photoMode: 'contain',      // 'contain' (with blur) | 'cover' (cropped) | 'sharp' (contain, black bars)
+    photoKenBurns: true,       // gentle Ken Burns zoom
+    photoShowClock: true,      // overlay clock + date on screensaver
+    photoOrder: 'random',      // 'random' | 'chrono'
+    // Sports widget
+    espnLeague: 'football/nfl',
   },
   members: [],
   events: [],
@@ -7284,16 +7583,17 @@ async function copyFamilyCode() {
   }
 }
 
-async function disconnectSync() {
-  if (!confirm('Disconnect from family sync? Your data stays on this device, but won\'t sync anymore.')) return;
-  if (unsubscribeListener) { unsubscribeListener(); unsubscribeListener = null; }
-  state.sync.enabled = false;
-  state.sync.familyId = null;
-  saveLocal();
-  setSyncStatus('disabled');
-  document.getElementById('syncIndicator').style.display = 'none';
-  renderFamily();
-  toast('Disconnected from sync');
+function disconnectSync() {
+  confirmAction('Disconnect from family sync? Your data stays on this device, but won\'t sync anymore.', () => {
+    if (unsubscribeListener) { unsubscribeListener(); unsubscribeListener = null; }
+    state.sync.enabled = false;
+    state.sync.familyId = null;
+    saveLocal();
+    setSyncStatus('disabled');
+    document.getElementById('syncIndicator').style.display = 'none';
+    renderFamily();
+    toast('Disconnected from sync');
+  }, { danger: false, okText: 'Disconnect' });
 }
 
 // ---------- RECURRENCE ----------
@@ -7823,16 +8123,18 @@ function saveEvent() {
 
 function deleteEvent() {
   if (!editingEventId) return;
-  if (!confirm('Delete this event? Any invitations linked to it will also be removed.')) return;
-  state.events = state.events.filter(e => e.id !== editingEventId);
-  // Cascade delete invitations
-  state.invitations = state.invitations.filter(inv => inv.eventId !== editingEventId);
-  saveState();
-  closeModal('eventModal');
-  renderCalendar();
-  renderDashboard();
-  renderInvites();
-  toast('Event deleted');
+  const eventId = editingEventId;
+  confirmAction('Delete this event? Any invitations linked to it will also be removed.', () => {
+    state.events = state.events.filter(e => e.id !== eventId);
+    // Cascade delete invitations
+    state.invitations = state.invitations.filter(inv => inv.eventId !== eventId);
+    saveState();
+    closeModal('eventModal');
+    renderCalendar();
+    renderDashboard();
+    renderInvites();
+    toast('Event deleted');
+  });
 }
 
 // ---------- GROCERIES ----------
@@ -8094,20 +8396,22 @@ function toggleChore(id) {
 }
 
 function deleteChore(id) {
-  if (!confirm('Delete this chore?')) return;
-  state.chores = state.chores.filter(c => c.id !== id);
-  saveState();
-  renderChores();
-  renderDashboard();
+  confirmAction('Delete this chore?', () => {
+    state.chores = state.chores.filter(c => c.id !== id);
+    saveState();
+    renderChores();
+    renderDashboard();
+  });
 }
 
 function resetChoresManual() {
-  if (!confirm('Mark all chores as not done?')) return;
-  state.chores.forEach(c => { c.done = false; });
-  saveState();
-  renderChores();
-  renderDashboard();
-  toast('All chores reset', 'success');
+  confirmAction('Mark all chores as not done?', () => {
+    state.chores.forEach(c => { c.done = false; });
+    saveState();
+    renderChores();
+    renderDashboard();
+    toast('All chores reset', 'success');
+  }, { danger: false, okText: 'Reset' });
 }
 
 function checkAutoReset() {
@@ -8909,12 +9213,13 @@ function toggleProjectComplete() {
 }
 
 function deleteProject(id) {
-  if (!confirm('Delete this project? This cannot be undone.')) return;
-  state.projects = state.projects.filter(p => p.id !== id);
-  saveState();
-  closeModal('projectDetailModal');
-  renderProjects();
-  toast('Project deleted');
+  confirmAction('Delete this project? This cannot be undone.', () => {
+    state.projects = state.projects.filter(p => p.id !== id);
+    saveState();
+    closeModal('projectDetailModal');
+    renderProjects();
+    toast('Project deleted');
+  });
 }
 
 function seedVacationPacking() {
@@ -9056,19 +9361,21 @@ function saveDinnerIdea() {
 
 function deleteDinner() {
   if (!editingDinnerId) return;
-  if (!confirm('Delete this dinner idea?')) return;
-  // Also clear from any meal plan slots
-  Object.keys(state.mealPlan || {}).forEach(iso => {
-    if (state.mealPlan[iso]?.dinnerId === editingDinnerId) {
-      delete state.mealPlan[iso];
-    }
+  const dinnerId = editingDinnerId;
+  confirmAction('Delete this dinner idea?', () => {
+    // Also clear from any meal plan slots
+    Object.keys(state.mealPlan || {}).forEach(iso => {
+      if (state.mealPlan[iso]?.dinnerId === dinnerId) {
+        delete state.mealPlan[iso];
+      }
+    });
+    state.dinners = state.dinners.filter(d => d.id !== dinnerId);
+    saveState();
+    closeModal('dinnerIdeaModal');
+    renderDinners();
+    renderDashboard();
+    toast('Dinner deleted');
   });
-  state.dinners = state.dinners.filter(d => d.id !== editingDinnerId);
-  saveState();
-  closeModal('dinnerIdeaModal');
-  renderDinners();
-  renderDashboard();
-  toast('Dinner deleted');
 }
 
 function addDinnerToGroceries(dinnerId) {
@@ -9254,11 +9561,12 @@ async function handlePhotoUpload(input) {
 }
 
 function deletePhoto(id) {
-  if (!confirm('Delete this photo?')) return;
-  photoAlbum = photoAlbum.filter(p => p.id !== id);
-  savePhotos();
-  renderPhotoAlbum();
-  renderPhotoWidget();
+  confirmAction('Delete this photo?', () => {
+    photoAlbum = photoAlbum.filter(p => p.id !== id);
+    savePhotos();
+    renderPhotoAlbum();
+    renderPhotoWidget();
+  });
 }
 
 function renderPhotoAlbum() {
@@ -9301,14 +9609,19 @@ function renderPhotoWidget() {
     return;
   }
 
-  // Random photo, with rotation. Two-layer render:
-  //   .pw-bg = blurred, scaled-up backdrop fill (Apple-style)
-  //   .pw-fg = main image with object-fit:contain so nothing gets cropped
+  // Random photo, with rotation. Two-layer render honoring photoMode setting:
+  //   .pw-bg = blurred, scaled-up backdrop fill (Apple-style)  -- only in "contain" mode
+  //   .pw-fg = main image (contain or cover, depending on mode)
   const showPhoto = () => {
-    const photo = photoAlbum[widgetPhotoIdx % photoAlbum.length];
+    const photo = getNextPhoto('widget', widgetPhotoIdx);
+    const mode = state.settings.photoMode || 'contain';
     const safeUrl = photo.dataUrl.replace(/'/g, "\\'");
+    widget.setAttribute('data-mode', mode);
+    const bgHtml = mode === 'contain'
+      ? `<div class="pw-bg" style="background-image:url('${safeUrl}')"></div>`
+      : '';
     widget.innerHTML = `
-      <div class="pw-bg" style="background-image:url('${safeUrl}')"></div>
+      ${bgHtml}
       <img class="pw-fg" src="${photo.dataUrl}" alt="Family">
       <div class="photo-widget-overlay">
         <div class="photo-widget-label">Tap for slideshow →</div>
@@ -9318,7 +9631,44 @@ function renderPhotoWidget() {
   };
   showPhoto();
   if (photoAlbum.length > 1) {
-    widgetTimer = setInterval(showPhoto, 8000);
+    const speedMs = (state.settings.photoSpeed || 8) * 1000;
+    widgetTimer = setInterval(showPhoto, speedMs);
+  }
+}
+
+// Helper: return the next photo to display, respecting photoOrder setting.
+// scope = 'widget' | 'ss' so dashboard and screensaver can index independently.
+function getNextPhoto(scope, idx) {
+  if (photoAlbum.length === 0) return null;
+  const order = state.settings.photoOrder || 'random';
+  if (order === 'random') {
+    return photoAlbum[Math.floor(Math.random() * photoAlbum.length)];
+  }
+  const arr = [...photoAlbum];
+  if (order === 'oldest') arr.sort((a, b) => (a.addedAt || 0) - (b.addedAt || 0));
+  else arr.sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0)); // newest first (chrono)
+  return arr[idx % arr.length];
+}
+
+// Apply slideshow settings — called when settings change in Family > Settings.
+// Re-renders the dashboard widget and restarts screensaver timer if active.
+function applyPhotoSettings() {
+  // Re-render dashboard widget with new speed/mode
+  if (typeof renderPhotoWidget === 'function') renderPhotoWidget();
+  // Update screensaver-attached attributes for CSS modes
+  const ss = document.getElementById('screensaver');
+  if (ss) {
+    ss.setAttribute('data-mode', state.settings.photoMode || 'contain');
+    ss.setAttribute('data-kb', state.settings.photoKenBurns === false ? 'off' : 'on');
+    ss.setAttribute('data-clock', state.settings.photoShowClock === false ? 'off' : 'on');
+  }
+  // If currently showing the screensaver, restart its timer with new speed
+  if (ssActive) {
+    if (ssTimer) { clearInterval(ssTimer); ssTimer = null; }
+    if (photoAlbum.length > 1) {
+      const speedMs = ((state.settings.photoSpeed || 8) + 1) * 1000; // +1s buffer over fade
+      ssTimer = setInterval(() => showSSPhoto(false), speedMs);
+    }
   }
 }
 
@@ -9331,7 +9681,12 @@ let ssLayer = 'A'; // currently visible layer
 
 function enterScreensaver() {
   ssActive = true;
-  document.getElementById('screensaver').classList.add('active');
+  const ss = document.getElementById('screensaver');
+  ss.classList.add('active');
+  // Apply slideshow settings as data attrs (CSS keys off these)
+  ss.setAttribute('data-mode', state.settings.photoMode || 'contain');
+  ss.setAttribute('data-kb', state.settings.photoKenBurns === false ? 'off' : 'on');
+  ss.setAttribute('data-clock', state.settings.photoShowClock === false ? 'off' : 'on');
 
   // Hide empty state if photos exist
   const empty = document.getElementById('ssEmptyState');
@@ -9341,11 +9696,14 @@ function enterScreensaver() {
     document.getElementById('ssPhotoB').style.removeProperty('--ss-img');
   } else {
     empty.style.display = 'none';
-    ssIdx = Math.floor(Math.random() * photoAlbum.length);
+    ssIdx = (state.settings.photoOrder === 'random')
+      ? Math.floor(Math.random() * photoAlbum.length)
+      : 0;
     showSSPhoto(true);
     if (photoAlbum.length > 1) {
       if (ssTimer) clearInterval(ssTimer);
-      ssTimer = setInterval(() => showSSPhoto(false), 9000);
+      const speedMs = ((state.settings.photoSpeed || 8) + 1) * 1000; // +1s buffer over crossfade
+      ssTimer = setInterval(() => showSSPhoto(false), speedMs);
     }
   }
 
@@ -9374,7 +9732,7 @@ function exitScreensaver() {
 
 function showSSPhoto(initial) {
   if (photoAlbum.length === 0) return;
-  const photo = photoAlbum[ssIdx % photoAlbum.length];
+  const photo = getNextPhoto('ss', ssIdx) || photoAlbum[ssIdx % photoAlbum.length];
   const showId = ssLayer === 'A' ? 'ssPhotoA' : 'ssPhotoB';
   const hideId = ssLayer === 'A' ? 'ssPhotoB' : 'ssPhotoA';
   const showEl = document.getElementById(showId);
@@ -9385,7 +9743,7 @@ function showSSPhoto(initial) {
   // Force reflow so CSS transition runs
   void showEl.offsetWidth;
   showEl.classList.add('visible');
-  // Trigger Ken Burns zoom after a moment
+  // Trigger Ken Burns zoom after a moment (CSS will null it out if data-kb="off")
   setTimeout(() => showEl.classList.add('zooming'), 100);
 
   if (!initial) hideEl.classList.remove('visible');
@@ -9945,12 +10303,14 @@ function saveExpense() {
 
 function deleteExpense() {
   if (!editingExpenseId) return;
-  if (!confirm('Delete this expense?')) return;
-  state.expenses = state.expenses.filter(e => e.id !== editingExpenseId);
-  saveState();
-  closeModal('expenseModal');
-  renderExpenses();
-  toast('Expense deleted');
+  const expenseId = editingExpenseId;
+  confirmAction('Delete this expense?', () => {
+    state.expenses = state.expenses.filter(e => e.id !== expenseId);
+    saveState();
+    closeModal('expenseModal');
+    renderExpenses();
+    toast('Expense deleted');
+  });
 }
 
 // Recurring expenses
@@ -10050,12 +10410,13 @@ function addRecurringExpense() {
 }
 
 function deleteRecurringExpense(id) {
-  if (!confirm('Delete this recurring bill?')) return;
-  state.recurringExpenses = state.recurringExpenses.filter(r => r.id !== id);
-  saveState();
-  renderRecurringList();
-  renderExpenses();
-  toast('Removed');
+  confirmAction('Delete this recurring bill?', () => {
+    state.recurringExpenses = state.recurringExpenses.filter(r => r.id !== id);
+    saveState();
+    renderRecurringList();
+    renderExpenses();
+    toast('Removed');
+  });
 }
 
 // Update expense amount field listener
@@ -10199,12 +10560,13 @@ function advanceRotation(id) {
 }
 
 function deleteRotation(id) {
-  if (!confirm('Delete this rotation?')) return;
-  state.rotations = state.rotations.filter(r => r.id !== id);
-  saveState();
-  renderRotationsList();
-  renderDashboard();
-  toast('Rotation deleted');
+  confirmAction('Delete this rotation?', () => {
+    state.rotations = state.rotations.filter(r => r.id !== id);
+    saveState();
+    renderRotationsList();
+    renderDashboard();
+    toast('Rotation deleted');
+  });
 }
 
 // Auto-delegate: re-balance unassigned/uneven chores across family
@@ -10217,30 +10579,30 @@ function autoDelegateChores() {
     toast('No chores to delegate yet', 'error');
     return;
   }
-  if (!confirm('Auto-balance chores so everyone has roughly equal points? This will reassign chores across the family.')) return;
+  confirmAction('Auto-balance chores so everyone has roughly equal points? This will reassign chores across the family.', () => {
+    // Get total points per chore, sort by value (descending) for greedy bin-packing
+    const choresSorted = [...state.chores].sort((a, b) => (b.points || 0) - (a.points || 0));
+    const memberPoints = {};
+    state.members.forEach(m => { memberPoints[m.id] = 0; });
 
-  // Get total points per chore, sort by value (descending) for greedy bin-packing
-  const choresSorted = [...state.chores].sort((a, b) => (b.points || 0) - (a.points || 0));
-  const memberPoints = {};
-  state.members.forEach(m => { memberPoints[m.id] = 0; });
-
-  // Greedy assignment: each chore goes to the member with current lowest total
-  choresSorted.forEach(ch => {
-    let lowest = state.members[0].id;
-    state.members.forEach(m => {
-      if (memberPoints[m.id] < memberPoints[lowest]) lowest = m.id;
+    // Greedy assignment: each chore goes to the member with current lowest total
+    choresSorted.forEach(ch => {
+      let lowest = state.members[0].id;
+      state.members.forEach(m => {
+        if (memberPoints[m.id] < memberPoints[lowest]) lowest = m.id;
+      });
+      ch.memberId = lowest;
+      memberPoints[lowest] += (ch.points || 0);
     });
-    ch.memberId = lowest;
-    memberPoints[lowest] += (ch.points || 0);
-  });
 
-  saveState();
-  renderChores();
-  renderDashboard();
+    saveState();
+    renderChores();
+    renderDashboard();
 
-  // Show toast with fairness info
-  const totals = state.members.map(m => `${m.name}: ${memberPoints[m.id]}pt`).join(' · ');
-  toast(`Chores rebalanced! ${totals}`, 'success');
+    // Show toast with fairness info
+    const totals = state.members.map(m => `${m.name}: ${memberPoints[m.id]}pt`).join(' · ');
+    toast(`Chores rebalanced! ${totals}`, 'success');
+  }, { danger: false, okText: 'Rebalance' });
 }
 
 // ---------- GROCERIES → EXPENSES ----------
@@ -10393,18 +10755,20 @@ function saveMember() {
 function deleteMember() {
   if (!editingMemberId) return;
   const m = memberById(editingMemberId);
-  if (!confirm(`Remove ${m.name}? Their chores will also be deleted.`)) return;
-  state.members = state.members.filter(x => x.id !== editingMemberId);
-  state.chores = state.chores.filter(c => c.memberId !== editingMemberId);
-  state.events.forEach(e => {
-    if (e.memberIds) e.memberIds = e.memberIds.filter(id => id !== editingMemberId);
-  });
-  saveState();
-  closeModal('memberModal');
-  renderFamily();
-  renderChores();
-  renderDashboard();
-  toast('Member removed');
+  const memberId = editingMemberId;
+  confirmAction(`Remove ${m.name}? Their chores will also be deleted.`, () => {
+    state.members = state.members.filter(x => x.id !== memberId);
+    state.chores = state.chores.filter(c => c.memberId !== memberId);
+    state.events.forEach(e => {
+      if (e.memberIds) e.memberIds = e.memberIds.filter(id => id !== memberId);
+    });
+    saveState();
+    closeModal('memberModal');
+    renderFamily();
+    renderChores();
+    renderDashboard();
+    toast('Member removed');
+  }, { okText: 'Remove' });
 }
 
 function renderFamily() {
@@ -10419,6 +10783,17 @@ function renderFamily() {
   if (fontSel && typeof getGoffFont === 'function') {
     fontSel.value = getGoffFont();
   }
+  // Slideshow / screensaver settings
+  const ps = document.getElementById('setPhotoSpeed');
+  if (ps) ps.value = String(state.settings.photoSpeed || 8);
+  const pm = document.getElementById('setPhotoMode');
+  if (pm) pm.value = state.settings.photoMode || 'contain';
+  const pkb = document.getElementById('setPhotoKB');
+  if (pkb) pkb.value = state.settings.photoKenBurns === false ? 'off' : 'on';
+  const pclk = document.getElementById('setPhotoClock');
+  if (pclk) pclk.value = state.settings.photoShowClock === false ? 'off' : 'on';
+  const por = document.getElementById('setPhotoOrder');
+  if (por) por.value = state.settings.photoOrder || 'random';
 
   const cards = state.members.map(m => {
     const myChores = state.chores.filter(ch => ch.memberId === m.id);
@@ -10521,20 +10896,21 @@ function importData(input) {
       if (!data.members || !data.events || !data.groceries || !data.chores) {
         throw new Error('Invalid backup');
       }
-      if (!confirm('Replace current data with this backup? Your current data will be lost.')) return;
-      // Merge with defaults so older backups still work
-      state = { ...defaultState(), ...data };
-      // Ensure new arrays/objects exist for older backups
-      state.projects = state.projects || [];
-      state.dinners = state.dinners || [];
-      state.mealPlan = state.mealPlan || {};
-      state.invitations = state.invitations || [];
-      state.expenses = state.expenses || [];
-      state.recurringExpenses = state.recurringExpenses || [];
-      state.rotations = state.rotations || [];
-      saveState();
-      renderAll();
-      toast('Backup restored', 'success');
+      confirmAction('Replace current data with this backup? Your current data will be lost.', () => {
+        // Merge with defaults so older backups still work
+        state = { ...defaultState(), ...data };
+        // Ensure new arrays/objects exist for older backups
+        state.projects = state.projects || [];
+        state.dinners = state.dinners || [];
+        state.mealPlan = state.mealPlan || {};
+        state.invitations = state.invitations || [];
+        state.expenses = state.expenses || [];
+        state.recurringExpenses = state.recurringExpenses || [];
+        state.rotations = state.rotations || [];
+        saveState();
+        renderAll();
+        toast('Backup restored', 'success');
+      }, { okText: 'Restore' });
     } catch (err) {
       toast('Could not read backup file', 'error');
     }
@@ -10544,11 +10920,18 @@ function importData(input) {
 }
 
 function resetAll() {
-  if (!confirm('Wipe ALL data? This cannot be undone.')) return;
-  if (!confirm('Are you really sure? Type yes if you want to proceed.')) return;
-  state = defaultState();
-  saveState();
-  location.reload();
+  confirmAction('Wipe ALL data? This cannot be undone. Family, chores, events, photos, notes — everything will be deleted.', () => {
+    confirmAction('Last chance — really wipe everything?', () => {
+      state = defaultState();
+      saveState();
+      try {
+        localStorage.removeItem('goff_alarms_v1');
+        localStorage.removeItem('goff_notes_v1');
+        localStorage.removeItem('goff_family_hub_photos_v1');
+      } catch (e) {}
+      location.reload();
+    }, { okText: 'Yes, wipe everything' });
+  }, { okText: 'Continue' });
 }
 
 // ---------- MODAL HELPERS ----------
@@ -10691,6 +11074,47 @@ function escapeHtml(str) {
   }[c]));
 }
 
+// ---------- CUSTOM CONFIRM (replaces window.confirm which Fully Kiosk Browser blocks) ----------
+// Usage: confirmAction('Delete this thing?', () => { /* do delete */ }, { danger: true });
+function confirmAction(message, onConfirm, options) {
+  options = options || {};
+  const modal = document.getElementById('confirmModal');
+  if (!modal) {
+    // Fallback to native (e.g., still loading) — only fires if browser allows it
+    if (window.confirm(message)) onConfirm && onConfirm();
+    return;
+  }
+  const titleEl = document.getElementById('confirmModalTitle');
+  const msgEl = document.getElementById('confirmModalMessage');
+  const okBtn = document.getElementById('confirmModalOk');
+  const cancelBtn = document.getElementById('confirmModalCancel');
+
+  if (titleEl) titleEl.innerHTML = options.title || 'Are you <em>sure?</em>';
+  if (msgEl) msgEl.textContent = message;
+  if (okBtn) {
+    okBtn.textContent = options.okText || (options.danger !== false ? 'Delete' : 'Confirm');
+    okBtn.classList.remove('btn-primary', 'btn-danger');
+    okBtn.classList.add(options.danger !== false ? 'btn-danger' : 'btn-primary');
+  }
+  if (cancelBtn) cancelBtn.textContent = options.cancelText || 'Cancel';
+
+  function cleanup() {
+    modal.classList.remove('active');
+    okBtn.removeEventListener('click', handleOk);
+    cancelBtn.removeEventListener('click', handleCancel);
+  }
+  function handleOk() {
+    cleanup();
+    if (typeof onConfirm === 'function') {
+      try { onConfirm(); } catch (e) { console.error('confirmAction handler error', e); }
+    }
+  }
+  function handleCancel() { cleanup(); }
+  okBtn.addEventListener('click', handleOk);
+  cancelBtn.addEventListener('click', handleCancel);
+  modal.classList.add('active');
+}
+
 // ---------- ONBOARDING ----------
 function completeWelcome() {
   const fam = document.getElementById('welcomeFamily').value.trim() || 'Goff Family';
@@ -10752,6 +11176,12 @@ function setTool(name) {
   if (name === 'draw') setTimeout(initDrawCanvas, 50);
   if (name === 'notes') renderNotes();
   if (name === 'alarm') renderAlarms();
+  if (name === 'sports') {
+    // Restore selector from settings, then fetch (cached if recent)
+    const sel = document.getElementById('espnLeague');
+    if (sel && state.settings.espnLeague) sel.value = state.settings.espnLeague;
+    fetchSports(false);
+  }
 }
 
 function renderTools() {
@@ -11008,10 +11438,11 @@ function saveAlarm() {
   closeModal('alarmModal');
 }
 function deleteAlarm(id) {
-  if (!confirm('Delete this alarm?')) return;
-  alarms = alarms.filter(a => a.id !== id);
-  saveAlarms();
-  renderAlarms();
+  confirmAction('Delete this alarm?', () => {
+    alarms = alarms.filter(a => a.id !== id);
+    saveAlarms();
+    renderAlarms();
+  });
 }
 function toggleAlarm(id) {
   const a = alarms.find(x => x.id === id);
@@ -11231,11 +11662,12 @@ function saveCurrentNote() {
 }
 function deleteCurrentNote() {
   if (!activeNoteId) return;
-  if (!confirm('Delete this note?')) return;
-  notes = notes.filter(n => n.id !== activeNoteId);
-  activeNoteId = notes.length ? notes[0].id : null;
-  saveNotesStorage();
-  renderNotes();
+  confirmAction('Delete this note?', () => {
+    notes = notes.filter(n => n.id !== activeNoteId);
+    activeNoteId = notes.length ? notes[0].id : null;
+    saveNotesStorage();
+    renderNotes();
+  });
 }
 function renderNotes() {
   renderNotesList();
@@ -11389,13 +11821,14 @@ function drawMove(e) {
 function drawUp() { drawing = false; }
 function drawClear() {
   if (!drawCtx) return;
-  if (!confirm('Clear the drawing?')) return;
-  const canvas = document.getElementById('drawCanvas');
-  try { drawHistory.push(canvas.toDataURL()); } catch (e) {}
-  drawCtx.globalCompositeOperation = 'source-over';
-  drawCtx.fillStyle = '#ffffff';
-  const rect = canvas.getBoundingClientRect();
-  drawCtx.fillRect(0, 0, rect.width, rect.height);
+  confirmAction('Clear the drawing?', () => {
+    const canvas = document.getElementById('drawCanvas');
+    try { drawHistory.push(canvas.toDataURL()); } catch (e) {}
+    drawCtx.globalCompositeOperation = 'source-over';
+    drawCtx.fillStyle = '#ffffff';
+    const rect = canvas.getBoundingClientRect();
+    drawCtx.fillRect(0, 0, rect.width, rect.height);
+  });
 }
 function drawUndo() {
   if (!drawCtx || drawHistory.length === 0) return;
@@ -11472,6 +11905,117 @@ function pickFromList() {
   document.getElementById('pickResult').textContent = pick;
   _animateResult('pickResult');
   chime();
+}
+
+// ---------- SPORTS (ESPN) ----------
+let sportsLastFetch = 0;
+let sportsAutoTimer = null;
+
+function changeESPNLeague(value) {
+  state.settings.espnLeague = value;
+  saveState();
+  fetchSports(true);
+}
+
+async function fetchSports(force) {
+  const sel = document.getElementById('espnLeague');
+  const league = (sel && sel.value) || state.settings.espnLeague || 'football/nfl';
+  const board = document.getElementById('sportsScoreboard');
+  const news = document.getElementById('sportsNews');
+  const updated = document.getElementById('sportsUpdated');
+  if (!board || !news) return;
+  if (!force && Date.now() - sportsLastFetch < 60_000) return;
+  sportsLastFetch = Date.now();
+  board.innerHTML = '<div class="empty-mini">Loading scores…</div>';
+  news.innerHTML = '<div class="empty-mini">Loading news…</div>';
+
+  // Scoreboard
+  try {
+    const r = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${league}/scoreboard`);
+    const d = await r.json();
+    renderScoreboard(d);
+  } catch (e) {
+    board.innerHTML = '<div class="empty-mini">Could not load scores. Network blocked?</div>';
+  }
+  // News
+  try {
+    const r = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${league}/news`);
+    const d = await r.json();
+    renderSportsNews(d);
+  } catch (e) {
+    news.innerHTML = '<div class="empty-mini">Could not load headlines</div>';
+  }
+  if (updated) updated.textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+}
+
+function renderScoreboard(data) {
+  const board = document.getElementById('sportsScoreboard');
+  const events = (data && data.events) || [];
+  if (!events.length) {
+    board.innerHTML = '<div class="empty-mini">No games scheduled today</div>';
+    return;
+  }
+  board.innerHTML = events.map(ev => {
+    const comp = ev.competitions && ev.competitions[0];
+    if (!comp) return '';
+    const status = ev.status && ev.status.type;
+    const statusText = (status && (status.shortDetail || status.description)) || '';
+    const state_ = (status && status.state) || '';
+    const isLive = state_ === 'in';
+    const isFinal = state_ === 'post' || (status && status.completed);
+    const competitors = comp.competitors || [];
+    const home = competitors.find(c => c.homeAway === 'home') || competitors[0];
+    const away = competitors.find(c => c.homeAway === 'away') || competitors[1];
+    if (!home || !away) return '';
+    const homeScore = parseInt(home.score, 10) || 0;
+    const awayScore = parseInt(away.score, 10) || 0;
+    const homeLoser = isFinal && awayScore > homeScore;
+    const awayLoser = isFinal && homeScore > awayScore;
+    function teamRow(c, loser) {
+      const t = c.team || {};
+      const logo = t.logo || (t.logos && t.logos[0] && t.logos[0].href) || '';
+      return `
+        <div class="game-team ${loser ? 'loser' : ''}">
+          ${logo ? `<img src="${logo}" alt="" onerror="this.style.display='none'">` : ''}
+          <span class="game-team-name">${escapeHtml(t.abbreviation || t.shortDisplayName || t.displayName || 'TBD')}</span>
+          <span class="game-score">${(c.score !== undefined && c.score !== '') ? c.score : '—'}</span>
+        </div>
+      `;
+    }
+    return `
+      <div class="game-card ${isLive ? 'live' : ''} ${isFinal ? 'final' : ''}">
+        <div class="game-status">${escapeHtml(statusText)}</div>
+        <div class="game-teams">
+          ${teamRow(away, awayLoser)}
+          ${teamRow(home, homeLoser)}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderSportsNews(data) {
+  const news = document.getElementById('sportsNews');
+  const articles = (data && data.articles) || [];
+  if (!articles.length) {
+    news.innerHTML = '<div class="empty-mini">No headlines available</div>';
+    return;
+  }
+  news.innerHTML = articles.slice(0, 10).map(a => {
+    const img = (a.images && a.images[0] && a.images[0].url) || '';
+    const url = (a.links && a.links.web && a.links.web.href) || '';
+    const date = a.published ? new Date(a.published).toLocaleDateString([], { month: 'short', day: 'numeric' }) : '';
+    const headline = a.headline || a.title || '';
+    return `
+      <a href="${url}" target="_blank" rel="noopener" class="news-item">
+        ${img ? `<img src="${img}" alt="" class="news-thumb" onerror="this.style.display='none'">` : ''}
+        <div class="news-info">
+          <div class="news-headline">${escapeHtml(headline)}</div>
+          <div class="news-meta">${escapeHtml(date)}</div>
+        </div>
+      </a>
+    `;
+  }).join('');
 }
 
 function init() {
