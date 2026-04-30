@@ -4073,7 +4073,7 @@ input, textarea, select {
 .dash-kiosk {
   flex: 1;
   display: grid;
-  grid-template-rows: minmax(200px, 0.85fr) minmax(220px, 1fr) minmax(250px, 1.4fr);
+  grid-template-rows: minmax(150px, 0.85fr) minmax(170px, 1fr) minmax(200px, 1.4fr);
   gap: 14px;
   min-height: 0;
 }
@@ -4090,16 +4090,19 @@ input, textarea, select {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 16px 26px 18px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  padding: clamp(10px, 1.6vh, 18px) clamp(16px, 2vw, 28px);
+  display: grid;
+  /* Fixed top + bottom rows for greet/date; clock fills the middle.
+     This prevents the clock's text from overflowing into the date row. */
+  grid-template-rows: auto 1fr auto;
   align-items: stretch;
+  justify-items: stretch;
   position: relative;
   overflow: hidden;
   min-height: 0;
-  gap: 6px;
+  gap: clamp(2px, 0.6vh, 6px);
 }
+.kiosk-time .k-clock { align-self: center; justify-self: stretch; }
 .kiosk-time::before {
   content: "";
   position: absolute;
@@ -4112,7 +4115,7 @@ input, textarea, select {
 }
 .k-greet {
   font-family: var(--display);
-  font-size: 22px;
+  font-size: clamp(16px, min(2.2vw, 3.2vh), 22px);
   font-weight: 400;
   font-style: italic;
   color: var(--text-2);
@@ -4121,6 +4124,9 @@ input, textarea, select {
   z-index: 1;
   flex-shrink: 0;
   line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .k-greet em {
   font-style: italic;
@@ -4131,7 +4137,9 @@ input, textarea, select {
 .k-clock {
   font-family: var(--display);
   font-weight: 600;
-  font-size: clamp(90px, 11.5vw, 150px);
+  /* Scale with the SHORTER of viewport-width or viewport-height so the clock never
+     overflows on either narrow or short tablet sizes. */
+  font-size: min(11vw, 19vh, 140px);
   line-height: 1;
   letter-spacing: -0.02em;
   font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
@@ -4142,10 +4150,15 @@ input, textarea, select {
   position: relative;
   z-index: 1;
   color: var(--text);
-  flex: 1;
+  flex: 1 1 auto;
   margin: 0;
   min-height: 0;
-  padding-bottom: 4px;
+  padding-bottom: 2px;
+  overflow: hidden;
+}
+.k-clock .ampm {
+  font-size: 0.26em;
+  flex-shrink: 0;
 }
 .k-clock .colon { color: var(--text-3); animation: blink 2s infinite; font-weight: 500; }
 .k-clock .ampm {
@@ -4158,7 +4171,7 @@ input, textarea, select {
 }
 .k-date {
   font-family: var(--display);
-  font-size: 18px;
+  font-size: clamp(13px, min(1.8vw, 2.6vh), 18px);
   font-style: italic;
   font-weight: 500;
   color: var(--text-2);
@@ -4166,19 +4179,23 @@ input, textarea, select {
   z-index: 1;
   flex-shrink: 0;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .kiosk-weather {
   background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 22px 26px;
+  padding: clamp(12px, 1.8vh, 22px) clamp(16px, 2vw, 26px);
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 18px;
+  gap: clamp(10px, 1.5vw, 18px);
   position: relative;
   overflow: hidden;
+  min-height: 0;
 }
 .kiosk-weather::before {
   content: "";
@@ -4191,11 +4208,12 @@ input, textarea, select {
   pointer-events: none;
 }
 .kw-icon {
-  font-size: clamp(72px, 8.5vw, 124px);
+  font-size: min(7.5vw, 14vh, 100px);
   line-height: 1;
   position: relative;
   z-index: 1;
   filter: drop-shadow(0 4px 18px rgba(0,0,0,0.3));
+  flex-shrink: 0;
 }
 .kw-main {
   display: flex;
@@ -4206,8 +4224,9 @@ input, textarea, select {
 }
 .kw-temp {
   font-family: var(--display);
-  font-size: clamp(78px, 9.5vw, 140px);
-  line-height: 0.9;
+  /* Bound by both width AND height so it never overflows the weather card. */
+  font-size: min(8.5vw, 16vh, 110px);
+  line-height: 0.95;
   font-weight: 500;
   letter-spacing: -0.035em;
   font-variation-settings: "opsz" 144, "SOFT" 0;
@@ -4222,7 +4241,7 @@ input, textarea, select {
   margin-top: 0.05em;
 }
 .kw-desc {
-  font-size: 22px;
+  font-size: clamp(14px, min(1.8vw, 2.6vh), 20px);
   color: var(--text);
   font-weight: 600;
   margin-top: 4px;
@@ -4232,21 +4251,25 @@ input, textarea, select {
   letter-spacing: -0.005em;
 }
 .kw-loc {
-  font-size: 14px;
+  font-size: clamp(11px, min(1.2vw, 1.7vh), 14px);
   color: var(--text-2);
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .kw-extra {
   display: flex;
-  gap: 18px;
-  font-size: 17px;
+  gap: clamp(10px, 1.5vw, 18px);
+  font-size: clamp(11px, min(1.4vw, 2vh), 16px);
   color: var(--text-2);
   font-weight: 600;
-  margin-top: 10px;
+  margin-top: 8px;
   flex-wrap: wrap;
+  line-height: 1.3;
 }
 .kw-extra span { display: inline-flex; align-items: center; gap: 6px; }
 .kw-extra strong { color: var(--text); font-weight: 700; }
@@ -4455,7 +4478,7 @@ input, textarea, select {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-auto-rows: 1fr;
-  gap: 6px;
+  gap: 5px;
   flex: 1;
   min-height: 0;
 }
@@ -4464,8 +4487,8 @@ input, textarea, select {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 8px 4px;
+  gap: 3px;
+  padding: 6px 3px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -4474,6 +4497,8 @@ input, textarea, select {
   cursor: pointer;
   transition: all 0.2s var(--ease);
   min-height: 0;
+  min-width: 0;
+  overflow: hidden;
 }
 .qt-tile:hover {
   background: var(--accent-soft);
@@ -4483,15 +4508,21 @@ input, textarea, select {
 }
 .qt-tile:active { transform: scale(0.94); }
 .qt-tile .qt-icon {
-  font-size: 26px;
+  font-size: clamp(18px, min(2.2vw, 3.4vh), 26px);
   line-height: 1;
+  flex-shrink: 0;
 }
 .qt-tile .qt-label {
-  font-size: 11px;
+  font-size: clamp(9px, min(1vw, 1.5vh), 11px);
   font-weight: 700;
   letter-spacing: 0.02em;
   text-align: center;
-  line-height: 1.1;
+  line-height: 1.15;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .qt-tile.qt-lock {
   background: linear-gradient(135deg, var(--surface-2), var(--surface));
@@ -4543,7 +4574,7 @@ input, textarea, select {
 /* Tablet portrait / smaller landscape adaptation */
 @media (min-width: 881px) and (max-height: 760px) {
   #view-dashboard.view { padding: 14px 18px; }
-  .dash-kiosk { gap: 10px; grid-template-rows: minmax(170px, 0.8fr) minmax(200px, 1fr) minmax(220px, 1.3fr); }
+  .dash-kiosk { gap: 8px; grid-template-rows: minmax(140px, 0.8fr) minmax(160px, 1fr) minmax(190px, 1.3fr); }
   .kiosk-time { padding: 12px 22px 14px; }
   .k-greet { font-size: 20px; }
   .k-clock { font-size: clamp(120px, 16vw, 200px); }
@@ -5915,10 +5946,10 @@ input, textarea, select {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 12px 14px;
+  padding: clamp(8px, 1.2vh, 14px) clamp(10px, 1.2vw, 16px);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: clamp(4px, 0.8vh, 8px);
   cursor: pointer;
   transition: all 0.2s var(--ease);
   position: relative;
@@ -5945,11 +5976,12 @@ input, textarea, select {
   gap: 10px;
   position: relative;
   z-index: 1;
+  flex-shrink: 0;
 }
-.dsc-emoji { font-size: 32px; line-height: 1; flex-shrink: 0; }
+.dsc-emoji { font-size: clamp(22px, min(2.6vw, 4vh), 30px); line-height: 1; flex-shrink: 0; }
 .dsc-name {
   font-family: var(--display);
-  font-size: 22px;
+  font-size: clamp(15px, min(1.8vw, 2.6vh), 20px);
   font-weight: 700;
   letter-spacing: -0.01em;
   flex: 1;
@@ -5958,17 +5990,21 @@ input, textarea, select {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.dsc-treats-pill {
-  display: inline-flex;
+/* Treats row sits below the meal buttons, full-width inside the pet card */
+.dsc-treats-row {
+  display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px 4px;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 8px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 999px;
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
 }
-.dsc-treats-bone { font-size: 14px; line-height: 1; padding: 0 2px; }
+.dsc-treats-bone { font-size: 14px; line-height: 1; }
 .dsc-treats-num {
   font-family: var(--display);
   font-size: 16px;
@@ -5976,9 +6012,13 @@ input, textarea, select {
   color: var(--c-amber);
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  min-width: 14px;
-  text-align: center;
-  padding: 0 2px;
+}
+.dsc-treats-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 .dsc-treats-btn {
   width: 26px;
@@ -6048,9 +6088,9 @@ input, textarea, select {
   border-color: var(--accent);
   color: var(--accent);
 }
-.dsc-meal-icon { font-size: 24px; line-height: 1; flex-shrink: 0; }
+.dsc-meal-icon { font-size: clamp(18px, min(2vw, 3vh), 26px); line-height: 1; flex-shrink: 0; }
 .dsc-meal-label {
-  font-size: 12px;
+  font-size: clamp(10px, min(1.1vw, 1.6vh), 13px);
   font-weight: 700;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -14180,12 +14220,6 @@ function renderDashDogsStrip() {
       <div class="dsc-top">
         <div class="dsc-emoji">${d.emoji || '🐕'}</div>
         <div class="dsc-name">${escapeHtml(d.name)}</div>
-        <div class="dsc-treats-pill">
-          <button class="dsc-treats-btn minus" onclick="event.stopPropagation(); dogTreatChange('${d.id}', -1);" aria-label="Remove treat" ${(d.treats || 0) === 0 ? 'disabled' : ''}>−</button>
-          <span class="dsc-treats-bone">🦴</span>
-          <span class="dsc-treats-num">${d.treats || 0}</span>
-          <button class="dsc-treats-btn plus" onclick="event.stopPropagation(); dogTreatChange('${d.id}', 1);" aria-label="Add treat">+</button>
-        </div>
       </div>
       <div class="dsc-meals">
         <button class="dsc-meal-btn ${d.fedBreakfast ? 'fed' : ''}" onclick="event.stopPropagation(); dogToggleMeal('${d.id}', 'breakfast');">
@@ -14198,6 +14232,13 @@ function renderDashDogsStrip() {
           <span class="dsc-meal-label">Dinner</span>
           <span class="dsc-meal-check">${d.fedDinner ? '✓' : ''}</span>
         </button>
+      </div>
+      <div class="dsc-treats-row">
+        <button class="dsc-treats-btn minus" onclick="event.stopPropagation(); dogTreatChange('${d.id}', -1);" aria-label="Remove treat" ${(d.treats || 0) === 0 ? 'disabled' : ''}>−</button>
+        <span class="dsc-treats-bone">🦴</span>
+        <span class="dsc-treats-num">${d.treats || 0}</span>
+        <span class="dsc-treats-label">treats</span>
+        <button class="dsc-treats-btn plus" onclick="event.stopPropagation(); dogTreatChange('${d.id}', 1);" aria-label="Add treat">+</button>
       </div>
     </div>
   `).join('');
