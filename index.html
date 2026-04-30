@@ -4073,7 +4073,7 @@ input, textarea, select {
 .dash-kiosk {
   flex: 1;
   display: grid;
-  grid-template-rows: minmax(200px, 0.9fr) minmax(190px, 0.85fr) minmax(260px, 1.5fr);
+  grid-template-rows: minmax(200px, 0.85fr) minmax(220px, 1fr) minmax(250px, 1.4fr);
   gap: 14px;
   min-height: 0;
 }
@@ -4090,7 +4090,7 @@ input, textarea, select {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 14px 26px 14px;
+  padding: 16px 26px 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -4098,6 +4098,7 @@ input, textarea, select {
   position: relative;
   overflow: hidden;
   min-height: 0;
+  gap: 6px;
 }
 .kiosk-time::before {
   content: "";
@@ -4130,9 +4131,9 @@ input, textarea, select {
 .k-clock {
   font-family: var(--display);
   font-weight: 600;
-  font-size: clamp(110px, 14vw, 180px);
-  line-height: 0.92;
-  letter-spacing: -0.025em;
+  font-size: clamp(90px, 11.5vw, 150px);
+  line-height: 1;
+  letter-spacing: -0.02em;
   font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
   display: flex;
   align-items: baseline;
@@ -4144,6 +4145,7 @@ input, textarea, select {
   flex: 1;
   margin: 0;
   min-height: 0;
+  padding-bottom: 4px;
 }
 .k-clock .colon { color: var(--text-3); animation: blink 2s infinite; font-weight: 500; }
 .k-clock .ampm {
@@ -4541,7 +4543,7 @@ input, textarea, select {
 /* Tablet portrait / smaller landscape adaptation */
 @media (min-width: 881px) and (max-height: 760px) {
   #view-dashboard.view { padding: 14px 18px; }
-  .dash-kiosk { gap: 10px; grid-template-rows: minmax(170px, 0.85fr) minmax(170px, 0.8fr) minmax(220px, 1.4fr); }
+  .dash-kiosk { gap: 10px; grid-template-rows: minmax(170px, 0.8fr) minmax(200px, 1fr) minmax(220px, 1.3fr); }
   .kiosk-time { padding: 12px 22px 14px; }
   .k-greet { font-size: 20px; }
   .k-clock { font-size: clamp(120px, 16vw, 200px); }
@@ -5219,14 +5221,47 @@ input, textarea, select {
 /* --- SPORTS (ESPN) --- */
 .sports-toolbar {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px 18px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   margin-bottom: 14px;
   flex-wrap: wrap;
+}
+.sports-leagues {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.sports-league-chip {
+  padding: 7px 13px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.sports-league-chip:hover { border-color: var(--border-strong); color: var(--text); }
+.sports-league-chip.followed {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.sports-league-chip .star { font-size: 11px; }
+.game-card.fav { box-shadow: 0 0 0 2px var(--accent); }
+.game-card-favorite-mark {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent);
+  margin-left: 4px;
 }
 .sports-updated { font-size: 12px; color: var(--text-3); margin-left: auto; }
 .sports-grid {
@@ -5932,10 +5967,11 @@ input, textarea, select {
 }
 .dsc-meal-btn {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: 4px;
+  padding: 6px 6px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -5945,6 +5981,7 @@ input, textarea, select {
   color: var(--text-2);
   min-width: 0;
   height: 100%;
+  position: relative;
 }
 .dsc-meal-btn:hover { background: var(--surface-3); border-color: var(--border-strong); }
 .dsc-meal-btn.fed {
@@ -5952,22 +5989,20 @@ input, textarea, select {
   border-color: var(--accent);
   color: var(--accent);
 }
-.dsc-meal-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
+.dsc-meal-icon { font-size: 24px; line-height: 1; flex-shrink: 0; }
 .dsc-meal-label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.02em;
-  min-width: 0;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .dsc-meal-check {
-  font-size: 16px;
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 11px;
   font-weight: 800;
   color: var(--accent);
-  min-width: 14px;
-  text-align: right;
 }
 
 /* Sports widget on dashboard - compact two-column featured-game + news layout */
@@ -7220,6 +7255,24 @@ body::before {
       <!-- SPORTS (ESPN scores + headlines) -->
       <div class="tool-pane" id="tool-sports">
         <div class="sports-toolbar">
+          <div style="display:flex;flex-direction:column;gap:10px;flex:1;min-width:0;">
+            <div>
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-3);margin-bottom:6px;">Following · tap to toggle</div>
+              <div class="sports-leagues" id="sportsLeagueChips"></div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <span style="font-size:13px;color:var(--text-3);font-weight:600;">Favorite team:</span>
+              <input type="text" id="favoriteTeamInput" class="settings-input" placeholder="e.g., Lions, Tigers, DET, BAL…" oninput="setFavoriteTeam(this.value)" style="min-width:180px;flex:1;max-width:280px;">
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+            <button class="tool-btn" onclick="fetchSports(true)">↻ Refresh</button>
+            <span class="sports-updated" id="sportsUpdated"></span>
+          </div>
+        </div>
+        <!-- Active viewing league for the scoreboard/news below -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-3);">Viewing:</span>
           <select class="settings-input" id="espnLeague" onchange="changeESPNLeague(this.value)" style="min-width:200px;">
             <option value="football/nfl">🏈 NFL</option>
             <option value="basketball/nba">🏀 NBA</option>
@@ -7232,8 +7285,6 @@ body::before {
             <option value="soccer/usa.1">⚽ MLS</option>
             <option value="soccer/eng.1">⚽ Premier League</option>
           </select>
-          <button class="tool-btn" onclick="fetchSports(true)">↻ Refresh</button>
-          <span class="sports-updated" id="sportsUpdated"></span>
         </div>
         <div class="sports-grid">
           <div class="sports-section">
@@ -8244,6 +8295,9 @@ const defaultState = () => ({
     photoOrder: 'random',      // 'random' | 'chrono'
     // Sports widget
     espnLeague: 'football/nfl',
+    followedLeagues: ['football/nfl'],   // dashboard cycles through these
+    favoriteTeam: '',                     // free-text team/city filter (e.g., "Lions" or "DET")
+    sportsRotateSeconds: 12,              // dashboard rotation interval
   },
   pets: [
     { id: 'axel', name: 'Axel', emoji: '🐕', color: '#fbbf24', type: 'dog', breed: '', birthday: '', notes: '', fedBreakfast: false, fedDinner: false, treats: 0, lastReset: '' },
@@ -12560,9 +12614,10 @@ function setTool(name) {
   if (name === 'notes') renderNotes();
   if (name === 'alarm') renderAlarms();
   if (name === 'sports') {
-    // Restore selector from settings, then fetch (cached if recent)
+    // Restore selector from settings, render followed leagues + favorite team
     const sel = document.getElementById('espnLeague');
     if (sel && state.settings.espnLeague) sel.value = state.settings.espnLeague;
+    renderLeagueChips();
     fetchSports(false);
   }
   if (name === 'dogs') renderDogs();
@@ -13318,6 +13373,85 @@ function pickFromList() {
 let sportsLastFetch = 0;
 let sportsAutoTimer = null;
 
+const ESPN_LEAGUES = [
+  { key: 'football/nfl',                          label: '🏈 NFL' },
+  { key: 'basketball/nba',                        label: '🏀 NBA' },
+  { key: 'baseball/mlb',                          label: '⚾ MLB' },
+  { key: 'hockey/nhl',                            label: '🏒 NHL' },
+  { key: 'football/college-football',             label: '🏈 NCAAF' },
+  { key: 'basketball/mens-college-basketball',    label: '🏀 NCAAB' },
+  { key: 'basketball/womens-college-basketball',  label: '🏀 NCAAW' },
+  { key: 'basketball/wnba',                       label: '🏀 WNBA' },
+  { key: 'soccer/usa.1',                          label: '⚽ MLS' },
+  { key: 'soccer/eng.1',                          label: '⚽ EPL' },
+];
+function leagueLabel(key) {
+  const l = ESPN_LEAGUES.find(x => x.key === key);
+  return l ? l.label : '📺 Sports';
+}
+
+function renderLeagueChips() {
+  const c = document.getElementById('sportsLeagueChips');
+  if (!c) return;
+  const followed = state.settings.followedLeagues || [];
+  c.innerHTML = ESPN_LEAGUES.map(l => `
+    <button class="sports-league-chip ${followed.includes(l.key) ? 'followed' : ''}" onclick="toggleFollowLeague('${l.key}')">
+      ${followed.includes(l.key) ? '<span class="star">★</span>' : ''} ${l.label}
+    </button>
+  `).join('');
+  // Update favorite team input + view selector
+  const ft = document.getElementById('favoriteTeamInput');
+  if (ft) ft.value = state.settings.favoriteTeam || '';
+  const vs = document.getElementById('espnLeague');
+  if (vs) vs.value = state.settings.espnLeague || 'football/nfl';
+}
+
+function toggleFollowLeague(key) {
+  if (!state.settings.followedLeagues) state.settings.followedLeagues = [];
+  const idx = state.settings.followedLeagues.indexOf(key);
+  if (idx >= 0) {
+    // Don't allow removing the last one
+    if (state.settings.followedLeagues.length === 1) {
+      toast('Keep at least one league followed', 'error');
+      return;
+    }
+    state.settings.followedLeagues.splice(idx, 1);
+  } else {
+    state.settings.followedLeagues.push(key);
+  }
+  saveState();
+  renderLeagueChips();
+  // Reset rotation index so dashboard catches up
+  dashSportsRotateIdx = 0;
+  renderDashSports();
+}
+
+function setFavoriteTeam(value) {
+  state.settings.favoriteTeam = value.trim();
+  saveState();
+  // Re-render dashboard widget + scoreboard to highlight favorite
+  renderDashSports();
+  if (dashSportsData) renderScoreboard(dashSportsData.sb || dashSportsData);
+  // Also re-fetch the full page if currently showing
+  if (document.getElementById('tool-sports')?.classList.contains('active')) {
+    fetchSports(false);
+  }
+}
+
+function isFavoriteTeam(team) {
+  const fav = (state.settings.favoriteTeam || '').trim().toLowerCase();
+  if (!fav) return false;
+  if (!team) return false;
+  const haystack = [
+    team.displayName, team.shortDisplayName, team.name,
+    team.abbreviation, team.location, team.nickname,
+  ].filter(Boolean).map(s => String(s).toLowerCase());
+  // Match if the favorite term appears in any field
+  return fav.split(/[,;]+/).map(s => s.trim()).filter(Boolean).some(term =>
+    haystack.some(h => h.includes(term) || term.includes(h.length > 2 ? h : 'XXXNOMATCH'))
+  );
+}
+
 function changeESPNLeague(value) {
   state.settings.espnLeague = value;
   saveState();
@@ -13362,7 +13496,15 @@ function renderScoreboard(data) {
     board.innerHTML = '<div class="empty-mini">No games scheduled today</div>';
     return;
   }
-  board.innerHTML = events.map(ev => {
+  // Sort favorite team games to the top
+  const sorted = [...events].sort((a, b) => {
+    const aFav = (a.competitions?.[0]?.competitors || []).some(c => isFavoriteTeam(c.team));
+    const bFav = (b.competitions?.[0]?.competitors || []).some(c => isFavoriteTeam(c.team));
+    if (aFav && !bFav) return -1;
+    if (!aFav && bFav) return 1;
+    return 0;
+  });
+  board.innerHTML = sorted.map(ev => {
     const comp = ev.competitions && ev.competitions[0];
     if (!comp) return '';
     const status = ev.status && ev.status.type;
@@ -13378,19 +13520,21 @@ function renderScoreboard(data) {
     const awayScore = parseInt(away.score, 10) || 0;
     const homeLoser = isFinal && awayScore > homeScore;
     const awayLoser = isFinal && homeScore > awayScore;
+    const isFav = isFavoriteTeam(home.team) || isFavoriteTeam(away.team);
     function teamRow(c, loser) {
       const t = c.team || {};
       const logo = t.logo || (t.logos && t.logos[0] && t.logos[0].href) || '';
+      const fav = isFavoriteTeam(t);
       return `
         <div class="game-team ${loser ? 'loser' : ''}">
           ${logo ? `<img src="${logo}" alt="" onerror="this.style.display='none'">` : ''}
-          <span class="game-team-name">${escapeHtml(t.abbreviation || t.shortDisplayName || t.displayName || 'TBD')}</span>
+          <span class="game-team-name">${escapeHtml(t.abbreviation || t.shortDisplayName || t.displayName || 'TBD')}${fav ? '<span class="game-card-favorite-mark">★</span>' : ''}</span>
           <span class="game-score">${(c.score !== undefined && c.score !== '') ? c.score : '—'}</span>
         </div>
       `;
     }
     return `
-      <div class="game-card ${isLive ? 'live' : ''} ${isFinal ? 'final' : ''}">
+      <div class="game-card ${isLive ? 'live' : ''} ${isFinal ? 'final' : ''} ${isFav ? 'fav' : ''}">
         <div class="game-status">${escapeHtml(statusText)}</div>
         <div class="game-teams">
           ${teamRow(away, awayLoser)}
@@ -13853,54 +13997,72 @@ function renderDashDogsStrip() {
   `).join('');
 }
 
-// Dashboard sports widget — pulls one game/headline from cached ESPN data
-let dashSportsData = null;
-let dashSportsFetchTime = 0;
+// Dashboard sports widget — rotates through followed leagues every N seconds
+let dashSportsCache = {};         // { 'football/nfl': { sb, news, ts }, ... }
+let dashSportsRotateIdx = 0;
+let dashSportsRotateTimer = null;
+
+function startDashSportsRotation() {
+  if (dashSportsRotateTimer) clearInterval(dashSportsRotateTimer);
+  const seconds = Math.max(5, state.settings.sportsRotateSeconds || 12);
+  dashSportsRotateTimer = setInterval(() => {
+    const followed = state.settings.followedLeagues || [];
+    if (followed.length <= 1) return; // nothing to rotate through
+    dashSportsRotateIdx = (dashSportsRotateIdx + 1) % followed.length;
+    renderDashSports();
+  }, seconds * 1000);
+}
+function stopDashSportsRotation() {
+  if (dashSportsRotateTimer) { clearInterval(dashSportsRotateTimer); dashSportsRotateTimer = null; }
+}
+
 async function renderDashSports() {
   const card = document.getElementById('dashSportsCard');
   if (!card) return;
-  const league = state.settings.espnLeague || 'football/nfl';
-  const leagueLabel = (() => {
-    const map = {
-      'football/nfl': '🏈 NFL',
-      'basketball/nba': '🏀 NBA',
-      'baseball/mlb': '⚾ MLB',
-      'hockey/nhl': '🏒 NHL',
-      'football/college-football': '🏈 NCAAF',
-      'basketball/mens-college-basketball': '🏀 NCAAB',
-      'basketball/womens-college-basketball': '🏀 NCAAW',
-      'basketball/wnba': '🏀 WNBA',
-      'soccer/usa.1': '⚽ MLS',
-      'soccer/eng.1': '⚽ EPL',
-    };
-    return map[league] || '📺 Sports';
-  })();
-  document.getElementById('dashSportsLeague').textContent = leagueLabel;
 
-  // Refetch at most once every 3 minutes when on dashboard
-  const stale = Date.now() - dashSportsFetchTime > 180_000;
-  if (!dashSportsData || stale) {
+  const followed = (state.settings.followedLeagues && state.settings.followedLeagues.length)
+    ? state.settings.followedLeagues
+    : [state.settings.espnLeague || 'football/nfl'];
+
+  const league = followed[dashSportsRotateIdx % followed.length];
+  document.getElementById('dashSportsLeague').textContent = leagueLabel(league);
+
+  // Cache per league for 3 minutes
+  const cached = dashSportsCache[league];
+  const stale = !cached || (Date.now() - cached.ts > 180_000);
+  if (stale) {
     try {
-      const sb = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${league}/scoreboard`);
-      const sbData = await sb.json();
-      const news = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${league}/news`);
-      const newsData = await news.json();
-      dashSportsData = { sb: sbData, news: newsData };
-      dashSportsFetchTime = Date.now();
+      const [sb, news] = await Promise.all([
+        fetch(`https://site.api.espn.com/apis/site/v2/sports/${league}/scoreboard`).then(r => r.json()),
+        fetch(`https://site.api.espn.com/apis/site/v2/sports/${league}/news`).then(r => r.json()),
+      ]);
+      dashSportsCache[league] = { sb, news, ts: Date.now() };
     } catch (e) {
-      const gameEl = document.getElementById('dashSportsGame');
+      const gameEl = document.getElementById('dashSportsGames');
       if (gameEl) gameEl.innerHTML = '<span class="ssc-empty">Could not load · tap for full page</span>';
-      document.getElementById('dashSportsStatus').textContent = '';
+      const newsEl = document.getElementById('dashSportsNews');
+      if (newsEl) newsEl.innerHTML = '';
       return;
     }
   }
+  const dashSportsData = dashSportsCache[league];
 
-  // Pick top 2 games: prefer live, then upcoming, then most-recent completed
+  // Pick top 2 games: prefer favorite team, then live, then upcoming, then most-recent completed
   const events = (dashSportsData && dashSportsData.sb && dashSportsData.sb.events) || [];
   const live = events.filter(e => e.status?.type?.state === 'in');
   const upcoming = events.filter(e => e.status?.type?.state === 'pre');
   const completed = events.filter(e => e.status?.type?.state === 'post');
-  const ordered = [...live, ...upcoming, ...completed];
+  let ordered = [...live, ...upcoming, ...completed];
+  // Bring favorite-team games to the front
+  if (state.settings.favoriteTeam) {
+    ordered.sort((a, b) => {
+      const aFav = (a.competitions?.[0]?.competitors || []).some(c => isFavoriteTeam(c.team));
+      const bFav = (b.competitions?.[0]?.competitors || []).some(c => isFavoriteTeam(c.team));
+      if (aFav && !bFav) return -1;
+      if (!aFav && bFav) return 1;
+      return 0;
+    });
+  }
   const top2 = ordered.slice(0, 2);
 
   const gamesEl = document.getElementById('dashSportsGames');
@@ -13995,6 +14157,9 @@ function init() {
 
   // Refresh weather every 30 min
   setInterval(fetchWeather, 30 * 60 * 1000);
+
+  // Start sports widget rotation (cycles through followed leagues on dashboard)
+  startDashSportsRotation();
 
   // Check auto-reset every minute so day rollover triggers within ~60s of midnight.
   // checkAutoReset itself is cheap and short-circuits when the date hasn't changed.
