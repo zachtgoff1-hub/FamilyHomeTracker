@@ -4073,7 +4073,7 @@ input, textarea, select {
 .dash-kiosk {
   flex: 1;
   display: grid;
-  grid-template-rows: minmax(220px, 1fr) minmax(160px, 0.7fr) minmax(260px, 1.55fr);
+  grid-template-rows: minmax(200px, 0.9fr) minmax(190px, 0.85fr) minmax(260px, 1.5fr);
   gap: 14px;
   min-height: 0;
 }
@@ -4090,13 +4090,14 @@ input, textarea, select {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 16px 28px 18px;
+  padding: 14px 26px 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: stretch;
   position: relative;
   overflow: hidden;
+  min-height: 0;
 }
 .kiosk-time::before {
   content: "";
@@ -4110,7 +4111,7 @@ input, textarea, select {
 }
 .k-greet {
   font-family: var(--display);
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 400;
   font-style: italic;
   color: var(--text-2);
@@ -4118,6 +4119,7 @@ input, textarea, select {
   position: relative;
   z-index: 1;
   flex-shrink: 0;
+  line-height: 1.1;
 }
 .k-greet em {
   font-style: italic;
@@ -4128,9 +4130,9 @@ input, textarea, select {
 .k-clock {
   font-family: var(--display);
   font-weight: 600;
-  font-size: clamp(150px, 19.5vw, 260px);
-  line-height: 0.86;
-  letter-spacing: -0.03em;
+  font-size: clamp(110px, 14vw, 180px);
+  line-height: 0.92;
+  letter-spacing: -0.025em;
   font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
   display: flex;
   align-items: baseline;
@@ -4140,7 +4142,8 @@ input, textarea, select {
   z-index: 1;
   color: var(--text);
   flex: 1;
-  margin: 4px 0;
+  margin: 0;
+  min-height: 0;
 }
 .k-clock .colon { color: var(--text-3); animation: blink 2s infinite; font-weight: 500; }
 .k-clock .ampm {
@@ -4153,13 +4156,14 @@ input, textarea, select {
 }
 .k-date {
   font-family: var(--display);
-  font-size: 20px;
+  font-size: 18px;
   font-style: italic;
   font-weight: 500;
   color: var(--text-2);
   position: relative;
   z-index: 1;
   flex-shrink: 0;
+  line-height: 1.2;
 }
 
 .kiosk-weather {
@@ -4535,7 +4539,7 @@ input, textarea, select {
 /* Tablet portrait / smaller landscape adaptation */
 @media (min-width: 881px) and (max-height: 760px) {
   #view-dashboard.view { padding: 14px 18px; }
-  .dash-kiosk { gap: 10px; grid-template-rows: minmax(180px, 0.85fr) minmax(140px, 0.7fr) minmax(220px, 1.4fr); }
+  .dash-kiosk { gap: 10px; grid-template-rows: minmax(170px, 0.85fr) minmax(170px, 0.8fr) minmax(220px, 1.4fr); }
   .kiosk-time { padding: 12px 22px 14px; }
   .k-greet { font-size: 20px; }
   .k-clock { font-size: clamp(120px, 16vw, 200px); }
@@ -5681,21 +5685,22 @@ input, textarea, select {
 }
 .dog-history-item .dh-text { flex: 1; color: var(--text); }
 
-/* Dashboard dogs strip */
+/* Dashboard pets strip — cleaner two-row layout per pet card */
 .dogs-strip {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   flex-shrink: 0;
+  min-height: 0;
 }
 .dog-strip-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px 16px;
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  gap: 8px;
   cursor: pointer;
   transition: all 0.2s var(--ease);
   position: relative;
@@ -5705,85 +5710,135 @@ input, textarea, select {
 .dog-strip-card::before {
   content: "";
   position: absolute;
-  top: -50%;
-  right: -10%;
-  width: 40%;
-  height: 200%;
+  top: -60%;
+  right: -15%;
+  width: 50%;
+  height: 220%;
   background: radial-gradient(closest-side, var(--dog-color, var(--accent-soft)), transparent);
-  opacity: 0.25;
+  opacity: 0.30;
   pointer-events: none;
 }
-.dsc-emoji { font-size: 28px; line-height: 1; flex-shrink: 0; position: relative; z-index: 1; }
-.dsc-info { flex: 1; min-width: 0; position: relative; z-index: 1; }
-.dsc-name {
-  font-family: var(--display);
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-.dsc-meals {
+.dsc-top {
   display: flex;
-  gap: 8px;
-  margin-top: 4px;
-  flex-wrap: wrap;
-}
-.dsc-meal-pill {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: var(--surface-2);
-  color: var(--text-3);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.dsc-meal-pill.fed {
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-.dsc-meal-pill:hover { background: var(--surface-3); }
-.dsc-meal-pill.fed:hover { background: var(--accent); color: #1a1410; }
-.dsc-treats {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 10px;
   position: relative;
   z-index: 1;
-  padding: 4px 10px;
-  border-left: 1px solid var(--border);
 }
-.dsc-treats-num {
+.dsc-emoji { font-size: 32px; line-height: 1; flex-shrink: 0; }
+.dsc-name {
   font-family: var(--display);
   font-size: 22px;
   font-weight: 700;
-  color: var(--c-amber);
-  line-height: 1;
+  letter-spacing: -0.01em;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.dsc-treats-label {
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-3);
-}
-.dsc-treat-add {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+.dsc-treats-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 4px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  font-size: 16px;
-  cursor: pointer;
-  margin-left: 6px;
-  position: relative;
-  z-index: 1;
-  transition: all 0.2s;
+  border-radius: 999px;
   flex-shrink: 0;
 }
-.dsc-treat-add:hover { background: var(--accent); color: #1a1410; }
+.dsc-treats-bone { font-size: 14px; line-height: 1; padding: 0 2px; }
+.dsc-treats-num {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--c-amber);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  min-width: 14px;
+  text-align: center;
+  padding: 0 2px;
+}
+.dsc-treats-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.15s var(--ease);
+  flex-shrink: 0;
+}
+.dsc-treats-btn:hover:not(:disabled) {
+  background: var(--accent);
+  color: #1a1410;
+  border-color: var(--accent);
+}
+.dsc-treats-btn:active:not(:disabled) { transform: scale(0.88); }
+.dsc-treats-btn.minus { color: var(--text-3); }
+.dsc-treats-btn.minus:hover:not(:disabled) {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+}
+.dsc-treats-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.dsc-meals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+.dsc-meal-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  color: var(--text-2);
+  min-width: 0;
+}
+.dsc-meal-btn:hover { background: var(--surface-3); border-color: var(--border-strong); }
+.dsc-meal-btn.fed {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.dsc-meal-icon { font-size: 16px; line-height: 1; flex-shrink: 0; }
+.dsc-meal-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  flex: 1;
+  text-align: left;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dsc-meal-check {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent);
+  min-width: 12px;
+}
 
 /* Sports widget on dashboard - compact two-column featured-game + news layout */
 .kiosk-info-strip {
@@ -9370,8 +9425,11 @@ function checkAutoReset() {
   const now = new Date();
   const todayKey = fmt.iso(now);
   const weekKey = fmt.iso(fmt.weekStart(now));
+  let didDailyReset = false;
+  let didWeeklyReset = false;
 
   if (state.lastDailyReset !== todayKey) {
+    didDailyReset = true;
     // Reset daily chores
     state.chores.forEach(c => {
       if (c.frequency === 'daily') {
@@ -9408,6 +9466,7 @@ function checkAutoReset() {
   }
 
   if (state.lastWeeklyReset !== weekKey) {
+    didWeeklyReset = true;
     state.chores.forEach(c => {
       if (c.frequency === 'weekly') c.done = false;
     });
@@ -9435,6 +9494,14 @@ function checkAutoReset() {
   }
 
   saveState();
+
+  // If a reset fired mid-session, force the dashboard + relevant views to redraw
+  // so the user sees fresh state without needing to reload.
+  if (didDailyReset || didWeeklyReset) {
+    if (typeof renderDashboard === 'function') renderDashboard();
+    if (typeof renderDogs === 'function' && document.getElementById('view-tools')?.classList.contains('active')) renderDogs();
+    if (typeof renderChores === 'function' && document.getElementById('view-chores')?.classList.contains('active')) renderChores();
+  }
 }
 
 // Chore view mode
@@ -13423,7 +13490,7 @@ function deletePet() {
   }, { okText: 'Remove' });
 }
 
-// Dashboard dogs strip — compact cards showing meal pills + treat count for each pet
+// Dashboard pets strip — clean card per pet with meals + treats
 function renderDashDogsStrip() {
   const c = document.getElementById('dashDogsStrip');
   if (!c) return;
@@ -13436,19 +13503,28 @@ function renderDashDogsStrip() {
   c.style.gridTemplateColumns = dogs.length === 1 ? '1fr' : '1fr 1fr';
   c.innerHTML = dogs.slice(0, 2).map(d => `
     <div class="dog-strip-card" style="--dog-color: ${d.color || 'var(--accent-soft)'};" onclick="setView('tools'); setTool('dogs');">
-      <div class="dsc-emoji">${d.emoji || '🐕'}</div>
-      <div class="dsc-info">
+      <div class="dsc-top">
+        <div class="dsc-emoji">${d.emoji || '🐕'}</div>
         <div class="dsc-name">${escapeHtml(d.name)}</div>
-        <div class="dsc-meals">
-          <span class="dsc-meal-pill ${d.fedBreakfast ? 'fed' : ''}" onclick="event.stopPropagation(); dogToggleMeal('${d.id}', 'breakfast');">☕ ${d.fedBreakfast ? '✓' : '○'}</span>
-          <span class="dsc-meal-pill ${d.fedDinner ? 'fed' : ''}" onclick="event.stopPropagation(); dogToggleMeal('${d.id}', 'dinner');">🍖 ${d.fedDinner ? '✓' : '○'}</span>
+        <div class="dsc-treats-pill">
+          <button class="dsc-treats-btn minus" onclick="event.stopPropagation(); dogTreatChange('${d.id}', -1);" aria-label="Remove treat" ${(d.treats || 0) === 0 ? 'disabled' : ''}>−</button>
+          <span class="dsc-treats-bone">🦴</span>
+          <span class="dsc-treats-num">${d.treats || 0}</span>
+          <button class="dsc-treats-btn plus" onclick="event.stopPropagation(); dogTreatChange('${d.id}', 1);" aria-label="Add treat">+</button>
         </div>
       </div>
-      <div class="dsc-treats">
-        <div class="dsc-treats-num">${d.treats || 0}</div>
-        <div class="dsc-treats-label">🦴 treats</div>
+      <div class="dsc-meals">
+        <button class="dsc-meal-btn ${d.fedBreakfast ? 'fed' : ''}" onclick="event.stopPropagation(); dogToggleMeal('${d.id}', 'breakfast');">
+          <span class="dsc-meal-icon">☕</span>
+          <span class="dsc-meal-label">Breakfast</span>
+          <span class="dsc-meal-check">${d.fedBreakfast ? '✓' : ''}</span>
+        </button>
+        <button class="dsc-meal-btn ${d.fedDinner ? 'fed' : ''}" onclick="event.stopPropagation(); dogToggleMeal('${d.id}', 'dinner');">
+          <span class="dsc-meal-icon">🍖</span>
+          <span class="dsc-meal-label">Dinner</span>
+          <span class="dsc-meal-check">${d.fedDinner ? '✓' : ''}</span>
+        </button>
       </div>
-      <button class="dsc-treat-add" onclick="event.stopPropagation(); dogTreatChange('${d.id}', 1);" title="Add treat">+</button>
     </div>
   `).join('');
 }
@@ -13541,11 +13617,11 @@ async function renderDashSports() {
     gamesEl.innerHTML = '<span class="ssc-empty">No games today</span>';
   }
 
-  // Top 2-3 headlines
+  // Top 2 headlines (any more and it overflows the dashboard widget)
   const articles = (dashSportsData && dashSportsData.news && dashSportsData.news.articles) || [];
   const newsEl = document.getElementById('dashSportsNews');
   if (articles.length && newsEl) {
-    newsEl.innerHTML = articles.slice(0, 3).map(a => {
+    newsEl.innerHTML = articles.slice(0, 2).map(a => {
       const headline = a.headline || a.title || '';
       return `<div class="ssc-news-item">📰 ${escapeHtml(headline)}</div>`;
     }).join('');
@@ -13595,13 +13671,14 @@ function init() {
   // Refresh weather every 30 min
   setInterval(fetchWeather, 30 * 60 * 1000);
 
-  // Check auto-reset every 5 min
+  // Check auto-reset every minute so day rollover triggers within ~60s of midnight.
+  // checkAutoReset itself is cheap and short-circuits when the date hasn't changed.
   setInterval(() => {
     checkAutoReset();
     if (document.getElementById('view-chores').classList.contains('active')) {
       renderChores();
     }
-  }, 5 * 60 * 1000);
+  }, 60 * 1000);
 
   // Prevent context menu on long-press for cleaner tablet experience
   document.addEventListener('contextmenu', (e) => {
