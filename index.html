@@ -1173,6 +1173,77 @@ input, textarea, select {
   gap: 20px;
 }
 
+/* Pet profiles in Family page */
+.pet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+.pet-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+.pet-card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+.pet-card::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 50%;
+  height: 140%;
+  background: radial-gradient(closest-side, var(--pet-color, var(--accent-soft)), transparent);
+  opacity: 0.35;
+  pointer-events: none;
+}
+.pet-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+.pet-card-emoji { font-size: 38px; line-height: 1; }
+.pet-card-info { flex: 1; min-width: 0; }
+.pet-card-name {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-style: italic;
+}
+.pet-card-meta {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+.pet-card-stats {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
+  font-size: 11px;
+  color: var(--text-3);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.pet-card-stats .pcs-pill {
+  padding: 3px 8px;
+  background: var(--surface-2);
+  border-radius: 999px;
+}
+.pet-card-stats .pcs-pill.fed { background: var(--accent-soft); color: var(--accent); }
+
 .fam-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -4002,7 +4073,7 @@ input, textarea, select {
 .dash-kiosk {
   flex: 1;
   display: grid;
-  grid-template-rows: minmax(220px, 1.05fr) auto minmax(220px, 1.4fr);
+  grid-template-rows: minmax(220px, 1fr) minmax(160px, 0.7fr) minmax(260px, 1.55fr);
   gap: 14px;
   min-height: 0;
 }
@@ -4217,10 +4288,10 @@ input, textarea, select {
 .kstat.sage .kstat-num { color: var(--c-sage); }
 .kstat.sky .kstat-num { color: var(--c-sky); }
 
-/* ---- BOTTOM ROW: Schedule + Chores ---- */
+/* ---- BOTTOM ROW: Photo (wide) + Upcoming Events (thin) + Quick Tools ---- */
 .kiosk-bottom {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
+  grid-template-columns: 1.85fr 0.78fr 1.05fr;
   gap: 14px;
   min-height: 0;
 }
@@ -4312,25 +4383,33 @@ input, textarea, select {
 .kiosk-bottom .kcard-badge { font-size: 11px; padding: 3px 9px; font-weight: 600; }
 
 .kiosk-bottom .today-item {
-  padding: 10px 13px;
-  gap: 10px;
+  padding: 8px 10px;
+  gap: 8px;
   background: var(--surface-2);
-  border-radius: 10px;
+  border-radius: 9px;
   border: 1px solid var(--border);
 }
-.kiosk-bottom .today-item .dot { width: 9px; height: 9px; }
+.kiosk-bottom .today-item .dot { width: 8px; height: 8px; }
 .kiosk-bottom .today-item .time {
-  font-size: 12px;
-  min-width: 58px;
+  font-size: 11px;
+  min-width: 0;
   font-weight: 700;
   color: var(--text-2);
 }
-.kiosk-bottom .today-item .name { font-size: 16px; font-weight: 600; color: var(--text); }
-.kiosk-bottom .today-item .who {
-  font-size: 11px;
+.kiosk-bottom .today-item .name {
+  font-size: 13px;
   font-weight: 600;
-  padding: 2px 8px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kiosk-bottom .today-item .who {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
   color: var(--text-2);
+  white-space: nowrap;
 }
 .kiosk-bottom .today-schedule-mini {
   background: var(--surface-2);
@@ -4342,20 +4421,34 @@ input, textarea, select {
   font-size: 12px;
 }
 .kiosk-bottom .kcard-body { gap: 6px; }
-.kiosk-bottom .k-next { padding: 10px 12px; gap: 10px; margin-bottom: 8px; }
-.kiosk-bottom .k-next-title { font-size: 14px; }
-.kiosk-bottom .k-next-time { font-size: 11px; }
-.kiosk-bottom .k-next-icon { font-size: 22px; }
+.kiosk-bottom .k-next { padding: 8px 10px; gap: 8px; margin-bottom: 6px; }
+.kiosk-bottom .k-next-title { font-size: 13px; }
+.kiosk-bottom .k-next-time { font-size: 10px; }
+.kiosk-bottom .k-next-icon { font-size: 20px; }
+.kiosk-bottom .k-next-label { font-size: 9px; }
 .kiosk-bottom .dinner-tonight { padding: 10px 12px; gap: 10px; }
 .kiosk-bottom .dinner-tonight-icon { font-size: 22px; }
 .kiosk-bottom .dinner-tonight-name { font-size: 14px; }
 
-/* Quick Tools tiles (replacement for chores card on home screen) */
+/* Upcoming Events grouping */
+.upcoming-list { display: flex; flex-direction: column; gap: 10px; }
+.upcoming-day { display: flex; flex-direction: column; gap: 5px; }
+.upcoming-day-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  padding: 6px 4px 2px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
+/* Quick Tools tiles — 3-column compact grid that fits 9 tiles cleanly */
 .qt-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  height: 100%;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
   align-content: start;
 }
 .qt-tile {
@@ -4363,16 +4456,16 @@ input, textarea, select {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 14px 8px;
+  gap: 3px;
+  padding: 8px 4px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   color: var(--text);
   font-family: inherit;
   cursor: pointer;
   transition: all 0.2s var(--ease);
-  min-height: 64px;
+  min-height: 54px;
 }
 .qt-tile:hover {
   background: var(--accent-soft);
@@ -4380,16 +4473,17 @@ input, textarea, select {
   transform: translateY(-1px);
   color: var(--accent);
 }
-.qt-tile:active { transform: scale(0.97); }
+.qt-tile:active { transform: scale(0.94); }
 .qt-tile .qt-icon {
-  font-size: 26px;
+  font-size: 22px;
   line-height: 1;
 }
 .qt-tile .qt-label {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-align: center;
+  line-height: 1.1;
 }
 .qt-tile.qt-lock {
   background: linear-gradient(135deg, var(--surface-2), var(--surface));
@@ -4441,7 +4535,7 @@ input, textarea, select {
 /* Tablet portrait / smaller landscape adaptation */
 @media (min-width: 881px) and (max-height: 760px) {
   #view-dashboard.view { padding: 14px 18px; }
-  .dash-kiosk { gap: 10px; grid-template-rows: minmax(180px, 0.95fr) auto minmax(180px, 1.3fr); }
+  .dash-kiosk { gap: 10px; grid-template-rows: minmax(180px, 0.85fr) minmax(140px, 0.7fr) minmax(220px, 1.4fr); }
   .kiosk-time { padding: 12px 22px 14px; }
   .k-greet { font-size: 20px; }
   .k-clock { font-size: clamp(120px, 16vw, 200px); }
@@ -4471,7 +4565,11 @@ input, textarea, select {
   }
   .kiosk-top { grid-template-columns: 1fr; }
   .kiosk-stats { grid-template-columns: repeat(2, 1fr); }
+  .kiosk-info-strip { grid-template-columns: 1fr; }
+  .ssc-body { grid-template-columns: 1fr; }
+  .dogs-strip { grid-template-columns: 1fr 1fr; }
   .kiosk-bottom { grid-template-columns: 1fr; }
+  .qt-grid { grid-template-columns: 1fr 1fr 1fr 1fr; }
   .k-clock { font-size: clamp(76px, 22vw, 120px); }
   .kw-icon { font-size: 64px; }
   .kw-temp { font-size: 70px; }
@@ -5260,6 +5358,584 @@ input, textarea, select {
 }
 .news-meta { font-size: 11px; color: var(--text-3); }
 
+/* --- LIGHT / DARK MODE TOGGLE (settings) --- */
+.mode-toggle {
+  display: inline-flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px;
+  gap: 2px;
+}
+.mode-toggle-btn {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-3);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.mode-toggle-btn:hover { color: var(--text-2); }
+.mode-toggle-btn.active {
+  background: var(--accent);
+  color: #1a1410;
+  font-weight: 700;
+}
+[data-theme="light"] .mode-toggle-btn.active,
+[data-theme="spring"] .mode-toggle-btn.active,
+[data-theme="summer"] .mode-toggle-btn.active,
+[data-theme="fall"] .mode-toggle-btn.active,
+[data-theme="winter"] .mode-toggle-btn.active { color: #ffffff; }
+
+/* --- MEAL LIBRARY (built-in dinner ideas) --- */
+.meal-lib-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.meal-lib-tab {
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-3);
+  transition: all 0.2s;
+}
+.meal-lib-tab:hover { color: var(--text-2); }
+.meal-lib-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.meal-lib-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 4px;
+}
+.meal-lib-item {
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.meal-lib-item:hover { background: var(--accent-soft); border-color: var(--accent); }
+.meal-lib-item.added { opacity: 0.5; pointer-events: none; }
+.meal-lib-name {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 600;
+  font-style: italic;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+.meal-lib-notes {
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.4;
+}
+
+/* --- DOGS tracker --- */
+.dogs-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+}
+.dogs-day {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.dogs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.dog-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  overflow: hidden;
+}
+.dog-card::before {
+  content: "";
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 50%;
+  height: 130%;
+  background: radial-gradient(closest-side, var(--dog-color, var(--accent-soft)), transparent);
+  opacity: 0.35;
+  pointer-events: none;
+}
+.dog-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+}
+.dog-emoji {
+  font-size: 44px;
+  line-height: 1;
+}
+.dog-name {
+  font-family: var(--display);
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.dog-status-badge {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-3);
+}
+.dog-status-badge.fed-all { background: var(--accent-soft); color: var(--accent); }
+.dog-status-badge.hungry { background: rgba(251, 113, 133, 0.18); color: var(--c-coral); }
+
+.dog-meal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+.dog-meal-toggle {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 18px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+  user-select: none;
+}
+.dog-meal-toggle:hover { background: var(--surface-3); }
+.dog-meal-toggle.fed {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.dog-meal-toggle .meal-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+.dog-meal-toggle .meal-info { flex: 1; min-width: 0; }
+.dog-meal-toggle .meal-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+}
+.dog-meal-toggle .meal-state {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 2px;
+  color: var(--text);
+}
+.dog-meal-toggle.fed .meal-state { color: var(--accent); }
+.dog-slider {
+  position: relative;
+  width: 50px;
+  height: 28px;
+  background: var(--surface-3);
+  border-radius: 999px;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.dog-slider::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--text);
+  transition: transform 0.25s var(--ease);
+}
+.dog-meal-toggle.fed .dog-slider { background: var(--accent); }
+.dog-meal-toggle.fed .dog-slider::after { transform: translateX(22px); background: #fff; }
+
+.dog-treats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  position: relative;
+  z-index: 1;
+}
+.dog-treats-icon { font-size: 32px; line-height: 1; }
+.dog-treats-info { flex: 1; }
+.dog-treats-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-3);
+}
+.dog-treats-count {
+  font-family: var(--display);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-amber);
+}
+.dog-treats-btns { display: flex; gap: 8px; }
+.dog-treat-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dog-treat-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.dog-treat-btn:active { transform: scale(0.92); }
+.dog-treat-btn.minus { color: var(--text-3); }
+
+.dogs-history {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+.dogs-history-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-3);
+  margin-bottom: 12px;
+}
+.dogs-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.dog-history-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--surface-2);
+  border-radius: 8px;
+  font-size: 13px;
+}
+.dog-history-item .dh-time {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-3);
+  min-width: 70px;
+}
+.dog-history-item .dh-text { flex: 1; color: var(--text); }
+
+/* Dashboard dogs strip */
+.dogs-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.dog-strip-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+.dog-strip-card:hover { border-color: var(--border-strong); background: var(--surface-2); }
+.dog-strip-card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 40%;
+  height: 200%;
+  background: radial-gradient(closest-side, var(--dog-color, var(--accent-soft)), transparent);
+  opacity: 0.25;
+  pointer-events: none;
+}
+.dsc-emoji { font-size: 28px; line-height: 1; flex-shrink: 0; position: relative; z-index: 1; }
+.dsc-info { flex: 1; min-width: 0; position: relative; z-index: 1; }
+.dsc-name {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.dsc-meals {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+.dsc-meal-pill {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.dsc-meal-pill.fed {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.dsc-meal-pill:hover { background: var(--surface-3); }
+.dsc-meal-pill.fed:hover { background: var(--accent); color: #1a1410; }
+.dsc-treats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+  z-index: 1;
+  padding: 4px 10px;
+  border-left: 1px solid var(--border);
+}
+.dsc-treats-num {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--c-amber);
+  line-height: 1;
+}
+.dsc-treats-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+}
+.dsc-treat-add {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 6px;
+  position: relative;
+  z-index: 1;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.dsc-treat-add:hover { background: var(--accent); color: #1a1410; }
+
+/* Sports widget on dashboard - compact two-column featured-game + news layout */
+.kiosk-info-strip {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  gap: 14px;
+  flex-shrink: 0;
+  min-height: 0;
+}
+.sports-strip-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.2s var(--ease);
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+}
+.sports-strip-card:hover { border-color: var(--border-strong); background: var(--surface-2); }
+.ssc-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.ssc-league {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+}
+.ssc-tap-hint {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--text-3);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.ssc-status {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-3);
+}
+.ssc-status.live { background: rgba(251, 113, 133, 0.18); color: var(--c-coral); }
+.ssc-status.final { background: rgba(134, 239, 172, 0.16); color: var(--success); }
+.ssc-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.ssc-games {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  overflow: hidden;
+}
+.ssc-game-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ssc-game-card.live { border-color: var(--c-coral); }
+.ssc-game-card-head {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ssc-game-card.live .ssc-game-card-head { color: var(--c-coral); }
+.ssc-game-card.final .ssc-game-card-head { color: var(--success); }
+.ssc-game-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.ssc-game-row img { width: 18px; height: 18px; object-fit: contain; flex-shrink: 0; }
+.ssc-game-team {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.ssc-game-team.loser { color: var(--text-3); font-weight: 500; }
+.ssc-game-score {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  min-width: 24px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.ssc-game-score.loser { color: var(--text-3); font-weight: 500; }
+.ssc-news {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow: hidden;
+  min-height: 0;
+  min-width: 0;
+}
+.ssc-news-item {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 5px 8px;
+  font-size: 11px;
+  line-height: 1.3;
+  color: var(--text);
+  font-weight: 500;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-width: 0;
+}
+.ssc-empty {
+  font-size: 12px;
+  color: var(--text-3);
+  font-style: italic;
+  padding: 6px 4px;
+}
+
 /* Tablet portrait / smaller landscape */
 @media (max-width: 880px) {
   .notes-shell { grid-template-columns: 1fr; height: auto; min-height: 0; }
@@ -5318,6 +5994,66 @@ input, textarea, select {
 `;
 
   const THEMES = {
+    light: `
+/* === LIGHT - clean neutral light mode (no seasonal tint) === */
+:root {
+  --bg: #f5f5f4;
+  --bg-elevated: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #efedea;
+  --surface-3: #e0ddd8;
+  --border: rgba(40, 36, 30, 0.10);
+  --border-strong: rgba(40, 36, 30, 0.22);
+
+  --text: #18181b;
+  --text-2: #44403c;
+  --text-3: #78716c;
+  --text-4: #a8a29e;
+
+  --c-amber: #d97706;
+  --c-coral: #e11d48;
+  --c-sage: #059669;
+  --c-sky: #0284c7;
+  --c-violet: #7c3aed;
+  --c-rose: #db2777;
+
+  --accent: #0284c7;
+  --accent-soft: rgba(2, 132, 199, 0.12);
+  --success: #059669;
+  --danger: #dc2626;
+}
+.rail { background: rgba(255, 255, 255, 0.72); }
+body::before {
+  background:
+    radial-gradient(900px 600px at 88% 10%, rgba(2, 132, 199, 0.08), transparent 60%),
+    radial-gradient(700px 500px at 8% 92%, rgba(225, 29, 72, 0.05), transparent 60%);
+}
+.hero::before, .kiosk-time::before {
+  background: radial-gradient(closest-side, rgba(2, 132, 199, 0.14), transparent);
+}
+.kiosk-weather { background: linear-gradient(135deg, #ffffff 0%, #efedea 100%); }
+.kiosk-weather::before { background: radial-gradient(closest-side, rgba(2, 132, 199, 0.12), transparent 70%); }
+.dinner-card::before { background: radial-gradient(closest-side, rgba(2, 132, 199, 0.12), transparent); }
+.dinner-tonight {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.10), transparent);
+  border: 1px solid rgba(2, 132, 199, 0.28);
+}
+.k-next {
+  background: linear-gradient(135deg, rgba(225, 29, 72, 0.14), rgba(225, 29, 72, 0.04));
+  border: 1px solid rgba(225, 29, 72, 0.36);
+}
+.k-next-label { color: #e11d48; }
+.btn-primary:hover { background: #38bdf8; border-color: #38bdf8; }
+.gro-add button:hover { background: #38bdf8; }
+.invite-btn.accept:hover { background: #10b981; }
+.exp-stat-card.amber { --exp-color: rgba(217, 119, 6, 0.18); }
+.exp-stat-card.sage  { --exp-color: rgba(5, 150, 105, 0.18); }
+.exp-stat-card.sky   { --exp-color: rgba(2, 132, 199, 0.18); }
+.modal-backdrop { background: rgba(40, 36, 30, 0.42); }
+.toast { box-shadow: 0 12px 40px rgba(40, 36, 30, 0.16); }
+::-webkit-scrollbar-thumb { background: rgba(40, 36, 30, 0.22); }
+` + LIGHT_BASE,
+
     spring: `
 /* === SPRING - soft cream + cheerful pastels === */
 :root {
@@ -5562,9 +6298,10 @@ body::before {
 
   /* Browser status-bar color per theme */
   const THEME_META_COLOR = {
+    light:  '#f5f5f4',
     spring: '#faf6ed',
     summer: '#fff7e8',
-    fall: '#f7eed5',
+    fall:   '#f7eed5',
     winter: '#eef4f8',
   };
 
@@ -5736,24 +6473,32 @@ body::before {
           </div>
         </div>
 
-        <!-- Stat strip -->
-        <div class="kiosk-stats">
-          <div class="kstat amber" onclick="setView('calendar')">
-            <div class="kstat-num" id="statEvents">0</div>
-            <div class="kstat-label">Events<br>Today</div>
+        <!-- Hidden stat counters — kept so renderDashboard's existing code doesn't error.
+             Stats strip removed from view; the rail and stat cards on individual pages still show counts. -->
+        <div style="display:none;">
+          <span id="statEvents">0</span>
+          <span id="statChores">0</span>
+          <span id="statGroceries">0</span>
+          <span id="statFamily">0</span>
+        </div>
+
+        <!-- Info strip: BIG Sports widget + Dogs status -->
+        <div class="kiosk-info-strip">
+          <div class="sports-strip-card" id="dashSportsCard" onclick="setView('tools'); setTool('sports');">
+            <div class="ssc-head">
+              <span class="ssc-league" id="dashSportsLeague">📺 Sports</span>
+              <span class="ssc-tap-hint">Tap for full Sports tab →</span>
+            </div>
+            <div class="ssc-body">
+              <div class="ssc-games" id="dashSportsGames">
+                <span class="ssc-empty">Loading scores…</span>
+              </div>
+              <div class="ssc-news" id="dashSportsNews">
+                <div class="empty-mini" style="padding:10px;">Loading headlines…</div>
+              </div>
+            </div>
           </div>
-          <div class="kstat sage" onclick="setView('chores')">
-            <div class="kstat-num" id="statChores">0</div>
-            <div class="kstat-label">Chores<br>Done</div>
-          </div>
-          <div class="kstat coral" onclick="setView('groceries')">
-            <div class="kstat-num" id="statGroceries">0</div>
-            <div class="kstat-label">Grocery<br>Items</div>
-          </div>
-          <div class="kstat sky" onclick="setView('family')">
-            <div class="kstat-num" id="statFamily">0</div>
-            <div class="kstat-label">Family<br>Members</div>
-          </div>
+          <div class="dogs-strip" id="dashDogsStrip"></div>
         </div>
 
         <!-- Bottom: Big rotating Photo widget + compact Schedule + Chores -->
@@ -5766,14 +6511,16 @@ body::before {
           </div>
           <div class="kcard">
             <div class="kcard-head">
-              <div class="kcard-title">Today's Schedule</div>
-              <div class="kcard-badge" id="schedDayBadge">—</div>
+              <div class="kcard-title">Upcoming Events</div>
+              <div class="kcard-badge" id="schedDayBadge">NEXT 7 DAYS</div>
             </div>
             <div class="kcard-body">
               <div id="dashNextUp"></div>
               <div id="dinnerTonight" style="margin-bottom:6px;"></div>
-              <div id="todaysSchedules" style="margin-bottom:6px;"></div>
-              <div class="today-list" id="todayEvents"></div>
+              <div class="upcoming-list" id="upcomingEvents"></div>
+              <!-- legacy IDs kept hidden so old render code paths don't error -->
+              <div id="todaysSchedules" style="display:none;"></div>
+              <div class="today-list" id="todayEvents" style="display:none;"></div>
             </div>
           </div>
           <div class="kcard">
@@ -5806,6 +6553,9 @@ body::before {
                 </button>
                 <button class="qt-tile" onclick="setView('tools'); setTool('sports');">
                   <span class="qt-icon">📺</span><span class="qt-label">Sports</span>
+                </button>
+                <button class="qt-tile" onclick="setView('tools'); setTool('dogs');">
+                  <span class="qt-icon">🐾</span><span class="qt-label">Pets</span>
                 </button>
                 <button class="qt-tile qt-lock" onclick="enterScreensaver()" style="grid-column: 1 / -1;">
                   <span class="qt-icon">🌙</span><span class="qt-label">Lock Screen</span>
@@ -5928,10 +6678,18 @@ body::before {
           <h1 class="view-title">What's for <em>dinner?</em></h1>
           <div class="view-sub">Weekly meal plan · Save your favorite ideas</div>
         </div>
-        <button class="btn btn-primary" onclick="openDinnerIdeaModal()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-          New Idea
-        </button>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn" onclick="autoGenerateMealIdeas()" title="Add 3 random ideas from the library">
+            🎲 Surprise Me
+          </button>
+          <button class="btn" onclick="openMealLibrary()" title="Browse the full meal idea library">
+            📖 Library
+          </button>
+          <button class="btn btn-primary" onclick="openDinnerIdeaModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            New Idea
+          </button>
+        </div>
       </div>
 
       <h2 class="card-title" style="margin-bottom: 12px;">This Week</h2>
@@ -6086,6 +6844,7 @@ body::before {
         <button class="tool-tab" data-tool="draw" onclick="setTool('draw')"><span class="tt-icon">🎨</span> Drawing</button>
         <button class="tool-tab" data-tool="dice" onclick="setTool('dice')"><span class="tt-icon">🎲</span> Decide</button>
         <button class="tool-tab" data-tool="sports" onclick="setTool('sports')"><span class="tt-icon">📺</span> Sports</button>
+        <button class="tool-tab" data-tool="dogs" onclick="setTool('dogs')"><span class="tt-icon">🐾</span> Pets</button>
       </div>
 
       <!-- STOPWATCH -->
@@ -6307,6 +7066,19 @@ body::before {
         </div>
       </div>
 
+      <!-- DOGS (Axel + Joey: meals + treats) -->
+      <div class="tool-pane" id="tool-dogs">
+        <div class="dogs-toolbar">
+          <div class="dogs-day" id="dogsDayLabel">—</div>
+          <button class="tool-btn" onclick="resetDogsToday()">Reset Today</button>
+        </div>
+        <div class="dogs-grid" id="dogsGrid"></div>
+        <div class="dogs-history">
+          <div class="dogs-history-title">🦴 Recent treat history</div>
+          <div id="dogsHistory" class="dogs-history-list"></div>
+        </div>
+      </div>
+
     </section>
 
     <!-- FAMILY -->
@@ -6318,6 +7090,19 @@ body::before {
         </div>
       </div>
       <div class="fam-grid" id="famList"></div>
+
+      <!-- PETS section -->
+      <div class="sync-section" style="margin-top: 32px;">
+        <div class="sync-section-head">
+          <div class="sync-section-title"><span class="icon">🐾</span>Pets</div>
+          <button type="button" class="photo-upload-btn" onclick="openPetModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            Add Pet
+          </button>
+        </div>
+        <p>Track meals &amp; treats from <em>Tools → Pets</em>. Each pet shows on the home dashboard for quick fed-status checks.</p>
+        <div class="pet-grid" id="petList"></div>
+      </div>
 
       <div class="sync-section" style="margin-top: 32px;">
         <div class="sync-section-head">
@@ -6338,13 +7123,24 @@ body::before {
         <h2 class="card-title">Settings</h2>
         <div class="settings-row">
           <div>
-            <div class="settings-label">Theme</div>
-            <div class="settings-desc">Seasonal color palette (changes look only — data unaffected)</div>
+            <div class="settings-label">Display Mode</div>
+            <div class="settings-desc">Quick switch between light &amp; dark</div>
+          </div>
+          <div class="mode-toggle">
+            <button id="modeBtnDark" class="mode-toggle-btn" onclick="setGoffTheme(null)">🌙 Dark</button>
+            <button id="modeBtnLight" class="mode-toggle-btn" onclick="setGoffTheme('light')">☀️ Light</button>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Color Palette</div>
+            <div class="settings-desc">Seasonal flavor (overrides Light/Dark above)</div>
           </div>
           <select class="settings-input" id="setTheme" onchange="setGoffTheme(this.value === 'default' ? null : this.value)">
             <option value="default">Default · Warm Dark</option>
+            <option value="light">☀️ Light · Clean &amp; Bright</option>
             <option value="spring">🌸 Spring · Cream &amp; Pastels</option>
-            <option value="summer">☀️ Summer · Sunset &amp; Tropical</option>
+            <option value="summer">🌅 Summer · Sunset &amp; Tropical</option>
             <option value="fall">🍂 Fall · Harvest &amp; Spice</option>
             <option value="winter">❄️ Winter · Snowy Evergreen</option>
           </select>
@@ -6507,6 +7303,20 @@ body::before {
   </div>
 </div>
 
+<!-- Meal idea library modal -->
+<div class="modal-backdrop" id="mealLibraryModal">
+  <div class="modal" style="max-width: 720px;">
+    <h2 class="modal-title">Meal <em>Library</em></h2>
+    <p style="color: var(--text-3); font-size: 13px; margin-bottom: 16px;">Tap any meal to add it to your dinner ideas.</p>
+    <div class="meal-lib-tabs" id="mealLibTabs"></div>
+    <div class="meal-lib-list" id="mealLibList"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('mealLibraryModal')">Close</button>
+      <button class="btn btn-primary" onclick="addAllVisibleMealIdeas()">Add All in Category</button>
+    </div>
+  </div>
+</div>
+
 <!-- Universal confirm modal (replaces window.confirm which Fully Kiosk blocks) -->
 <div class="modal-backdrop" id="confirmModal">
   <div class="modal" style="max-width: 440px;">
@@ -6653,6 +7463,57 @@ body::before {
       <button class="btn btn-danger" id="memDelete" style="display:none" onclick="deleteMember()">Delete</button>
       <button class="btn" onclick="closeModal('memberModal')">Cancel</button>
       <button class="btn btn-primary" onclick="saveMember()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Pet add/edit modal -->
+<div class="modal-backdrop" id="petModal">
+  <div class="modal" style="max-width: 540px;">
+    <h2 class="modal-title" id="petModalTitle">Add <em>Pet</em></h2>
+    <div class="field">
+      <label class="field-label">Name</label>
+      <input class="field-input" id="petName" type="text" placeholder="Axel, Joey, Whiskers...">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Type</label>
+        <select class="field-select" id="petType">
+          <option value="dog">🐕 Dog</option>
+          <option value="cat">🐈 Cat</option>
+          <option value="bird">🐦 Bird</option>
+          <option value="fish">🐠 Fish</option>
+          <option value="rabbit">🐰 Rabbit</option>
+          <option value="other">🐾 Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">Color Tag</label>
+        <div class="color-picker" id="petColors"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Emoji</label>
+      <div class="emoji-picker" id="petEmojis"></div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Breed</label>
+        <input class="field-input" id="petBreed" type="text" placeholder="German Shepherd, Tabby, Lab Mix…">
+      </div>
+      <div class="field">
+        <label class="field-label">Birthday</label>
+        <input class="field-input" id="petBirthday" type="date">
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Notes</label>
+      <textarea class="field-textarea" id="petNotes" placeholder="Allergies, vet info, food brand, favorite toy…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="petDelete" style="display:none" onclick="deletePet()">Delete</button>
+      <button class="btn" onclick="closeModal('petModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePet()">Save</button>
     </div>
   </div>
 </div>
@@ -7162,6 +8023,10 @@ const defaultState = () => ({
     // Sports widget
     espnLeague: 'football/nfl',
   },
+  pets: [
+    { id: 'axel', name: 'Axel', emoji: '🐕', color: '#fbbf24', type: 'dog', breed: '', birthday: '', notes: '', fedBreakfast: false, fedDinner: false, treats: 0, lastReset: '' },
+    { id: 'joey', name: 'Joey', emoji: '🐕‍🦺', color: '#86efac', type: 'dog', breed: '', birthday: '', notes: '', fedBreakfast: false, fedDinner: false, treats: 0, lastReset: '' },
+  ],
   members: [],
   events: [],
   groceries: [],
@@ -7195,6 +8060,18 @@ function loadState() {
       // Merge nested defaults
       state.settings = { ...defaultState().settings, ...(parsed.settings || {}) };
       state.sync = { ...defaultState().sync, ...(parsed.sync || {}) };
+      // Migrate legacy state.dogs -> state.pets
+      if (parsed.dogs && (!parsed.pets || parsed.pets.length === 0)) {
+        state.pets = parsed.dogs.map(d => ({
+          ...d,
+          type: d.type || 'dog',
+          breed: d.breed || '',
+          birthday: d.birthday || '',
+          notes: d.notes || '',
+        }));
+      }
+      // Ensure pets array exists for fresh installs that came in before this rename
+      if (!state.pets) state.pets = defaultState().pets;
     }
   } catch (e) {
     console.error('Failed to load state', e);
@@ -7707,28 +8584,45 @@ function renderDashboard() {
     alarmsBadge.textContent = enabledCount > 0 ? `${enabledCount} ALARM${enabledCount === 1 ? '' : 'S'}` : 'READY';
   }
 
-  // "Next Up" pill - show the next upcoming event today
+  // Dogs status strip
+  renderDashDogsStrip();
+  // Sports widget (lazy-fetches in background)
+  renderDashSports();
+
+  // "Next Up" pill — find the next upcoming event within the next 7 days
   const nextUpEl = document.getElementById('dashNextUp');
   if (nextUpEl) {
-    const nowMins = now.getHours() * 60 + now.getMinutes();
-    const upcoming = todayEvents
-      .filter(e => e.time)
-      .map(e => {
+    const nowMs = now.getTime();
+    let nextEvent = null;
+    let nextEventTs = Infinity;
+    let nextEventDayLabel = '';
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(now);
+      d.setDate(d.getDate() + i);
+      const isoKey = fmt.iso(d);
+      const dayEvs = eventsOnDate(isoKey);
+      dayEvs.forEach(e => {
+        if (!e.time) return; // skip all-day for the pill
         const [hh, mm] = e.time.split(':').map(Number);
-        return { ev: e, mins: hh * 60 + mm };
-      })
-      .filter(x => x.mins >= nowMins)
-      .sort((a, b) => a.mins - b.mins);
-    if (upcoming.length > 0) {
-      const next = upcoming[0].ev;
-      const m = next.memberIds?.[0] ? memberById(next.memberIds[0]) : null;
+        const evDate = new Date(d);
+        evDate.setHours(hh, mm, 0, 0);
+        const ts = evDate.getTime();
+        if (ts >= nowMs && ts < nextEventTs) {
+          nextEventTs = ts;
+          nextEvent = e;
+          nextEventDayLabel = i === 0 ? 'Today' : (i === 1 ? 'Tomorrow' : evDate.toLocaleDateString('en-US', { weekday: 'short' }));
+        }
+      });
+    }
+    if (nextEvent) {
+      const m = nextEvent.memberIds?.[0] ? memberById(nextEvent.memberIds[0]) : null;
       nextUpEl.innerHTML = `
-        <div class="k-next" onclick="openEventModal('${next.id}')" style="cursor:pointer;">
+        <div class="k-next" onclick="openEventModal('${nextEvent.id}')" style="cursor:pointer;">
           <div class="k-next-icon">⏰</div>
           <div style="flex:1; min-width:0;">
             <div class="k-next-label">Coming up next</div>
-            <div class="k-next-title">${escapeHtml(next.title)}</div>
-            <div class="k-next-time">${fmt.shortTime(next.time)}${m ? ' · ' + escapeHtml(m.name) : ''}</div>
+            <div class="k-next-title">${escapeHtml(nextEvent.title)}</div>
+            <div class="k-next-time">${escapeHtml(nextEventDayLabel)} · ${fmt.shortTime(nextEvent.time)}${m ? ' · ' + escapeHtml(m.name) : ''}</div>
           </div>
         </div>
       `;
@@ -7764,18 +8658,76 @@ function renderDashboard() {
       tonightEl.innerHTML = '';
     }
   }
-  if (todayEvents.length === 0) {
-    todayList.innerHTML = '<div class="empty-mini">No events today — enjoy the day</div>';
-  } else {
-    const sorted = [...todayEvents].sort((a, b) => (a.time || '').localeCompare(b.time || ''));
-    todayList.innerHTML = sorted.map(e => `
-      <div class="today-item" onclick="openEventModal('${e.id}')">
-        <div class="dot" style="background:${colorOf(e.memberIds?.[0]) || 'var(--accent)'}"></div>
-        <div class="time">${e.time ? fmt.shortTime(e.time) : 'All day'}</div>
-        <div class="name">${escapeHtml(e.title)}${e.recurrence ? '<span class="recur-badge">' + RECUR_LABELS[e.recurrence] + '</span>' : ''}</div>
-        ${e.memberIds?.[0] ? `<div class="who">${escapeHtml(memberById(e.memberIds[0])?.name || '')}</div>` : ''}
-      </div>
-    `).join('');
+  // Legacy: still populate todayList (hidden) so other code paths don't break
+  if (todayList) {
+    if (todayEvents.length === 0) {
+      todayList.innerHTML = '';
+    } else {
+      const sorted = [...todayEvents].sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+      todayList.innerHTML = sorted.map(e => `
+        <div class="today-item" onclick="openEventModal('${e.id}')">
+          <div class="dot" style="background:${colorOf(e.memberIds?.[0]) || 'var(--accent)'}"></div>
+          <div class="time">${e.time ? fmt.shortTime(e.time) : 'All day'}</div>
+          <div class="name">${escapeHtml(e.title)}${e.recurrence ? '<span class="recur-badge">' + RECUR_LABELS[e.recurrence] + '</span>' : ''}</div>
+          ${e.memberIds?.[0] ? `<div class="who">${escapeHtml(memberById(e.memberIds[0])?.name || '')}</div>` : ''}
+        </div>
+      `).join('');
+    }
+  }
+
+  // Upcoming events — next 7 days grouped by day
+  const upcomingEl = document.getElementById('upcomingEvents');
+  if (upcomingEl) {
+    const dayBlocks = [];
+    let totalEvents = 0;
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(now);
+      d.setDate(d.getDate() + i);
+      const isoKey = fmt.iso(d);
+      const dayEvents = eventsOnDate(isoKey);
+      if (i === 0) {
+        // For today, only show events that haven't passed
+        const nowMins = now.getHours() * 60 + now.getMinutes();
+        const filtered = dayEvents.filter(e => {
+          if (!e.time) return true; // all-day still relevant
+          const [hh, mm] = e.time.split(':').map(Number);
+          return (hh * 60 + mm) >= nowMins - 30; // 30 min grace for "still in progress"
+        });
+        if (filtered.length > 0) dayBlocks.push({ date: d, events: filtered, label: 'Today' });
+        totalEvents += filtered.length;
+      } else if (dayEvents.length > 0) {
+        const label = i === 1
+          ? 'Tomorrow'
+          : d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+        dayBlocks.push({ date: d, events: dayEvents, label });
+        totalEvents += dayEvents.length;
+      }
+    }
+    if (dayBlocks.length === 0) {
+      upcomingEl.innerHTML = '<div class="empty-mini" style="margin-top:8px;">Nothing coming up — clear week ahead 🎉</div>';
+    } else {
+      upcomingEl.innerHTML = dayBlocks.map(block => {
+        const sorted = [...block.events].sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+        return `
+          <div class="upcoming-day">
+            <div class="upcoming-day-label">${escapeHtml(block.label)}</div>
+            ${sorted.map(e => `
+              <div class="today-item" onclick="openEventModal('${e.id}')">
+                <div class="dot" style="background:${colorOf(e.memberIds?.[0]) || 'var(--accent)'}"></div>
+                <div class="time">${e.time ? fmt.shortTime(e.time) : 'All day'}</div>
+                <div class="name">${escapeHtml(e.title)}</div>
+                ${e.memberIds?.[0] ? `<div class="who">${escapeHtml(memberById(e.memberIds[0])?.name || '')}</div>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }).join('');
+    }
+    // Update day badge to show event count
+    const badge = document.getElementById('schedDayBadge');
+    if (badge) {
+      badge.textContent = totalEvents > 0 ? `${totalEvents} EVENT${totalEvents === 1 ? '' : 'S'}` : 'NEXT 7 DAYS';
+    }
   }
 
   // Today's family schedules (work, school, etc.)
@@ -8444,6 +9396,13 @@ function checkAutoReset() {
         rot.cycleIndex = (rot.cycleIndex || 0) + 1;
         rot.lastAdvanced = Date.now();
       }
+    });
+    // Reset pets daily (meals + treats)
+    (state.pets || []).forEach(p => {
+      p.fedBreakfast = false;
+      p.fedDinner = false;
+      p.treats = 0;
+      p.lastReset = todayKey;
     });
     state.lastDailyReset = todayKey;
   }
@@ -9247,6 +10206,184 @@ function seedVacationPacking() {
 // ---------- DINNERS / MEAL PLAN ----------
 let editingDinnerId = null;
 let mealAssignDate = null;
+
+// Built-in meal idea library, browseable from the Dinners tab.
+// Categorized by cuisine/style. Notes double as a quick recipe sketch.
+const MEAL_IDEAS_LIBRARY = [
+  // Italian
+  { name: 'Spaghetti & Meatballs', cat: 'Italian', notes: 'Brown beef meatballs, simmer 20 min in jarred marinara. Serve over spaghetti with parmesan.' },
+  { name: 'Chicken Parm', cat: 'Italian', notes: 'Bread chicken cutlets, pan-fry, top with marinara + mozzarella, broil 3 min. Serve with pasta.' },
+  { name: 'Baked Ziti', cat: 'Italian', notes: 'Ziti + marinara + ricotta + mozzarella. Bake covered 25 min @ 375°F, uncover 10 min.' },
+  { name: 'Lasagna', cat: 'Italian', notes: 'Layer noodles, ricotta-egg mix, meat sauce, mozzarella. Bake 45 min @ 375°F.' },
+  { name: 'Fettuccine Alfredo', cat: 'Italian', notes: 'Cook fettuccine. Melt butter + heavy cream + parmesan. Toss. Add grilled chicken if desired.' },
+  { name: 'Pesto Pasta', cat: 'Italian', notes: 'Toss hot penne with jarred pesto, halved cherry tomatoes, mozzarella pearls.' },
+
+  // Mexican / Tex-Mex
+  { name: 'Chicken Tacos', cat: 'Mexican', notes: 'Shredded rotisserie chicken w/ taco seasoning. Soft tortillas, cheese, lettuce, salsa, sour cream.' },
+  { name: 'Beef Burritos', cat: 'Mexican', notes: 'Brown ground beef w/ taco seasoning. Wrap with rice, beans, cheese in large flour tortilla.' },
+  { name: 'Quesadillas', cat: 'Mexican', notes: 'Cheese + leftover chicken/beef in flour tortilla, crisp in skillet. Serve with salsa & sour cream.' },
+  { name: 'Taco Tuesday Bowls', cat: 'Mexican', notes: 'Rice base + seasoned ground turkey + black beans + corn + cheese + salsa + avocado.' },
+  { name: 'Enchiladas', cat: 'Mexican', notes: 'Roll chicken & cheese in tortillas, top with red enchilada sauce + cheese. Bake 20 min @ 375°F.' },
+  { name: 'Sheet Pan Fajitas', cat: 'Mexican', notes: 'Sliced chicken or steak + bell peppers + onions + fajita seasoning. Roast 18 min @ 425°F.' },
+
+  // Asian
+  { name: 'Teriyaki Chicken Bowl', cat: 'Asian', notes: 'Pan-sear chicken thighs, glaze with bottled teriyaki. Serve over rice with steamed broccoli.' },
+  { name: 'Beef Stir-Fry', cat: 'Asian', notes: 'Sliced flank steak + frozen stir-fry veggies + soy + garlic + ginger. Serve over rice.' },
+  { name: 'Fried Rice', cat: 'Asian', notes: 'Day-old rice + scrambled egg + frozen peas/carrots + soy + sesame oil. Add ham or chicken.' },
+  { name: 'Sesame Noodles', cat: 'Asian', notes: 'Toss spaghetti with peanut butter + soy + sesame oil + ginger + chili crisp. Top with scallions.' },
+  { name: 'Lettuce Wraps', cat: 'Asian', notes: 'Ground chicken + hoisin + ginger + water chestnuts. Spoon into butter lettuce cups.' },
+  { name: 'Sweet & Sour Pork', cat: 'Asian', notes: 'Fried pork pieces tossed with sweet & sour sauce + bell peppers + pineapple. Over rice.' },
+
+  // American comfort
+  { name: 'Cheeseburgers', cat: 'American', notes: 'Smash burgers on a skillet. Toasted buns, american cheese, pickles, ketchup. Fries on the side.' },
+  { name: 'Sloppy Joes', cat: 'American', notes: 'Brown ground beef, simmer in tomato sauce + brown sugar + worcestershire. Pile on buns.' },
+  { name: 'BBQ Pulled Pork', cat: 'American', notes: 'Slow cook pork shoulder with BBQ sauce 8 hrs. Shred. Serve on buns with coleslaw.' },
+  { name: 'Mac & Cheese', cat: 'American', notes: 'Béchamel + sharp cheddar tossed with elbows. Bake with breadcrumb topping 15 min @ 400°F.' },
+  { name: 'Chicken Pot Pie', cat: 'American', notes: 'Cream sauce + chicken + frozen peas/carrots in pie crust. Bake 35 min @ 400°F until golden.' },
+  { name: 'Meatloaf', cat: 'American', notes: 'Beef + breadcrumbs + egg + onion + ketchup glaze. Bake 1 hr @ 350°F.' },
+
+  // Quick & Easy
+  { name: 'Sheet Pan Sausage & Veggies', cat: 'Quick & Easy', notes: 'Kielbasa + bell peppers + red onion + baby potatoes. Olive oil + salt. 25 min @ 425°F.' },
+  { name: 'Breakfast for Dinner', cat: 'Quick & Easy', notes: 'Bacon + scrambled eggs + pancakes + hash browns. Family favorite.' },
+  { name: 'Grilled Cheese & Tomato Soup', cat: 'Quick & Easy', notes: 'Buttered sourdough + 2 cheeses, crisped slow. Canned tomato soup + heavy cream + basil.' },
+  { name: 'Pizza Night', cat: 'Quick & Easy', notes: 'Store-bought dough + sauce + cheese + favorite toppings. 12 min @ 500°F on a stone.' },
+  { name: 'Chicken Caesar Wraps', cat: 'Quick & Easy', notes: 'Rotisserie chicken + romaine + caesar + parmesan in spinach tortillas.' },
+  { name: 'BLT Sandwiches', cat: 'Quick & Easy', notes: 'Crispy bacon + tomato + lettuce + mayo on toasted sourdough. Chips on the side.' },
+
+  // Healthy
+  { name: 'Salmon & Asparagus', cat: 'Healthy', notes: 'Salmon fillets + asparagus + lemon + olive oil. 12 min @ 400°F. Serve with quinoa or rice.' },
+  { name: 'Grilled Chicken Salad', cat: 'Healthy', notes: 'Grilled chicken on mixed greens + cucumber + tomato + feta + balsamic vinaigrette.' },
+  { name: 'Stuffed Bell Peppers', cat: 'Healthy', notes: 'Halved peppers stuffed with ground turkey + rice + tomato. Bake 35 min @ 375°F.' },
+  { name: 'Shrimp Scampi', cat: 'Healthy', notes: 'Shrimp + butter + lots of garlic + lemon + parsley. Over linguine or zucchini noodles.' },
+  { name: 'Turkey Chili', cat: 'Healthy', notes: 'Ground turkey + beans + tomatoes + chili powder + cumin. Simmer 30 min. Top w/ cheese.' },
+
+  // Vegetarian
+  { name: 'Cheese Tortellini Soup', cat: 'Vegetarian', notes: 'Veggie broth + tomato + spinach + cheese tortellini. Done in 20 min.' },
+  { name: 'Veggie Stir-Fry', cat: 'Vegetarian', notes: 'Mixed veggies + tofu + ginger soy sauce. Over jasmine rice.' },
+  { name: 'Eggplant Parmesan', cat: 'Vegetarian', notes: 'Breaded eggplant rounds, marinara, mozzarella, parmesan. Bake 25 min @ 375°F.' },
+  { name: 'Black Bean Burgers', cat: 'Vegetarian', notes: 'Mashed black beans + breadcrumbs + spices. Pan-fry. Serve on buns w/ avocado.' },
+  { name: 'Mushroom Risotto', cat: 'Vegetarian', notes: 'Arborio rice + slowly added warm broth + sautéed mushrooms + parmesan. Patience pays off.' },
+
+  // Slow Cooker
+  { name: 'Slow Cooker Chili', cat: 'Slow Cooker', notes: 'Beef + beans + tomatoes + onion + chili powder + cumin. 6 hrs low. Top w/ cheese & sour cream.' },
+  { name: 'Pot Roast', cat: 'Slow Cooker', notes: 'Chuck roast + potatoes + carrots + onion + beef broth + thyme. 8 hrs low.' },
+  { name: 'Slow Cooker Chicken Tacos', cat: 'Slow Cooker', notes: 'Chicken breasts + jar of salsa + taco seasoning. 4 hrs low. Shred. Serve in tortillas.' },
+  { name: 'Pulled BBQ Chicken', cat: 'Slow Cooker', notes: 'Chicken + bbq sauce. 6 hrs low. Shred. Serve on buns w/ coleslaw.' },
+
+  // Grill / Outdoor
+  { name: 'Grilled Burgers', cat: 'Grill', notes: '80/20 ground beef patties. 4 min/side over high heat. Toast buns on the grill.' },
+  { name: 'BBQ Chicken & Corn', cat: 'Grill', notes: 'BBQ-glazed chicken thighs + grilled corn on the cob. About 25 min on medium.' },
+  { name: 'Grilled Steak Fajitas', cat: 'Grill', notes: 'Marinated skirt steak + peppers/onions on the grill. Slice thin. Serve in tortillas.' },
+  { name: 'Cedar Plank Salmon', cat: 'Grill', notes: 'Soaked cedar plank + salmon + brown sugar + dijon glaze. 15 min over medium-high.' },
+];
+
+const MEAL_LIB_CATEGORIES = ['All', 'Italian', 'Mexican', 'Asian', 'American', 'Quick & Easy', 'Healthy', 'Vegetarian', 'Slow Cooker', 'Grill'];
+let activeMealLibCat = 'All';
+
+function autoGenerateMealIdeas() {
+  // Pick 3 ideas the user doesn't already have
+  const existingNames = new Set((state.dinners || []).map(d => d.name.toLowerCase()));
+  const candidates = MEAL_IDEAS_LIBRARY.filter(m => !existingNames.has(m.name.toLowerCase()));
+  if (candidates.length === 0) {
+    toast('You already have all built-in ideas! Add a custom one or refresh the library.', 'success');
+    return;
+  }
+  // Shuffle & pick 3
+  const shuffled = [...candidates].sort(() => Math.random() - 0.5);
+  const picks = shuffled.slice(0, Math.min(3, shuffled.length));
+  picks.forEach(m => {
+    state.dinners.push({
+      id: uid(),
+      name: m.name,
+      notes: m.notes,
+      tag: m.cat,
+      createdAt: Date.now(),
+    });
+  });
+  saveState();
+  renderDinners();
+  toast(`Added ${picks.length} ideas: ${picks.map(p => p.name).join(', ')}`, 'success');
+}
+
+function openMealLibrary() {
+  activeMealLibCat = 'All';
+  renderMealLibrary();
+  openModal('mealLibraryModal');
+}
+
+function renderMealLibrary() {
+  const tabsEl = document.getElementById('mealLibTabs');
+  const listEl = document.getElementById('mealLibList');
+  if (!tabsEl || !listEl) return;
+  tabsEl.innerHTML = MEAL_LIB_CATEGORIES.map(c => `
+    <button class="meal-lib-tab ${c === activeMealLibCat ? 'active' : ''}" onclick="setMealLibCat('${c.replace(/'/g, "\\'")}')">${c}</button>
+  `).join('');
+  const items = activeMealLibCat === 'All'
+    ? MEAL_IDEAS_LIBRARY
+    : MEAL_IDEAS_LIBRARY.filter(m => m.cat === activeMealLibCat);
+  const existingNames = new Set((state.dinners || []).map(d => d.name.toLowerCase()));
+  listEl.innerHTML = items.map(m => {
+    const added = existingNames.has(m.name.toLowerCase());
+    const safe = m.name.replace(/'/g, "\\'");
+    return `
+      <div class="meal-lib-item ${added ? 'added' : ''}" onclick="addMealIdeaFromLibrary('${safe}')">
+        <div class="meal-lib-name">${escapeHtml(m.name)}${added ? ' ✓' : ''}</div>
+        <div class="meal-lib-notes">${escapeHtml(m.notes)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function setMealLibCat(c) {
+  activeMealLibCat = c;
+  renderMealLibrary();
+}
+
+function addMealIdeaFromLibrary(name) {
+  const meal = MEAL_IDEAS_LIBRARY.find(m => m.name === name);
+  if (!meal) return;
+  const exists = (state.dinners || []).some(d => d.name.toLowerCase() === meal.name.toLowerCase());
+  if (exists) { toast('Already in your list', 'success'); return; }
+  state.dinners.push({
+    id: uid(),
+    name: meal.name,
+    notes: meal.notes,
+    tag: meal.cat,
+    createdAt: Date.now(),
+  });
+  saveState();
+  renderDinners();
+  renderMealLibrary();
+  toast(`Added: ${meal.name}`, 'success');
+}
+
+function addAllVisibleMealIdeas() {
+  const items = activeMealLibCat === 'All'
+    ? MEAL_IDEAS_LIBRARY
+    : MEAL_IDEAS_LIBRARY.filter(m => m.cat === activeMealLibCat);
+  const existingNames = new Set((state.dinners || []).map(d => d.name.toLowerCase()));
+  let added = 0;
+  items.forEach(m => {
+    if (!existingNames.has(m.name.toLowerCase())) {
+      state.dinners.push({
+        id: uid(),
+        name: m.name,
+        notes: m.notes,
+        tag: m.cat,
+        createdAt: Date.now(),
+      });
+      added++;
+    }
+  });
+  if (added === 0) {
+    toast('All ideas in this category already saved', 'success');
+    return;
+  }
+  saveState();
+  renderDinners();
+  renderMealLibrary();
+  toast(`Added ${added} new ideas`, 'success');
+}
 
 function renderDinners() {
   renderMealWeek();
@@ -10779,6 +11916,15 @@ function renderFamily() {
   if (themeSel && typeof getGoffTheme === 'function') {
     themeSel.value = getGoffTheme();
   }
+  // Light/Dark toggle highlight
+  const currentTheme = (typeof getGoffTheme === 'function') ? getGoffTheme() : 'default';
+  const isLight = currentTheme === 'light' || currentTheme === 'spring' || currentTheme === 'summer' || currentTheme === 'fall' || currentTheme === 'winter';
+  const dBtn = document.getElementById('modeBtnDark');
+  const lBtn = document.getElementById('modeBtnLight');
+  if (dBtn && lBtn) {
+    dBtn.classList.toggle('active', !isLight);
+    lBtn.classList.toggle('active', isLight);
+  }
   const fontSel = document.getElementById('setFont');
   if (fontSel && typeof getGoffFont === 'function') {
     fontSel.value = getGoffFont();
@@ -10833,6 +11979,9 @@ function renderFamily() {
   `;
 
   c.innerHTML = cards + addCard;
+
+  // Render pets list
+  renderPetList();
 
   // Render sync section
   const synced = state.sync.enabled && state.sync.familyId;
@@ -11182,6 +12331,7 @@ function setTool(name) {
     if (sel && state.settings.espnLeague) sel.value = state.settings.espnLeague;
     fetchSports(false);
   }
+  if (name === 'dogs') renderDogs();
 }
 
 function renderTools() {
@@ -12018,11 +13168,398 @@ function renderSportsNews(data) {
   }).join('');
 }
 
+// ---------- DOGS (Axel + Joey: meals + treats) ----------
+const DOG_HISTORY_KEY = 'goff_dog_history_v1';
+let dogHistory = [];
+function loadDogHistory() {
+  try {
+    const raw = localStorage.getItem(DOG_HISTORY_KEY);
+    if (raw) dogHistory = JSON.parse(raw);
+  } catch (e) { dogHistory = []; }
+}
+function saveDogHistory() {
+  try { localStorage.setItem(DOG_HISTORY_KEY, JSON.stringify(dogHistory.slice(-40))); } catch (e) {}
+}
+function logDogEvent(dogName, action) {
+  dogHistory.push({ ts: Date.now(), dog: dogName, action });
+  if (dogHistory.length > 60) dogHistory = dogHistory.slice(-60);
+  saveDogHistory();
+}
+function dogToggleMeal(dogId, meal) {
+  const dog = (state.pets || []).find(d => d.id === dogId);
+  if (!dog) return;
+  const key = meal === 'breakfast' ? 'fedBreakfast' : 'fedDinner';
+  dog[key] = !dog[key];
+  saveState();
+  logDogEvent(dog.name, `${dog[key] ? 'fed' : 'unfed'} ${meal}`);
+  renderDogs();
+  renderDashboard();
+}
+function dogTreatChange(dogId, delta) {
+  const dog = (state.pets || []).find(d => d.id === dogId);
+  if (!dog) return;
+  dog.treats = Math.max(0, (dog.treats || 0) + delta);
+  saveState();
+  if (delta > 0) logDogEvent(dog.name, `treat +1 (${dog.treats} today)`);
+  else if (delta < 0) logDogEvent(dog.name, `treat -1 (${dog.treats} today)`);
+  renderDogs();
+  renderDashboard();
+  if (delta > 0) beep(80, 880, 0.15);
+}
+function resetDogsToday() {
+  confirmAction("Reset today's meals and treat counts for all pets?", () => {
+    (state.pets || []).forEach(p => {
+      p.fedBreakfast = false;
+      p.fedDinner = false;
+      p.treats = 0;
+    });
+    saveState();
+    renderDogs();
+    renderDashboard();
+    toast('Pets reset', 'success');
+  }, { danger: false, okText: 'Reset' });
+}
+function renderDogs() {
+  const grid = document.getElementById('dogsGrid');
+  const dayLabel = document.getElementById('dogsDayLabel');
+  if (!grid) return;
+  const now = new Date();
+  if (dayLabel) dayLabel.textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  const dogs = state.pets || [];
+  // If user removed all pets, show empty state with "Add Pet" prompt
+  if (dogs.length === 0) {
+    grid.innerHTML = '<div class="empty-mini" style="grid-column: 1 / -1; padding: 32px;">No pets yet. Add one from <strong>Family → Pets</strong>.</div>';
+    const histEl = document.getElementById('dogsHistory');
+    if (histEl) histEl.innerHTML = '';
+    return;
+  }
+  grid.innerHTML = dogs.map(d => {
+    const fedAll = d.fedBreakfast && d.fedDinner;
+    const hungry = !d.fedBreakfast && !d.fedDinner;
+    const status = fedAll ? 'fed-all' : (hungry ? 'hungry' : '');
+    const statusText = fedAll ? '✓ All fed' : (hungry ? 'Hungry' : 'Half fed');
+    return `
+      <div class="dog-card" style="--dog-color: ${d.color || 'var(--accent-soft)'};">
+        <div class="dog-head">
+          <div class="dog-emoji">${d.emoji || '🐕'}</div>
+          <div class="dog-name">${escapeHtml(d.name)}</div>
+          <div class="dog-status-badge ${status}">${statusText}</div>
+        </div>
+        <div class="dog-meal-row">
+          <div class="dog-meal-toggle ${d.fedBreakfast ? 'fed' : ''}" onclick="dogToggleMeal('${d.id}', 'breakfast')">
+            <div class="meal-icon">☕</div>
+            <div class="meal-info">
+              <div class="meal-label">Breakfast</div>
+              <div class="meal-state">${d.fedBreakfast ? 'Fed' : 'Not yet'}</div>
+            </div>
+            <div class="dog-slider"></div>
+          </div>
+          <div class="dog-meal-toggle ${d.fedDinner ? 'fed' : ''}" onclick="dogToggleMeal('${d.id}', 'dinner')">
+            <div class="meal-icon">🍖</div>
+            <div class="meal-info">
+              <div class="meal-label">Dinner</div>
+              <div class="meal-state">${d.fedDinner ? 'Fed' : 'Not yet'}</div>
+            </div>
+            <div class="dog-slider"></div>
+          </div>
+        </div>
+        <div class="dog-treats">
+          <div class="dog-treats-icon">🦴</div>
+          <div class="dog-treats-info">
+            <div class="dog-treats-label">Treats today</div>
+            <div class="dog-treats-count">${d.treats || 0}</div>
+          </div>
+          <div class="dog-treats-btns">
+            <button class="dog-treat-btn minus" onclick="dogTreatChange('${d.id}', -1)" aria-label="Subtract treat">−</button>
+            <button class="dog-treat-btn" onclick="dogTreatChange('${d.id}', 1)" aria-label="Add treat">+</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // History
+  const histEl = document.getElementById('dogsHistory');
+  if (histEl) {
+    if (dogHistory.length === 0) {
+      histEl.innerHTML = '<div class="empty-mini">No activity yet today</div>';
+    } else {
+      const recent = dogHistory.slice(-15).reverse();
+      histEl.innerHTML = recent.map(h => {
+        const t = new Date(h.ts);
+        const time = t.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        return `
+          <div class="dog-history-item">
+            <span class="dh-time">${time}</span>
+            <span class="dh-text"><strong>${escapeHtml(h.dog)}</strong> · ${escapeHtml(h.action)}</span>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+}
+
+// ---------- PET PROFILE MANAGEMENT ----------
+const PET_TYPES = {
+  dog: '🐕', cat: '🐈', bird: '🐦', fish: '🐠', rabbit: '🐰', other: '🐾',
+};
+const PET_EMOJIS = ['🐕','🐕‍🦺','🐩','🐶','🐈','🐈‍⬛','🐱','🐰','🐇','🐦','🐦‍⬛','🦜','🐠','🐟','🐢','🦎','🐹','🐭','🐴','🦮','🦊','🐻','🐨','🐼','🐾'];
+let editingPetId = null;
+
+function renderPetList() {
+  const c = document.getElementById('petList');
+  if (!c) return;
+  const pets = state.pets || [];
+  if (pets.length === 0) {
+    c.innerHTML = '<div class="empty-mini" style="padding: 24px;">No pets yet — tap <strong>+ Add Pet</strong> to add one</div>';
+    return;
+  }
+  c.innerHTML = pets.map(p => {
+    const typeIcon = PET_TYPES[p.type] || '🐾';
+    const meta = [p.breed, p.type ? p.type.charAt(0).toUpperCase() + p.type.slice(1) : ''].filter(Boolean).join(' · ');
+    return `
+      <div class="pet-card" style="--pet-color: ${p.color || 'var(--accent-soft)'};" onclick="openPetModal('${p.id}')">
+        <div class="pet-card-head">
+          <div class="pet-card-emoji">${p.emoji || typeIcon}</div>
+          <div class="pet-card-info">
+            <div class="pet-card-name">${escapeHtml(p.name)}</div>
+            ${meta ? `<div class="pet-card-meta">${escapeHtml(meta)}</div>` : ''}
+          </div>
+        </div>
+        <div class="pet-card-stats">
+          <span class="pcs-pill ${p.fedBreakfast ? 'fed' : ''}">☕ ${p.fedBreakfast ? 'Fed' : 'Not yet'}</span>
+          <span class="pcs-pill ${p.fedDinner ? 'fed' : ''}">🍖 ${p.fedDinner ? 'Fed' : 'Not yet'}</span>
+          <span class="pcs-pill">🦴 ${p.treats || 0} treats</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openPetModal(id) {
+  editingPetId = id || null;
+  const pet = id ? (state.pets || []).find(p => p.id === id) : null;
+
+  document.getElementById('petModalTitle').innerHTML = pet ? `Edit <em>${escapeHtml(pet.name)}</em>` : 'Add <em>Pet</em>';
+  document.getElementById('petName').value = pet ? pet.name : '';
+  document.getElementById('petType').value = pet ? (pet.type || 'dog') : 'dog';
+  document.getElementById('petBreed').value = pet ? (pet.breed || '') : '';
+  document.getElementById('petBirthday').value = pet ? (pet.birthday || '') : '';
+  document.getElementById('petNotes').value = pet ? (pet.notes || '') : '';
+
+  // Color picker
+  const palette = ['#fbbf24', '#fb7185', '#86efac', '#7dd3fc', '#c4b5fd', '#f9a8d4', '#fb923c', '#a3e635'];
+  const selectedColor = pet ? pet.color : palette[0];
+  const colorEl = document.getElementById('petColors');
+  colorEl.innerHTML = palette.map(c => `
+    <div class="color-dot ${c === selectedColor ? 'selected' : ''}" style="background:${c}" onclick="selectPetColor('${c}')" data-color="${c}"></div>
+  `).join('');
+
+  // Emoji picker
+  const selectedEmoji = pet ? pet.emoji : '🐕';
+  const emojiEl = document.getElementById('petEmojis');
+  emojiEl.innerHTML = PET_EMOJIS.map(e => `
+    <button type="button" class="emoji-btn ${e === selectedEmoji ? 'selected' : ''}" onclick="selectPetEmoji('${e}')">${e}</button>
+  `).join('');
+
+  document.getElementById('petDelete').style.display = pet ? '' : 'none';
+  openModal('petModal');
+}
+
+function selectPetColor(c) {
+  document.querySelectorAll('#petColors .color-dot').forEach(d => {
+    d.classList.toggle('selected', d.dataset.color === c);
+  });
+}
+function selectPetEmoji(e) {
+  document.querySelectorAll('#petEmojis .emoji-btn').forEach(b => {
+    b.classList.toggle('selected', b.textContent === e);
+  });
+}
+
+function savePet() {
+  const name = document.getElementById('petName').value.trim();
+  if (!name) { toast('Pet name required', 'error'); return; }
+  const type = document.getElementById('petType').value || 'dog';
+  const breed = document.getElementById('petBreed').value.trim();
+  const birthday = document.getElementById('petBirthday').value;
+  const notes = document.getElementById('petNotes').value.trim();
+  const color = document.querySelector('#petColors .color-dot.selected')?.dataset.color || '#fbbf24';
+  const emoji = document.querySelector('#petEmojis .emoji-btn.selected')?.textContent || PET_TYPES[type] || '🐾';
+
+  if (!state.pets) state.pets = [];
+
+  if (editingPetId) {
+    const p = state.pets.find(x => x.id === editingPetId);
+    if (p) { p.name = name; p.type = type; p.breed = breed; p.birthday = birthday; p.notes = notes; p.color = color; p.emoji = emoji; }
+  } else {
+    state.pets.push({
+      id: uid(),
+      name, type, breed, birthday, notes, color, emoji,
+      fedBreakfast: false, fedDinner: false, treats: 0, lastReset: '',
+    });
+  }
+  saveState();
+  closeModal('petModal');
+  renderFamily();
+  renderDashboard();
+  if (typeof renderDogs === 'function') renderDogs();
+  toast(editingPetId ? 'Pet updated' : 'Pet added', 'success');
+}
+
+function deletePet() {
+  if (!editingPetId) return;
+  const pet = (state.pets || []).find(p => p.id === editingPetId);
+  if (!pet) return;
+  const petId = editingPetId;
+  confirmAction(`Remove ${pet.name}? Their tracker data will also be deleted.`, () => {
+    state.pets = (state.pets || []).filter(p => p.id !== petId);
+    saveState();
+    closeModal('petModal');
+    renderFamily();
+    renderDashboard();
+    if (typeof renderDogs === 'function') renderDogs();
+    toast('Pet removed');
+  }, { okText: 'Remove' });
+}
+
+// Dashboard dogs strip — compact cards showing meal pills + treat count for each pet
+function renderDashDogsStrip() {
+  const c = document.getElementById('dashDogsStrip');
+  if (!c) return;
+  const dogs = state.pets || [];
+  if (dogs.length === 0) {
+    c.innerHTML = '<div class="empty-mini" style="grid-column: 1 / -1; padding: 16px; font-size: 12px;">No pets · add in Family</div>';
+    return;
+  }
+  // For 1 pet, full width; for 2+, 2 columns
+  c.style.gridTemplateColumns = dogs.length === 1 ? '1fr' : '1fr 1fr';
+  c.innerHTML = dogs.slice(0, 2).map(d => `
+    <div class="dog-strip-card" style="--dog-color: ${d.color || 'var(--accent-soft)'};" onclick="setView('tools'); setTool('dogs');">
+      <div class="dsc-emoji">${d.emoji || '🐕'}</div>
+      <div class="dsc-info">
+        <div class="dsc-name">${escapeHtml(d.name)}</div>
+        <div class="dsc-meals">
+          <span class="dsc-meal-pill ${d.fedBreakfast ? 'fed' : ''}" onclick="event.stopPropagation(); dogToggleMeal('${d.id}', 'breakfast');">☕ ${d.fedBreakfast ? '✓' : '○'}</span>
+          <span class="dsc-meal-pill ${d.fedDinner ? 'fed' : ''}" onclick="event.stopPropagation(); dogToggleMeal('${d.id}', 'dinner');">🍖 ${d.fedDinner ? '✓' : '○'}</span>
+        </div>
+      </div>
+      <div class="dsc-treats">
+        <div class="dsc-treats-num">${d.treats || 0}</div>
+        <div class="dsc-treats-label">🦴 treats</div>
+      </div>
+      <button class="dsc-treat-add" onclick="event.stopPropagation(); dogTreatChange('${d.id}', 1);" title="Add treat">+</button>
+    </div>
+  `).join('');
+}
+
+// Dashboard sports widget — pulls one game/headline from cached ESPN data
+let dashSportsData = null;
+let dashSportsFetchTime = 0;
+async function renderDashSports() {
+  const card = document.getElementById('dashSportsCard');
+  if (!card) return;
+  const league = state.settings.espnLeague || 'football/nfl';
+  const leagueLabel = (() => {
+    const map = {
+      'football/nfl': '🏈 NFL',
+      'basketball/nba': '🏀 NBA',
+      'baseball/mlb': '⚾ MLB',
+      'hockey/nhl': '🏒 NHL',
+      'football/college-football': '🏈 NCAAF',
+      'basketball/mens-college-basketball': '🏀 NCAAB',
+      'basketball/womens-college-basketball': '🏀 NCAAW',
+      'basketball/wnba': '🏀 WNBA',
+      'soccer/usa.1': '⚽ MLS',
+      'soccer/eng.1': '⚽ EPL',
+    };
+    return map[league] || '📺 Sports';
+  })();
+  document.getElementById('dashSportsLeague').textContent = leagueLabel;
+
+  // Refetch at most once every 3 minutes when on dashboard
+  const stale = Date.now() - dashSportsFetchTime > 180_000;
+  if (!dashSportsData || stale) {
+    try {
+      const sb = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${league}/scoreboard`);
+      const sbData = await sb.json();
+      const news = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${league}/news`);
+      const newsData = await news.json();
+      dashSportsData = { sb: sbData, news: newsData };
+      dashSportsFetchTime = Date.now();
+    } catch (e) {
+      const gameEl = document.getElementById('dashSportsGame');
+      if (gameEl) gameEl.innerHTML = '<span class="ssc-empty">Could not load · tap for full page</span>';
+      document.getElementById('dashSportsStatus').textContent = '';
+      return;
+    }
+  }
+
+  // Pick top 2 games: prefer live, then upcoming, then most-recent completed
+  const events = (dashSportsData && dashSportsData.sb && dashSportsData.sb.events) || [];
+  const live = events.filter(e => e.status?.type?.state === 'in');
+  const upcoming = events.filter(e => e.status?.type?.state === 'pre');
+  const completed = events.filter(e => e.status?.type?.state === 'post');
+  const ordered = [...live, ...upcoming, ...completed];
+  const top2 = ordered.slice(0, 2);
+
+  const gamesEl = document.getElementById('dashSportsGames');
+  if (top2.length) {
+    gamesEl.innerHTML = top2.map(game => {
+      const comp = game.competitions && game.competitions[0];
+      if (!comp) return '';
+      const home = comp.competitors.find(c => c.homeAway === 'home') || comp.competitors[0];
+      const away = comp.competitors.find(c => c.homeAway === 'away') || comp.competitors[1];
+      const status = game.status?.type;
+      const state_ = status?.state;
+      const isLive = state_ === 'in';
+      const isFinal = state_ === 'post';
+      const homeScore = parseInt(home.score, 10) || 0;
+      const awayScore = parseInt(away.score, 10) || 0;
+      const homeLoser = isFinal && awayScore > homeScore;
+      const awayLoser = isFinal && homeScore > awayScore;
+      function teamRow(c, loser) {
+        const t = c.team || {};
+        const logo = t.logo || (t.logos && t.logos[0]?.href) || '';
+        return `
+          <div class="ssc-game-row">
+            ${logo ? `<img src="${logo}" alt="" onerror="this.style.display='none'">` : ''}
+            <span class="ssc-game-team ${loser ? 'loser' : ''}">${escapeHtml(t.abbreviation || t.shortDisplayName || 'TBD')}</span>
+            <span class="ssc-game-score ${loser ? 'loser' : ''}">${(c.score !== undefined && c.score !== '') ? c.score : '—'}</span>
+          </div>
+        `;
+      }
+      return `
+        <div class="ssc-game-card ${isLive ? 'live' : ''} ${isFinal ? 'final' : ''}">
+          <div class="ssc-game-card-head">${escapeHtml(status?.shortDetail || status?.description || '')}</div>
+          ${teamRow(away, awayLoser)}
+          ${teamRow(home, homeLoser)}
+        </div>
+      `;
+    }).join('');
+  } else {
+    gamesEl.innerHTML = '<span class="ssc-empty">No games today</span>';
+  }
+
+  // Top 2-3 headlines
+  const articles = (dashSportsData && dashSportsData.news && dashSportsData.news.articles) || [];
+  const newsEl = document.getElementById('dashSportsNews');
+  if (articles.length && newsEl) {
+    newsEl.innerHTML = articles.slice(0, 3).map(a => {
+      const headline = a.headline || a.title || '';
+      return `<div class="ssc-news-item">📰 ${escapeHtml(headline)}</div>`;
+    }).join('');
+  } else if (newsEl) {
+    newsEl.innerHTML = '<div class="empty-mini" style="padding:10px;">No headlines</div>';
+  }
+}
+
 function init() {
   loadState();
   loadPhotos();
   loadAlarms();
   loadNotes();
+  loadDogHistory();
   checkAutoReset();
 
   if (!state.settings.onboarded) {
