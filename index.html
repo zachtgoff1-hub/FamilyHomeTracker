@@ -5520,6 +5520,65 @@ input, textarea, select {
   font-weight: 500;
 }
 
+/* Search-result-specific extras */
+.yt-results-section { margin-bottom: 18px; }
+.yt-history-item .yt-thumb-wrap {
+  position: relative;
+}
+.yt-history-item .yt-duration {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.yt-channel {
+  font-size: 11px;
+  color: var(--text-2);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.yt-loading {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--text-3);
+  font-size: 14px;
+  font-style: italic;
+}
+.yt-loading::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border-strong);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  margin-right: 10px;
+  vertical-align: middle;
+  animation: ytspin 0.8s linear infinite;
+}
+@keyframes ytspin { to { transform: rotate(360deg); } }
+.yt-results-error {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-3);
+  font-size: 13px;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+.yt-results-error .yt-fallback-btn {
+  margin-top: 10px;
+  display: inline-block;
+}
+
 /* --- LIGHT / DARK MODE TOGGLE (settings) --- */
 .mode-toggle {
   display: inline-flex;
@@ -7309,9 +7368,8 @@ body::before {
       <!-- YOUTUBE -->
       <div class="tool-pane" id="tool-youtube">
         <div class="yt-toolbar">
-          <input id="ytInput" type="text" placeholder="Paste YouTube URL, video ID, or search…" onkeydown="if(event.key==='Enter') ytPlay()">
-          <button class="tool-btn tool-btn-primary" onclick="ytPlay()">▶ Play</button>
-          <button class="tool-btn" onclick="ytSearchExternal()" title="Search opens in a new browser tab">🔎 Search</button>
+          <input id="ytInput" type="text" placeholder="Search YouTube or paste a URL…" onkeydown="if(event.key==='Enter') ytPlay()">
+          <button class="tool-btn tool-btn-primary" onclick="ytPlay()">🔎 Search</button>
         </div>
         <div class="yt-quick">
           <button class="tool-chip" onclick="ytQuickSearch('relaxing piano music')">🎵 Music</button>
@@ -7326,11 +7384,21 @@ body::before {
         <div class="yt-player">
           <div class="yt-player-empty" id="ytPlayerEmpty">
             <div class="yt-icon">▶️</div>
-            <div class="yt-empty-text">Paste a YouTube link above and tap Play, or pick a quick category to search</div>
+            <div class="yt-empty-text">Type a search above (or paste a YouTube link) and tap <strong>Search</strong></div>
           </div>
           <iframe id="ytPlayerFrame" style="display:none;" src="" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="origin"></iframe>
         </div>
-        <div class="yt-history">
+
+        <!-- Inline search results (Piped/Invidious public APIs — no API key needed) -->
+        <div class="yt-results-section" id="ytResultsSection" style="display:none;">
+          <div class="yt-history-head">
+            <div class="yt-history-title" id="ytResultsTitle">🔎 Search Results</div>
+            <button class="tool-chip" onclick="ytCloseResults()">Close</button>
+          </div>
+          <div id="ytResults" class="yt-history-list"></div>
+        </div>
+
+        <div class="yt-history" id="ytHistorySection">
           <div class="yt-history-head">
             <div class="yt-history-title">📜 Recently Watched</div>
             <button class="tool-chip" onclick="ytClearHistory()">Clear History</button>
@@ -13604,14 +13672,152 @@ function parseYTId(input) {
 function ytPlay() {
   const inputEl = document.getElementById('ytInput');
   const input = inputEl.value.trim();
-  if (!input) { toast('Paste a YouTube URL or search term first', 'error'); return; }
+  if (!input) { toast('Type something to search or paste a YouTube link', 'error'); return; }
   const id = parseYTId(input);
   if (id) {
     ytLoadVideo(id);
+    ytCloseResults();
   } else {
-    // Plain text search → open externally
-    ytSearchExternal();
+    // Plain text → search inline
+    ytSearchInline(input);
   }
+}
+
+// ---- INLINE SEARCH via public Piped/Invidious APIs (no API key) ----
+// We try a list of mirrors in order; first one that returns videos wins.
+// Public instances rotate so the list may need refreshing over time.
+const YT_SEARCH_INSTANCES = [
+  { kind: 'piped',     base: 'https://pipedapi.kavin.rocks' },
+  { kind: 'piped',     base: 'https://api-piped.mha.fi' },
+  { kind: 'piped',     base: 'https://pipedapi.tokhmi.xyz' },
+  { kind: 'piped',     base: 'https://pipedapi.adminforge.de' },
+  { kind: 'piped',     base: 'https://pipedapi.ducks.party' },
+  { kind: 'invidious', base: 'https://yewtu.be' },
+  { kind: 'invidious', base: 'https://invidious.io.lol' },
+  { kind: 'invidious', base: 'https://inv.tux.pizza' },
+  { kind: 'invidious', base: 'https://invidious.privacydev.net' },
+];
+
+async function ytFetchWithTimeout(url, ms) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  try {
+    const r = await fetch(url, { signal: ctrl.signal });
+    return r;
+  } finally { clearTimeout(t); }
+}
+
+async function ytSearchInline(query) {
+  const results = document.getElementById('ytResults');
+  const section = document.getElementById('ytResultsSection');
+  const titleEl = document.getElementById('ytResultsTitle');
+  if (!results || !section) return;
+
+  section.style.display = '';
+  if (titleEl) titleEl.textContent = `🔎 Searching for "${query}"…`;
+  results.innerHTML = '<div class="yt-loading">Searching across video servers</div>';
+
+  for (const inst of YT_SEARCH_INSTANCES) {
+    try {
+      const url = inst.kind === 'piped'
+        ? `${inst.base}/search?q=${encodeURIComponent(query)}&filter=videos`
+        : `${inst.base}/api/v1/search?q=${encodeURIComponent(query)}&type=video`;
+      const r = await ytFetchWithTimeout(url, 6000);
+      if (!r.ok) continue;
+      const d = await r.json();
+      let items = [];
+      if (inst.kind === 'piped') {
+        items = (d.items || []).filter(i => i.type === 'stream' || i.url?.includes('/watch?v=')).map(i => {
+          const id = (i.url || '').replace('/watch?v=', '').split('?')[0].split('&')[0];
+          return {
+            id,
+            title: i.title || '',
+            channel: i.uploaderName || '',
+            duration: i.duration || 0,
+            thumbnail: i.thumbnail || `https://i.ytimg.com/vi/${id}/mqdefault.jpg`,
+          };
+        });
+      } else {
+        items = (Array.isArray(d) ? d : []).filter(x => x.type === 'video').map(x => ({
+          id: x.videoId,
+          title: x.title || '',
+          channel: x.author || '',
+          duration: x.lengthSeconds || 0,
+          thumbnail: (x.videoThumbnails?.[0]?.url) || `https://i.ytimg.com/vi/${x.videoId}/mqdefault.jpg`,
+        }));
+      }
+      items = items.filter(i => i.id && i.id.length === 11);
+      if (items.length > 0) {
+        ytRenderResults(items.slice(0, 24), query);
+        return;
+      }
+    } catch (e) { /* try next instance */ }
+  }
+  // Every instance failed
+  if (titleEl) titleEl.textContent = `🔎 Search Results for "${query}"`;
+  results.innerHTML = `
+    <div class="yt-results-error" style="grid-column: 1 / -1;">
+      <div>All public search servers are unreachable right now.</div>
+      <button class="tool-btn yt-fallback-btn" onclick="ytSearchExternal()">Open YouTube Search ↗</button>
+    </div>
+  `;
+}
+
+function ytRenderResults(items, query) {
+  const results = document.getElementById('ytResults');
+  const titleEl = document.getElementById('ytResultsTitle');
+  if (titleEl) titleEl.textContent = `🔎 ${items.length} results for "${query}"`;
+  results.innerHTML = items.map(it => {
+    const dur = ytFormatDuration(it.duration);
+    const safeId = it.id.replace(/'/g, '');
+    return `
+      <div class="yt-history-item" onclick="ytPickResult('${safeId}', ${JSON.stringify(it.title).replace(/"/g, '&quot;')})">
+        <div class="yt-thumb-wrap">
+          <img src="${it.thumbnail}" alt="" class="yt-thumb" loading="lazy" onerror="this.src='https://i.ytimg.com/vi/${safeId}/mqdefault.jpg'">
+          ${dur ? `<span class="yt-duration">${dur}</span>` : ''}
+        </div>
+        <div class="yt-info">
+          <div class="yt-title">${escapeHtml(it.title)}</div>
+          ${it.channel ? `<div class="yt-channel">${escapeHtml(it.channel)}</div>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function ytPickResult(videoId, title) {
+  ytLoadVideo(videoId);
+  // If we have the title from search, prefill it in history right away (faster than oEmbed)
+  if (title) {
+    ytHistory = ytHistory.filter(h => h.id !== videoId);
+    ytHistory.unshift({
+      id: videoId,
+      title,
+      thumbnail: `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
+      ts: Date.now(),
+    });
+    ytHistory = ytHistory.slice(0, 30);
+    saveYTHistoryStorage();
+    renderYTHistory();
+  }
+  // Scroll player into view on smaller screens
+  const player = document.getElementById('ytPlayerFrame');
+  if (player) player.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function ytCloseResults() {
+  const section = document.getElementById('ytResultsSection');
+  if (section) section.style.display = 'none';
+}
+
+function ytFormatDuration(seconds) {
+  const s = parseInt(seconds, 10);
+  if (!s || isNaN(s) || s <= 0) return '';
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  return `${m}:${String(sec).padStart(2,'0')}`;
 }
 
 function ytLoadVideo(videoId) {
@@ -13669,7 +13875,7 @@ function ytSearchExternal() {
 
 function ytQuickSearch(query) {
   document.getElementById('ytInput').value = query;
-  ytSearchExternal();
+  ytSearchInline(query);
 }
 
 function ytClearHistory() {
