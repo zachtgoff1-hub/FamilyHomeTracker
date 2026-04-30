@@ -5364,6 +5364,127 @@ input, textarea, select {
 }
 .news-meta { font-size: 11px; color: var(--text-3); }
 
+/* --- YOUTUBE WATCH TAB --- */
+.yt-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.yt-toolbar input {
+  flex: 1;
+  min-width: 240px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  color: var(--text);
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.yt-toolbar input:focus { border-color: var(--accent); }
+
+.yt-quick {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.yt-player {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 18px;
+  position: relative;
+  max-height: 60vh;
+}
+.yt-player iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+.yt-player-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-3);
+  gap: 12px;
+  text-align: center;
+  padding: 24px;
+}
+.yt-icon { font-size: 64px; opacity: 0.6; }
+.yt-empty-text { font-size: 14px; max-width: 380px; line-height: 1.5; }
+
+.yt-history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.yt-history-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-2);
+}
+.yt-history-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+.yt-history-item {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.2s var(--ease);
+}
+.yt-history-item:hover { transform: translateY(-2px); border-color: var(--border-strong); }
+.yt-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #1a1a1a;
+  display: block;
+}
+.yt-info {
+  padding: 8px 10px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.yt-title {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--text);
+}
+.yt-meta {
+  font-size: 10px;
+  color: var(--text-3);
+  font-weight: 500;
+}
+
 /* --- LIGHT / DARK MODE TOGGLE (settings) --- */
 .mode-toggle {
   display: inline-flex;
@@ -6621,6 +6742,9 @@ body::before {
                 <button class="qt-tile" onclick="setView('tools'); setTool('dogs');">
                   <span class="qt-icon">🐾</span><span class="qt-label">Pets</span>
                 </button>
+                <button class="qt-tile" onclick="setView('tools'); setTool('youtube');">
+                  <span class="qt-icon">▶️</span><span class="qt-label">YouTube</span>
+                </button>
                 <button class="qt-tile qt-lock" onclick="enterScreensaver()" style="grid-column: 1 / -1;">
                   <span class="qt-icon">🌙</span><span class="qt-label">Lock Screen</span>
                 </button>
@@ -6909,6 +7033,7 @@ body::before {
         <button class="tool-tab" data-tool="dice" onclick="setTool('dice')"><span class="tt-icon">🎲</span> Decide</button>
         <button class="tool-tab" data-tool="sports" onclick="setTool('sports')"><span class="tt-icon">📺</span> Sports</button>
         <button class="tool-tab" data-tool="dogs" onclick="setTool('dogs')"><span class="tt-icon">🐾</span> Pets</button>
+        <button class="tool-tab" data-tool="youtube" onclick="setTool('youtube')"><span class="tt-icon">▶️</span> YouTube</button>
       </div>
 
       <!-- STOPWATCH -->
@@ -7127,6 +7252,39 @@ body::before {
               <div class="empty-mini">Loading…</div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- YOUTUBE -->
+      <div class="tool-pane" id="tool-youtube">
+        <div class="yt-toolbar">
+          <input id="ytInput" type="text" placeholder="Paste YouTube URL, video ID, or search…" onkeydown="if(event.key==='Enter') ytPlay()">
+          <button class="tool-btn tool-btn-primary" onclick="ytPlay()">▶ Play</button>
+          <button class="tool-btn" onclick="ytSearchExternal()" title="Search opens in a new browser tab">🔎 Search</button>
+        </div>
+        <div class="yt-quick">
+          <button class="tool-chip" onclick="ytQuickSearch('relaxing piano music')">🎵 Music</button>
+          <button class="tool-chip" onclick="ytQuickSearch('news today')">📰 News</button>
+          <button class="tool-chip" onclick="ytQuickSearch('easy dinner recipes')">🍳 Cooking</button>
+          <button class="tool-chip" onclick="ytQuickSearch('lofi hip hop beats')">🎧 Lofi</button>
+          <button class="tool-chip" onclick="ytQuickSearch('peaceful nature 4k')">🌳 Nature</button>
+          <button class="tool-chip" onclick="ytQuickSearch('cartoons for kids')">📺 Kids</button>
+          <button class="tool-chip" onclick="ytQuickSearch('comedy clips')">😂 Comedy</button>
+          <button class="tool-chip" onclick="ytQuickSearch('home workout')">💪 Workout</button>
+        </div>
+        <div class="yt-player">
+          <div class="yt-player-empty" id="ytPlayerEmpty">
+            <div class="yt-icon">▶️</div>
+            <div class="yt-empty-text">Paste a YouTube link above and tap Play, or pick a quick category to search</div>
+          </div>
+          <iframe id="ytPlayerFrame" style="display:none;" src="" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="origin"></iframe>
+        </div>
+        <div class="yt-history">
+          <div class="yt-history-head">
+            <div class="yt-history-title">📜 Recently Watched</div>
+            <button class="tool-chip" onclick="ytClearHistory()">Clear History</button>
+          </div>
+          <div id="ytHistory" class="yt-history-list"></div>
         </div>
       </div>
 
@@ -12408,7 +12566,30 @@ function setTool(name) {
     fetchSports(false);
   }
   if (name === 'dogs') renderDogs();
+  if (name === 'youtube') renderYTHistory();
 }
+
+// Pause / blank the YouTube iframe when navigating away so audio doesn't keep playing.
+// Hook into setView to detect leaving the tools view.
+(function() {
+  const _origSetView = window.setView;
+  if (typeof _origSetView !== 'function') return;
+  window.setView = function(view) {
+    const wasOnYoutube = document.getElementById('tool-youtube')?.classList.contains('active');
+    const result = _origSetView.apply(this, arguments);
+    if (wasOnYoutube && view !== 'tools') {
+      const f = document.getElementById('ytPlayerFrame');
+      if (f && f.src) {
+        // Stop playback by clearing the src
+        f.src = '';
+        f.style.display = 'none';
+        const empty = document.getElementById('ytPlayerEmpty');
+        if (empty) empty.style.display = 'flex';
+      }
+    }
+    return result;
+  };
+})();
 
 function renderTools() {
   // Default tool
@@ -13244,6 +13425,140 @@ function renderSportsNews(data) {
   }).join('');
 }
 
+// ---------- YOUTUBE (paste URL → embed inline; search opens external) ----------
+const YT_HIST_KEY = 'goff_yt_history_v1';
+let ytHistory = [];
+
+function loadYTHistory() {
+  try {
+    const raw = localStorage.getItem(YT_HIST_KEY);
+    if (raw) ytHistory = JSON.parse(raw);
+  } catch (e) { ytHistory = []; }
+}
+function saveYTHistoryStorage() {
+  try { localStorage.setItem(YT_HIST_KEY, JSON.stringify(ytHistory.slice(0, 30))); } catch (e) {}
+}
+
+// Parse YouTube video ID from a URL or raw ID
+function parseYTId(input) {
+  if (!input) return null;
+  const trimmed = input.trim();
+  // Direct 11-char ID (allowed chars: letters, digits, -, _)
+  if (/^[\w-]{11}$/.test(trimmed)) return trimmed;
+  // Common URL formats
+  const patterns = [
+    /(?:youtube\.com\/watch\?[^#]*v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/|youtube\.com\/v\/)([\w-]{11})/,
+    /[?&]v=([\w-]{11})/,
+  ];
+  for (const p of patterns) {
+    const m = trimmed.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+function ytPlay() {
+  const inputEl = document.getElementById('ytInput');
+  const input = inputEl.value.trim();
+  if (!input) { toast('Paste a YouTube URL or search term first', 'error'); return; }
+  const id = parseYTId(input);
+  if (id) {
+    ytLoadVideo(id);
+  } else {
+    // Plain text search → open externally
+    ytSearchExternal();
+  }
+}
+
+function ytLoadVideo(videoId) {
+  const frame = document.getElementById('ytPlayerFrame');
+  const empty = document.getElementById('ytPlayerEmpty');
+  if (!frame) return;
+  // Use the privacy-enhanced domain so cookies aren't dropped
+  frame.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+  frame.style.display = 'block';
+  if (empty) empty.style.display = 'none';
+  // Clear input after playing
+  const inputEl = document.getElementById('ytInput');
+  if (inputEl) inputEl.value = '';
+  // Save to history with title (fetched in background)
+  ytAddToHistory(videoId);
+}
+
+async function ytAddToHistory(videoId) {
+  // Initial entry with placeholder title — will be enriched if noembed responds
+  let title = 'YouTube video · ' + videoId;
+  let thumbnail = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+
+  // Try noembed.com for title (no API key, supports CORS)
+  try {
+    const r = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
+    if (r.ok) {
+      const d = await r.json();
+      if (d.title) title = d.title;
+      if (d.thumbnail_url) thumbnail = d.thumbnail_url;
+    }
+  } catch (e) { /* ignore — keep fallback */ }
+
+  // Dedupe by video id (move to top)
+  ytHistory = ytHistory.filter(h => h.id !== videoId);
+  ytHistory.unshift({ id: videoId, title, thumbnail, ts: Date.now() });
+  ytHistory = ytHistory.slice(0, 30);
+  saveYTHistoryStorage();
+  renderYTHistory();
+}
+
+function ytSearchExternal() {
+  const inputEl = document.getElementById('ytInput');
+  const q = (inputEl?.value || '').trim();
+  if (!q) { toast('Type something to search first', 'error'); return; }
+  const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`;
+  // Try popup first; fall back to confirm + same-window navigation
+  let win = null;
+  try { win = window.open(url, '_blank', 'noopener'); } catch (e) {}
+  if (!win) {
+    confirmAction(`Open YouTube search for "${q}"? Opens in this tab — you can come back via the Home button.`, () => {
+      location.href = url;
+    }, { danger: false, okText: 'Open YouTube' });
+  }
+}
+
+function ytQuickSearch(query) {
+  document.getElementById('ytInput').value = query;
+  ytSearchExternal();
+}
+
+function ytClearHistory() {
+  if (ytHistory.length === 0) return;
+  confirmAction('Clear watch history? Embedded videos still play, this just empties the recent list.', () => {
+    ytHistory = [];
+    saveYTHistoryStorage();
+    renderYTHistory();
+  }, { okText: 'Clear' });
+}
+
+function renderYTHistory() {
+  const c = document.getElementById('ytHistory');
+  if (!c) return;
+  if (ytHistory.length === 0) {
+    c.innerHTML = '<div class="empty-mini">No videos yet — play one above to see it here.</div>';
+    return;
+  }
+  c.innerHTML = ytHistory.map(h => {
+    const safeId = h.id.replace(/'/g, '');
+    const date = new Date(h.ts).toLocaleDateString([], { month: 'short', day: 'numeric' });
+    return `
+      <div class="yt-history-item" onclick="ytLoadVideo('${safeId}')">
+        <img src="${h.thumbnail}" alt="" class="yt-thumb" onerror="this.style.background='#1a1a1a'; this.removeAttribute('src');">
+        <div class="yt-info">
+          <div class="yt-title">${escapeHtml(h.title)}</div>
+          <div class="yt-meta">${escapeHtml(date)}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
 // ---------- DOGS (Axel + Joey: meals + treats) ----------
 const DOG_HISTORY_KEY = 'goff_dog_history_v1';
 let dogHistory = [];
@@ -13645,6 +13960,7 @@ function init() {
   loadAlarms();
   loadNotes();
   loadDogHistory();
+  loadYTHistory();
   checkAutoReset();
 
   if (!state.settings.onboarded) {
