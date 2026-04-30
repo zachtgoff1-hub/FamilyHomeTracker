@@ -4137,27 +4137,25 @@ input, textarea, select {
 .k-clock {
   font-family: var(--display);
   font-weight: 600;
-  /* Scale with the SHORTER of viewport-width or viewport-height so the clock never
-     overflows on either narrow or short tablet sizes. */
-  font-size: min(11vw, 19vh, 140px);
+  /* Conservative max so it never overlaps greeting/date on any tablet. */
+  font-size: min(7.5vw, 13vh, 110px);
   line-height: 1;
   letter-spacing: -0.02em;
   font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: center;
   gap: 4px;
   position: relative;
   z-index: 1;
   color: var(--text);
-  flex: 1 1 auto;
   margin: 0;
   min-height: 0;
-  padding-bottom: 2px;
   overflow: hidden;
+  width: 100%;
 }
 .k-clock .ampm {
-  font-size: 0.26em;
+  font-size: 0.28em;
   flex-shrink: 0;
 }
 .k-clock .colon { color: var(--text-3); animation: blink 2s infinite; font-weight: 500; }
@@ -4208,7 +4206,7 @@ input, textarea, select {
   pointer-events: none;
 }
 .kw-icon {
-  font-size: min(7.5vw, 14vh, 100px);
+  font-size: min(6vw, 11vh, 80px);
   line-height: 1;
   position: relative;
   z-index: 1;
@@ -4224,8 +4222,7 @@ input, textarea, select {
 }
 .kw-temp {
   font-family: var(--display);
-  /* Bound by both width AND height so it never overflows the weather card. */
-  font-size: min(8.5vw, 16vh, 110px);
+  font-size: min(6.5vw, 11vh, 90px);
   line-height: 0.95;
   font-weight: 500;
   letter-spacing: -0.035em;
@@ -4487,8 +4484,8 @@ input, textarea, select {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  padding: 6px 3px;
+  gap: 4px;
+  padding: 6px 4px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -4496,9 +4493,8 @@ input, textarea, select {
   font-family: inherit;
   cursor: pointer;
   transition: all 0.2s var(--ease);
-  min-height: 0;
+  min-height: 50px;
   min-width: 0;
-  overflow: hidden;
 }
 .qt-tile:hover {
   background: var(--accent-soft);
@@ -4508,21 +4504,19 @@ input, textarea, select {
 }
 .qt-tile:active { transform: scale(0.94); }
 .qt-tile .qt-icon {
-  font-size: clamp(18px, min(2.2vw, 3.4vh), 26px);
+  font-size: clamp(16px, min(1.9vw, 2.8vh), 22px);
   line-height: 1;
   flex-shrink: 0;
 }
 .qt-tile .qt-label {
-  font-size: clamp(9px, min(1vw, 1.5vh), 11px);
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-align: center;
   line-height: 1.15;
-  word-break: break-word;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  flex-shrink: 0;
+  word-break: keep-all;
+  white-space: nowrap;
 }
 .qt-tile.qt-lock {
   background: linear-gradient(135deg, var(--surface-2), var(--surface));
@@ -6880,7 +6874,7 @@ body::before {
                   <span class="qt-icon">▶️</span><span class="qt-label">YouTube</span>
                 </button>
                 <button class="qt-tile qt-lock" onclick="enterScreensaver()" style="grid-column: 1 / -1;">
-                  <span class="qt-icon">🌙</span><span class="qt-label">Lock Screen</span>
+                  <span class="qt-icon">🌙</span><span class="qt-label">Lock</span>
                 </button>
               </div>
               <!-- keep todayChores element so renderDashboard's chore code doesn't error -->
@@ -7553,6 +7547,13 @@ body::before {
             <div class="settings-desc">ZIP code (48044) or city name (Macomb, MI)</div>
           </div>
           <input class="settings-input" id="setWeatherLoc" type="text" onchange="saveSetting('weatherLocation', this.value); fetchWeather();">
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">YouTube API Key <span style="font-weight:400;color:var(--text-3);">(optional)</span></div>
+            <div class="settings-desc">For reliable inline YouTube search. Free key at <em>console.cloud.google.com</em> → enable "YouTube Data API v3" → Credentials. Without a key, the app falls back to public mirrors.</div>
+          </div>
+          <input class="settings-input" id="setYTApiKey" type="text" placeholder="AIza…" onchange="saveSetting('ytApiKey', this.value.trim())" style="font-family: var(--mono); font-size: 12px; min-width: 260px;">
         </div>
 
         <div class="settings-row" style="border-top: 1px solid var(--border-strong); padding-top: 24px; margin-top: 8px;">
@@ -8406,6 +8407,9 @@ const defaultState = () => ({
     followedLeagues: ['football/nfl'],   // dashboard cycles through these
     favoriteTeam: '',                     // free-text team/city filter (e.g., "Lions" or "DET")
     sportsRotateSeconds: 12,              // dashboard rotation interval
+    // YouTube — optional Data API key for guaranteed inline search
+    // Get one free at https://console.cloud.google.com → APIs → YouTube Data API v3
+    ytApiKey: '',
   },
   pets: [
     { id: 'axel', name: 'Axel', emoji: '🐕', color: '#fbbf24', type: 'dog', breed: '', birthday: '', notes: '', fedBreakfast: false, fedDinner: false, treats: 0, lastReset: '' },
@@ -12325,6 +12329,8 @@ function renderFamily() {
   if (fontSel && typeof getGoffFont === 'function') {
     fontSel.value = getGoffFont();
   }
+  const ytKey = document.getElementById('setYTApiKey');
+  if (ytKey) ytKey.value = state.settings.ytApiKey || '';
   // Slideshow / screensaver settings
   const ps = document.getElementById('setPhotoSpeed');
   if (ps) ps.value = String(state.settings.photoSpeed || 8);
@@ -13723,19 +13729,29 @@ function ytPlay() {
   }
 }
 
-// ---- INLINE SEARCH via public Piped/Invidious APIs (no API key) ----
-// We try a list of mirrors in order; first one that returns videos wins.
-// Public instances rotate so the list may need refreshing over time.
+// ---- INLINE SEARCH ----
+// Two paths:
+//  1. If user has provided their own YouTube Data API key in settings → use official API (100% reliable)
+//  2. Otherwise → try a chain of public Piped/Invidious mirrors (works most of the time)
 const YT_SEARCH_INSTANCES = [
-  { kind: 'piped',     base: 'https://pipedapi.kavin.rocks' },
-  { kind: 'piped',     base: 'https://api-piped.mha.fi' },
-  { kind: 'piped',     base: 'https://pipedapi.tokhmi.xyz' },
+  // Piped (search format: /search?q=Q&filter=videos)
   { kind: 'piped',     base: 'https://pipedapi.adminforge.de' },
+  { kind: 'piped',     base: 'https://piapi.ggtyler.dev' },
+  { kind: 'piped',     base: 'https://pipedapi.r4fo.com' },
+  { kind: 'piped',     base: 'https://api-piped.mha.fi' },
+  { kind: 'piped',     base: 'https://pipedapi.smnz.de' },
+  { kind: 'piped',     base: 'https://pipedapi.darkness.services' },
+  { kind: 'piped',     base: 'https://pipedapi.in.projectsegfau.lt' },
+  { kind: 'piped',     base: 'https://pipedapi.tokhmi.xyz' },
   { kind: 'piped',     base: 'https://pipedapi.ducks.party' },
-  { kind: 'invidious', base: 'https://yewtu.be' },
-  { kind: 'invidious', base: 'https://invidious.io.lol' },
-  { kind: 'invidious', base: 'https://inv.tux.pizza' },
+  // Invidious (search format: /api/v1/search?q=Q&type=video)
   { kind: 'invidious', base: 'https://invidious.privacydev.net' },
+  { kind: 'invidious', base: 'https://yewtu.be' },
+  { kind: 'invidious', base: 'https://inv.tux.pizza' },
+  { kind: 'invidious', base: 'https://invidious.io.lol' },
+  { kind: 'invidious', base: 'https://invidious.fdn.fr' },
+  { kind: 'invidious', base: 'https://invidious.flokinet.to' },
+  { kind: 'invidious', base: 'https://inv.nadeko.net' },
 ];
 
 async function ytFetchWithTimeout(url, ms) {
@@ -13755,14 +13771,43 @@ async function ytSearchInline(query) {
 
   section.style.display = '';
   if (titleEl) titleEl.textContent = `🔎 Searching for "${query}"…`;
-  results.innerHTML = '<div class="yt-loading">Searching across video servers</div>';
+  results.innerHTML = '<div class="yt-loading">Searching</div>';
 
+  // 1) Official YouTube Data API path (if user set their key in settings)
+  const apiKey = (state.settings.ytApiKey || '').trim();
+  if (apiKey) {
+    try {
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=24&q=${encodeURIComponent(query)}&key=${encodeURIComponent(apiKey)}`;
+      const r = await ytFetchWithTimeout(url, 10000);
+      if (r.ok) {
+        const d = await r.json();
+        const items = (d.items || []).map(it => ({
+          id: it.id?.videoId,
+          title: it.snippet?.title || '',
+          channel: it.snippet?.channelTitle || '',
+          duration: 0,
+          thumbnail: it.snippet?.thumbnails?.medium?.url
+                  || it.snippet?.thumbnails?.default?.url
+                  || `https://i.ytimg.com/vi/${it.id?.videoId}/mqdefault.jpg`,
+        })).filter(i => i.id && i.id.length === 11);
+        if (items.length > 0) {
+          ytRenderResults(items, query);
+          return;
+        }
+      } else if (r.status === 403) {
+        // Quota exceeded or invalid key
+        toast('YouTube API key issue (check quota or key in Family → Settings)', 'error');
+      }
+    } catch (e) { /* fall through to public mirrors */ }
+  }
+
+  // 2) Public mirror chain — try each until one returns results
   for (const inst of YT_SEARCH_INSTANCES) {
     try {
       const url = inst.kind === 'piped'
         ? `${inst.base}/search?q=${encodeURIComponent(query)}&filter=videos`
         : `${inst.base}/api/v1/search?q=${encodeURIComponent(query)}&type=video`;
-      const r = await ytFetchWithTimeout(url, 6000);
+      const r = await ytFetchWithTimeout(url, 8000);
       if (!r.ok) continue;
       const d = await r.json();
       let items = [];
@@ -13793,11 +13838,14 @@ async function ytSearchInline(query) {
       }
     } catch (e) { /* try next instance */ }
   }
-  // Every instance failed
+  // All paths failed
   if (titleEl) titleEl.textContent = `🔎 Search Results for "${query}"`;
   results.innerHTML = `
     <div class="yt-results-error" style="grid-column: 1 / -1;">
-      <div>All public search servers are unreachable right now.</div>
+      <div style="margin-bottom:8px;"><strong>Search couldn't reach any servers.</strong></div>
+      <div style="font-size:12px;line-height:1.5;color:var(--text-3);max-width:480px;margin:0 auto 12px;">
+        For 100% reliable search, add a free YouTube Data API key in <strong>Family → Settings → YouTube API Key</strong> (takes 5 minutes at <em>console.cloud.google.com</em>).
+      </div>
       <button class="tool-btn yt-fallback-btn" onclick="ytSearchExternal()">Open YouTube Search ↗</button>
     </div>
   `;
