@@ -4637,9 +4637,10 @@ input, textarea, select {
   #view-dashboard.view { padding: 14px 18px; }
   .dash-kiosk { gap: 8px; grid-template-rows: minmax(140px, 0.8fr) minmax(160px, 1fr) minmax(190px, 1.3fr); }
   .kiosk-time { padding: 12px 22px 14px; }
-  .k-greet { font-size: 20px; }
-  .k-clock { font-size: clamp(120px, 16vw, 200px); }
-  .k-date { font-size: 17px; }
+  .k-greet { font-size: 18px; }
+  /* Match the main rule's cap so it doesn't override and overflow */
+  .k-clock { font-size: min(6vw, 11vh, 75px); }
+  .k-date { font-size: 15px; }
   .kiosk-weather { padding: 16px 20px; gap: 14px; }
   .kw-icon { font-size: clamp(60px, 7.5vw, 100px); }
   .kw-temp { font-size: clamp(60px, 7.8vw, 110px); font-weight: 500; }
@@ -4670,7 +4671,7 @@ input, textarea, select {
   .dogs-strip { grid-template-columns: 1fr 1fr; }
   .kiosk-bottom { grid-template-columns: 1fr; }
   .qt-grid { grid-template-columns: 1fr 1fr 1fr 1fr; }
-  .k-clock { font-size: clamp(76px, 22vw, 120px); }
+  .k-clock { font-size: min(8vw, 18vh, 80px); }
   .kw-icon { font-size: 64px; }
   .kw-temp { font-size: 70px; }
 }
@@ -13312,8 +13313,10 @@ function setTool(name) {
   if (name === 'youtube') renderYTHistory();
 }
 
-// Pause / blank the YouTube tool iframe when navigating away so audio doesn't keep playing.
-// (Home widget keeps playing — that's handled separately.)
+// When navigating from the YouTube tool to anywhere else:
+//   • If going home AND home has a tracked video → transfer playback back to home
+//     at the full-tab's current timestamp (seamless seek).
+//   • Always clear the full-tab iframe so audio doesn't bleed elsewhere.
 (function() {
   const _origSetView = window.setView;
   if (typeof _origSetView !== 'function') return;
@@ -13321,12 +13324,43 @@ function setTool(name) {
     const wasOnYoutube = document.getElementById('tool-youtube')?.classList.contains('active');
     const result = _origSetView.apply(this, arguments);
     if (wasOnYoutube && view !== 'tools') {
-      const f = document.getElementById('ytPlayerFrame');
-      // Destroy the YT.Player object before clearing src
+      // Capture the full-tab's current timestamp BEFORE we tear it down
+      let backTime = 0;
+      let fullVideoId = null;
+      if (typeof fullYTPlayer !== 'undefined' && fullYTPlayer) {
+        try { backTime = Math.floor(fullYTPlayer.getCurrentTime() || 0); } catch (e) {}
+        try { fullVideoId = fullYTPlayer.getVideoData?.()?.video_id || null; } catch (e) {}
+      }
+
+      // If returning home and home has a video tracked, resume it at backTime
+      if (view === 'dashboard' && _currentDashYTVideoId) {
+        const videoId = _currentDashYTVideoId;
+        // Prefer the live full-tab playback time (in case user changed videos in full tab)
+        if (fullVideoId === videoId && dashYTPlayer && typeof dashYTPlayer.seekTo === 'function') {
+          try {
+            dashYTPlayer.seekTo(backTime, true);
+            dashYTPlayer.playVideo();
+            _ytFloatPaused = false;
+            const playBtn = document.getElementById('ytFloatPlayBtn');
+            if (playBtn) playBtn.textContent = '⏸';
+          } catch (e) {
+            // If seek/play fails, force a fresh load at the timestamp
+            setTimeout(() => dashYTPlay(videoId, '', backTime), 50);
+          }
+        } else {
+          // Different video in full tab, or no live Player — load fresh
+          const targetId = fullVideoId || videoId;
+          _currentDashYTVideoId = targetId;
+          setTimeout(() => dashYTPlay(targetId, '', backTime), 50);
+        }
+      }
+
+      // Clear the full-tab iframe regardless (so it doesn't keep playing in background)
       if (typeof fullYTPlayer !== 'undefined' && fullYTPlayer && typeof fullYTPlayer.destroy === 'function') {
         try { fullYTPlayer.destroy(); } catch (e) {}
         fullYTPlayer = null;
       }
+      const f = document.getElementById('ytPlayerFrame');
       if (f && f.src) {
         f.src = '';
         f.style.display = 'none';
@@ -15254,44 +15288,36 @@ function updateYTFloatVisibility() {
 })();
 
 // setTool hook: when entering the YouTube tool tab while home is playing,
-// transfer the current video INTO the full-tab player AT THE SAME TIMESTAMP.
+// PAUSE the home player and load the same video in the full tab at that timestamp.
+// We keep the home iframe + Player alive so returning to home resumes seamlessly.
 (function() {
   const _origSetTool = window.setTool;
   if (typeof _origSetTool !== 'function') return;
   window.setTool = function(name) {
     const result = _origSetTool.apply(this, arguments);
-    if (name === 'youtube') {
-      if (_currentDashYTVideoId) {
-        const transferId = _currentDashYTVideoId;
-        // Capture current playback position from the home Player
-        let startSec = 0;
-        if (dashYTPlayer && typeof dashYTPlayer.getCurrentTime === 'function') {
-          try { startSec = Math.floor(dashYTPlayer.getCurrentTime() || 0); } catch (e) {}
-        }
-        // Stop home iframe to avoid double playback
-        const homeIframe = document.getElementById('dashYTPlayer');
-        if (dashYTPlayer && typeof dashYTPlayer.destroy === 'function') {
-          try { dashYTPlayer.destroy(); } catch (e) {}
-          dashYTPlayer = null;
-        }
-        if (homeIframe) {
-          homeIframe.src = '';
-          homeIframe.style.display = 'none';
-          homeIframe.classList.remove('yt-floating');
-        }
-        const empty = document.getElementById('dashYTEmpty');
-        if (empty) empty.style.display = 'flex';
-        document.getElementById('ytFloatControls')?.classList.remove('visible');
-        _currentDashYTVideoId = null;
-
-        // Load same video in the full-tab player at the same timestamp
-        const full = document.getElementById('ytPlayerFrame');
-        const isAlreadyLoaded = full && full.src && full.src.includes(transferId);
-        if (!isAlreadyLoaded && typeof ytLoadVideo === 'function') {
-          // Tiny delay so the YouTube tool pane is in the DOM and active
-          setTimeout(() => ytLoadVideo(transferId, startSec), 50);
-        }
-        if (typeof renderDashYT === 'function') renderDashYT();
+    if (name === 'youtube' && _currentDashYTVideoId) {
+      const videoId = _currentDashYTVideoId;
+      // Capture current playback position from the home Player
+      let startSec = 0;
+      if (dashYTPlayer && typeof dashYTPlayer.getCurrentTime === 'function') {
+        try { startSec = Math.floor(dashYTPlayer.getCurrentTime() || 0); } catch (e) {}
+      }
+      // PAUSE home (don't destroy — we want the iframe ready to resume on return)
+      if (dashYTPlayer && typeof dashYTPlayer.pauseVideo === 'function') {
+        try { dashYTPlayer.pauseVideo(); } catch (e) {}
+      }
+      _ytFloatPaused = true;
+      const playBtn = document.getElementById('ytFloatPlayBtn');
+      if (playBtn) playBtn.textContent = '▶';
+      // Hide floating UI (we're now on YouTube tab)
+      const homeIframe = document.getElementById('dashYTPlayer');
+      if (homeIframe) homeIframe.classList.remove('yt-floating');
+      document.getElementById('ytFloatControls')?.classList.remove('visible');
+      // Load same video in the full-tab player at the same timestamp
+      const full = document.getElementById('ytPlayerFrame');
+      const isAlreadyLoaded = full && full.src && full.src.includes(videoId);
+      if (!isAlreadyLoaded && typeof ytLoadVideo === 'function') {
+        setTimeout(() => ytLoadVideo(videoId, startSec), 50);
       }
     }
     setTimeout(updateYTFloatVisibility, 0);
