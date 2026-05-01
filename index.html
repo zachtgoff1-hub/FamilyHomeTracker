@@ -3266,11 +3266,26 @@ input, textarea, select {
 
 .photo-tile:hover { transform: scale(1.02); border-color: var(--accent); }
 
-.photo-tile img {
+.photo-tile img,
+.photo-tile video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  background: #000;
+}
+.photo-tile-badge {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 3px 7px;
+  border-radius: 999px;
+  pointer-events: none;
 }
 
 .photo-del {
@@ -3429,6 +3444,22 @@ input, textarea, select {
   background-repeat: no-repeat;
   z-index: 2;
 }
+/* Video element — fills slot, contained so it isn't cropped */
+.ss-photo-vid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+  z-index: 2;
+  display: none;
+}
+/* Show photo layers OR video layer based on type */
+.ss-photo[data-type="video"] .ss-photo-bg,
+.ss-photo[data-type="video"] .ss-photo-fg { display: none; }
+.ss-photo[data-type="video"] .ss-photo-vid { display: block; }
+.screensaver[data-mode="cover"] .ss-photo-vid { object-fit: cover; }
 
 /* --- Screensaver display modes (driven by data-mode attribute set by JS) --- */
 .screensaver[data-mode="cover"] .ss-photo-fg { background-size: cover; }
@@ -4381,7 +4412,8 @@ input, textarea, select {
   transform: scale(1.18);
   z-index: 0;
 }
-.kiosk-bottom .photo-widget img.pw-fg {
+.kiosk-bottom .photo-widget img.pw-fg,
+.kiosk-bottom .photo-widget video.pw-fg {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -4389,7 +4421,9 @@ input, textarea, select {
   object-fit: contain;
   z-index: 1;
   image-rendering: auto;
+  background: #000;
 }
+.kiosk-bottom .photo-widget[data-mode="cover"] video.pw-fg { object-fit: cover; }
 .kiosk-bottom .photo-widget-empty .pw-icon { font-size: 56px; }
 .kiosk-bottom .photo-widget-empty .pw-text {
   font-size: 16px;
@@ -7755,14 +7789,14 @@ body::before {
 
       <div class="sync-section" style="margin-top: 32px;">
         <div class="sync-section-head">
-          <div class="sync-section-title"><span class="icon">📷</span>Family Photos</div>
+          <div class="sync-section-title"><span class="icon">📷</span>Family Photos &amp; Videos</div>
           <button type="button" class="photo-upload-btn" onclick="triggerPhotoUpload(event)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-            Add Photos
+            Add Photos &amp; Videos
           </button>
-          <input type="file" id="photoFileInput" accept="image/*" multiple onchange="handlePhotoUpload(this)" style="position:absolute;left:-9999px;top:-9999px;opacity:0;width:1px;height:1px;">
+          <input type="file" id="photoFileInput" accept="image/*,video/*" multiple onchange="handlePhotoUpload(this)" style="position:absolute;left:-9999px;top:-9999px;opacity:0;width:1px;height:1px;">
         </div>
-        <p>Photos are stored on this device only (not synced) — perfect for a wall tablet screensaver. Upload as many as you want; they're auto-compressed to save space.</p>
+        <p>Photos &amp; videos are stored on this device only (not synced) — perfect for a wall tablet screensaver. Photos are auto-compressed; videos up to 100&nbsp;MB each play full-screen during the slideshow.</p>
         <div class="photo-grid" id="photoGrid"></div>
       </div>
 
@@ -8607,13 +8641,15 @@ body::before {
      SCREENSAVER
      ============================================ -->
 <div class="screensaver" id="screensaver">
-  <div class="ss-photo" id="ssPhotoA">
+  <div class="ss-photo" id="ssPhotoA" data-type="photo">
     <div class="ss-photo-bg"></div>
     <div class="ss-photo-fg"></div>
+    <video class="ss-photo-vid" muted playsinline></video>
   </div>
-  <div class="ss-photo" id="ssPhotoB">
+  <div class="ss-photo" id="ssPhotoB" data-type="photo">
     <div class="ss-photo-bg"></div>
     <div class="ss-photo-fg"></div>
+    <video class="ss-photo-vid" muted playsinline></video>
   </div>
   <div class="ss-overlay">
     <div class="ss-empty" id="ssEmptyState" style="display:none;">
@@ -11303,32 +11339,123 @@ function clearMealAssignment() {
   toast('Cleared');
 }
 
-// ---------- PHOTO ALBUM (local-only) ----------
-const PHOTOS_KEY = 'goff_family_hub_photos_v1';
-let photoAlbum = []; // {id, dataUrl, addedAt}
+// ---------- MEDIA ALBUM (photos + videos, stored in IndexedDB) ----------
+// Each item: { id, type: 'photo'|'video', blob, mime, addedAt, url (object URL, in-memory only) }
+const PHOTOS_KEY = 'goff_family_hub_photos_v1';     // legacy key, migrated to IndexedDB on first load
+const MEDIA_DB_NAME = 'goff_media_v1';
+const MEDIA_STORE = 'media';
+const MEDIA_MIGRATED_FLAG = 'goff_media_migrated_v1';
+let photoAlbum = []; // {id, type, blob, mime, addedAt, url}
+let _mediaDb = null;
 
-function loadPhotos() {
+function _openMediaDb() {
+  return new Promise((resolve, reject) => {
+    if (_mediaDb) return resolve(_mediaDb);
+    if (!('indexedDB' in window)) return reject(new Error('No IndexedDB'));
+    const req = indexedDB.open(MEDIA_DB_NAME, 1);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(MEDIA_STORE)) {
+        db.createObjectStore(MEDIA_STORE, { keyPath: 'id' });
+      }
+    };
+    req.onsuccess = () => { _mediaDb = req.result; resolve(req.result); };
+    req.onerror = () => reject(req.error);
+  });
+}
+async function _mediaPut(item) {
+  const db = await _openMediaDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction([MEDIA_STORE], 'readwrite');
+    tx.objectStore(MEDIA_STORE).put(item);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function _mediaGetAll() {
   try {
+    const db = await _openMediaDb();
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction([MEDIA_STORE], 'readonly');
+      const req = tx.objectStore(MEDIA_STORE).getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    });
+  } catch (e) { return []; }
+}
+async function _mediaDelete(id) {
+  const db = await _openMediaDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction([MEDIA_STORE], 'readwrite');
+    tx.objectStore(MEDIA_STORE).delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+// Convert a Blob to an object URL for inline display
+function _toUrl(blob) {
+  try { return URL.createObjectURL(blob); } catch (e) { return ''; }
+}
+
+// One-time migration: move legacy localStorage photos into IndexedDB
+async function _migrateLegacyPhotos() {
+  try {
+    if (localStorage.getItem(MEDIA_MIGRATED_FLAG) === 'done') return;
     const raw = localStorage.getItem(PHOTOS_KEY);
-    if (raw) photoAlbum = JSON.parse(raw);
-  } catch (e) {
-    console.error('Failed to load photos', e);
-    photoAlbum = [];
-  }
+    if (!raw) {
+      localStorage.setItem(MEDIA_MIGRATED_FLAG, 'done');
+      return;
+    }
+    const old = JSON.parse(raw);
+    let migrated = 0;
+    for (const p of old) {
+      if (!p.dataUrl) continue;
+      try {
+        const r = await fetch(p.dataUrl);
+        const blob = await r.blob();
+        await _mediaPut({
+          id: p.id || uid(),
+          type: 'photo',
+          blob,
+          mime: blob.type || 'image/jpeg',
+          addedAt: p.addedAt || Date.now(),
+        });
+        migrated++;
+      } catch (e) { console.warn('Skipped photo migration:', e); }
+    }
+    localStorage.setItem(MEDIA_MIGRATED_FLAG, 'done');
+    if (migrated > 0) {
+      // Free up the localStorage space (still keep flag)
+      try { localStorage.removeItem(PHOTOS_KEY); } catch (e) {}
+      console.log(`Migrated ${migrated} photos from localStorage to IndexedDB`);
+    }
+  } catch (e) { console.error('Photo migration failed', e); }
 }
 
-function savePhotos() {
-  try {
-    localStorage.setItem(PHOTOS_KEY, JSON.stringify(photoAlbum));
-  } catch (e) {
-    console.error('Photo save failed:', e);
-    toast('Storage full — delete some photos first', 'error');
-    return false;
-  }
-  return true;
+async function loadPhotos() {
+  // Migrate first (one-time)
+  await _migrateLegacyPhotos();
+  // Load all media from IndexedDB
+  const items = await _mediaGetAll();
+  // Revoke any old object URLs first
+  photoAlbum.forEach(p => { if (p.url) try { URL.revokeObjectURL(p.url); } catch (e) {} });
+  photoAlbum = items.map(it => ({
+    id: it.id,
+    type: it.type || 'photo',
+    blob: it.blob,
+    mime: it.mime || (it.type === 'video' ? 'video/mp4' : 'image/jpeg'),
+    addedAt: it.addedAt || 0,
+    url: _toUrl(it.blob),
+  }));
+  photoAlbum.sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0));
+  // Re-render now that the album is populated (init() may have called renderAll first)
+  try { if (typeof renderPhotoAlbum === 'function') renderPhotoAlbum(); } catch (e) {}
+  try { if (typeof renderPhotoWidget === 'function') renderPhotoWidget(); } catch (e) {}
 }
 
-function compressImage(file, maxDim = 2000, quality = 0.90) {
+// Compress an image File to a JPEG Blob (so we don't waste space on raw originals)
+function compressImageToBlob(file, maxDim = 2000, quality = 0.90) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -11344,13 +11471,28 @@ function compressImage(file, maxDim = 2000, quality = 0.90) {
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, w, h);
         ctx.drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', quality));
+        canvas.toBlob(
+          (blob) => blob ? resolve(blob) : reject(new Error('toBlob failed')),
+          'image/jpeg',
+          quality
+        );
       };
       img.onerror = () => reject(new Error('Image load failed'));
       img.src = e.target.result;
     };
     reader.onerror = () => reject(new Error('File read failed'));
     reader.readAsDataURL(file);
+  });
+}
+
+// Backwards-compat shim: old code may still call compressImage(file) → return a dataUrl
+async function compressImage(file, maxDim = 2000, quality = 0.90) {
+  const blob = await compressImageToBlob(file, maxDim, quality);
+  return await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
   });
 }
 
@@ -11374,37 +11516,58 @@ function triggerPhotoUpload(ev) {
   }
 }
 
+// Reasonable per-video upload limit. Videos are stored as-is so this caps total disk use.
+const MAX_VIDEO_BYTES = 100 * 1024 * 1024; // 100 MB per video
+
 async function handlePhotoUpload(input) {
   const files = Array.from(input.files || []);
   if (!files.length) return;
-  toast(`Processing ${files.length} photo${files.length === 1 ? '' : 's'}…`);
+  toast(`Processing ${files.length} item${files.length === 1 ? '' : 's'}…`);
   let added = 0, failed = 0;
   for (const file of files) {
-    if (!file.type.startsWith('image/')) { failed++; continue; }
+    const isVideo = file.type.startsWith('video/');
+    const isImage = file.type.startsWith('image/');
+    if (!isVideo && !isImage) { failed++; continue; }
     try {
-      const dataUrl = await compressImage(file);
-      photoAlbum.push({
-        id: uid(),
-        dataUrl,
-        addedAt: Date.now(),
-      });
+      let blob, mime, type;
+      if (isImage) {
+        blob = await compressImageToBlob(file);
+        mime = 'image/jpeg';
+        type = 'photo';
+      } else {
+        if (file.size > MAX_VIDEO_BYTES) {
+          toast(`"${file.name}" is over 100 MB — skipped`, 'error');
+          failed++;
+          continue;
+        }
+        blob = file;
+        mime = file.type || 'video/mp4';
+        type = 'video';
+      }
+      const item = { id: uid(), type, blob, mime, addedAt: Date.now() };
+      await _mediaPut(item);
+      photoAlbum.unshift({ ...item, url: _toUrl(blob) });
       added++;
     } catch (e) {
+      console.error('Upload failed:', e);
       failed++;
     }
   }
-  if (savePhotos()) {
-    renderPhotoAlbum();
-    renderPhotoWidget();
-    toast(`Added ${added} photo${added === 1 ? '' : 's'}${failed ? ` (${failed} failed)` : ''}`, 'success');
-  }
+  renderPhotoAlbum();
+  renderPhotoWidget();
+  const summary = added === 0
+    ? `Couldn't add anything${failed ? ` (${failed} failed)` : ''}`
+    : `Added ${added} item${added === 1 ? '' : 's'}${failed ? ` · ${failed} failed` : ''}`;
+  toast(summary, added > 0 ? 'success' : 'error');
   input.value = '';
 }
 
 function deletePhoto(id) {
-  confirmAction('Delete this photo?', () => {
+  confirmAction('Delete this item?', async () => {
+    const item = photoAlbum.find(p => p.id === id);
+    if (item && item.url) { try { URL.revokeObjectURL(item.url); } catch (e) {} }
     photoAlbum = photoAlbum.filter(p => p.id !== id);
-    savePhotos();
+    try { await _mediaDelete(id); } catch (e) {}
     renderPhotoAlbum();
     renderPhotoWidget();
   });
@@ -11414,19 +11577,24 @@ function renderPhotoAlbum() {
   const c = document.getElementById('photoGrid');
   if (!c) return;
   if (photoAlbum.length === 0) {
-    c.innerHTML = '<div class="empty-mini" style="padding:40px 20px; font-size:13px; grid-column:1/-1;">No photos yet. Tap "Add Photos" to get started.</div>';
+    c.innerHTML = '<div class="empty-mini" style="padding:40px 20px; font-size:13px; grid-column:1/-1;">No photos or videos yet. Tap "Add Photos & Videos" to get started.</div>';
     return;
   }
-  // Newest first
   const sorted = [...photoAlbum].sort((a, b) => b.addedAt - a.addedAt);
-  c.innerHTML = sorted.map(p => `
-    <div class="photo-tile">
-      <img src="${p.dataUrl}" alt="Family photo">
-      <button class="photo-del" onclick="event.stopPropagation(); deletePhoto('${p.id}')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-2 14a2 2 0 01-2 2H9a2 2 0 01-2-2L5 6"/></svg>
-      </button>
-    </div>
-  `).join('');
+  c.innerHTML = sorted.map(p => {
+    const isVideo = p.type === 'video';
+    return `
+      <div class="photo-tile ${isVideo ? 'video-tile' : ''}">
+        ${isVideo
+          ? `<video src="${p.url}" muted preload="metadata" playsinline></video>
+             <span class="photo-tile-badge">▶ VIDEO</span>`
+          : `<img src="${p.url}" alt="Family photo">`}
+        <button class="photo-del" onclick="event.stopPropagation(); deletePhoto('${p.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-2 14a2 2 0 01-2 2H9a2 2 0 01-2-2L5 6"/></svg>
+        </button>
+      </div>
+    `;
+  }).join('');
 }
 
 // Dashboard photo widget (rotating)
@@ -11450,20 +11618,25 @@ function renderPhotoWidget() {
     return;
   }
 
-  // Random photo, with rotation. Two-layer render honoring photoMode setting:
+  // Random media, with rotation. Two-layer render honoring photoMode setting:
   //   .pw-bg = blurred, scaled-up backdrop fill (Apple-style)  -- only in "contain" mode
-  //   .pw-fg = main image (contain or cover, depending on mode)
+  //   .pw-fg = main image OR video (contain or cover, depending on mode)
   const showPhoto = () => {
     const photo = getNextPhoto('widget', widgetPhotoIdx);
+    if (!photo) return;
     const mode = state.settings.photoMode || 'contain';
-    const safeUrl = photo.dataUrl.replace(/'/g, "\\'");
+    const safeUrl = (photo.url || '').replace(/'/g, "\\'");
     widget.setAttribute('data-mode', mode);
-    const bgHtml = mode === 'contain'
+    widget.setAttribute('data-type', photo.type || 'photo');
+    const bgHtml = (mode === 'contain' && photo.type !== 'video')
       ? `<div class="pw-bg" style="background-image:url('${safeUrl}')"></div>`
       : '';
+    const mediaHtml = photo.type === 'video'
+      ? `<video class="pw-fg" src="${photo.url}" autoplay muted loop playsinline></video>`
+      : `<img class="pw-fg" src="${photo.url}" alt="Family">`;
     widget.innerHTML = `
       ${bgHtml}
-      <img class="pw-fg" src="${photo.dataUrl}" alt="Family">
+      ${mediaHtml}
       <div class="photo-widget-overlay">
         <div class="photo-widget-label">Tap for slideshow →</div>
       </div>
@@ -11540,12 +11713,8 @@ function enterScreensaver() {
     ssIdx = (state.settings.photoOrder === 'random')
       ? Math.floor(Math.random() * photoAlbum.length)
       : 0;
+    // showSSPhoto self-schedules the next item (handles video onended too)
     showSSPhoto(true);
-    if (photoAlbum.length > 1) {
-      if (ssTimer) clearInterval(ssTimer);
-      const speedMs = ((state.settings.photoSpeed || 8) + 1) * 1000; // +1s buffer over crossfade
-      ssTimer = setInterval(() => showSSPhoto(false), speedMs);
-    }
   }
 
   tickSSClock();
@@ -11564,7 +11733,10 @@ function exitScreensaver() {
   ssActive = false;
   document.getElementById('screensaver').classList.remove('active');
   if (ssTimer) { clearInterval(ssTimer); ssTimer = null; }
+  if (typeof ssNextTimer !== 'undefined' && ssNextTimer) { clearTimeout(ssNextTimer); ssNextTimer = null; }
   if (ssClockTimer) { clearInterval(ssClockTimer); ssClockTimer = null; }
+  // Pause any playing videos
+  document.querySelectorAll('.ss-photo-vid').forEach(v => { try { v.pause(); } catch (e) {} });
   try {
     if (document.exitFullscreen && document.fullscreenElement) document.exitFullscreen().catch(() => {});
     else if (document.webkitExitFullscreen && document.webkitFullscreenElement) document.webkitExitFullscreen();
@@ -11574,24 +11746,67 @@ function exitScreensaver() {
 function showSSPhoto(initial) {
   if (photoAlbum.length === 0) return;
   const photo = getNextPhoto('ss', ssIdx) || photoAlbum[ssIdx % photoAlbum.length];
+  if (!photo) return;
   const showId = ssLayer === 'A' ? 'ssPhotoA' : 'ssPhotoB';
   const hideId = ssLayer === 'A' ? 'ssPhotoB' : 'ssPhotoA';
   const showEl = document.getElementById(showId);
   const hideEl = document.getElementById(hideId);
 
-  showEl.style.setProperty('--ss-img', `url('${photo.dataUrl}')`);
+  // Pause whichever video was on the outgoing layer
+  const hideVid = hideEl.querySelector('.ss-photo-vid');
+  if (hideVid) { try { hideVid.pause(); } catch (e) {} }
+
+  // Set the right type and source on the incoming layer
+  if (photo.type === 'video') {
+    showEl.setAttribute('data-type', 'video');
+    showEl.style.removeProperty('--ss-img');
+    const vid = showEl.querySelector('.ss-photo-vid');
+    if (vid) {
+      vid.src = photo.url;
+      vid.currentTime = 0;
+      // Mute so autoplay is allowed by every browser
+      vid.muted = true;
+      vid.play().catch(() => { /* autoplay may be blocked momentarily; will retry on next tick */ });
+      // When the video ends, advance to the next item right away
+      vid.onended = () => {
+        if (ssActive) showSSPhoto(false);
+      };
+    }
+  } else {
+    showEl.setAttribute('data-type', 'photo');
+    showEl.style.setProperty('--ss-img', `url('${photo.url}')`);
+    const vid = showEl.querySelector('.ss-photo-vid');
+    if (vid) { try { vid.pause(); vid.removeAttribute('src'); vid.load(); } catch (e) {} }
+  }
+
   showEl.classList.remove('zooming');
-  // Force reflow so CSS transition runs
   void showEl.offsetWidth;
   showEl.classList.add('visible');
-  // Trigger Ken Burns zoom after a moment (CSS will null it out if data-kb="off")
-  setTimeout(() => showEl.classList.add('zooming'), 100);
+  // Ken Burns only for photos (zooming a video looks weird)
+  if (photo.type !== 'video') {
+    setTimeout(() => showEl.classList.add('zooming'), 100);
+  }
 
   if (!initial) hideEl.classList.remove('visible');
 
   ssLayer = ssLayer === 'A' ? 'B' : 'A';
   ssIdx = (ssIdx + 1) % photoAlbum.length;
+
+  // Self-schedule the NEXT item so videos can advance via 'onended'
+  // and photos still rotate at the user's chosen speed.
+  if (ssTimer) { clearInterval(ssTimer); ssTimer = null; }
+  if (ssNextTimer) { clearTimeout(ssNextTimer); ssNextTimer = null; }
+  if (photoAlbum.length > 1) {
+    if (photo.type === 'video') {
+      // Videos advance via onended; cap at 5 minutes as a fail-safe
+      ssNextTimer = setTimeout(() => { if (ssActive) showSSPhoto(false); }, 5 * 60 * 1000);
+    } else {
+      const speedMs = ((state.settings.photoSpeed || 8) + 1) * 1000;
+      ssNextTimer = setTimeout(() => { if (ssActive) showSSPhoto(false); }, speedMs);
+    }
+  }
 }
+let ssNextTimer = null;
 
 function tickSSClock() {
   const now = new Date();
