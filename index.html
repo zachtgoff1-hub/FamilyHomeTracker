@@ -4124,9 +4124,9 @@ input, textarea, select {
   border-radius: var(--radius-xl);
   padding: clamp(10px, 1.6vh, 18px) clamp(16px, 2vw, 28px);
   display: grid;
-  /* 2-column layout: greet/date stack on the LEFT (auto width),
+  /* 2-column layout: greet/date stack on the LEFT (auto width, can shrink),
      clock fills the RIGHT column at full card height. */
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
   grid-template-rows: 1fr 1fr;
   grid-template-areas:
     "greet clock"
@@ -4180,10 +4180,11 @@ input, textarea, select {
 .k-clock {
   font-family: var(--display);
   font-weight: 600;
-  /* Tighter cap so the full "12:34 PM" string always fits with a buffer on each side. */
-  font-size: min(7vw, 14vh, 100px);
+  /* Aggressive cap so the clock can NEVER bleed into the greet/date column.
+     min() picks whichever bound is smallest. */
+  font-size: min(6vw, 12vh, 80px);
   line-height: 1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
   font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
   display: flex;
   align-items: center;
@@ -4193,16 +4194,18 @@ input, textarea, select {
   z-index: 1;
   color: var(--text);
   margin: 0;
+  min-width: 0;
   min-height: 0;
-  overflow: visible;
+  /* Clip any overflow so the digits/PM never spill into the left column */
+  overflow: hidden;
+  max-width: 100%;
   width: 100%;
-  padding: 0 6px;
+  padding: 0 4px;
   box-sizing: border-box;
 }
 .k-clock .ampm {
-  font-size: 0.32em;
+  font-size: 0.3em;
   flex-shrink: 0;
-  padding-right: 2px;
 }
 .k-clock .ampm {
   font-size: 0.28em;
@@ -6540,6 +6543,49 @@ input, textarea, select {
   overflow: hidden;
   flex: 1;
   min-width: 0;
+}
+
+/* When home YouTube iframe is "floating" (user navigated away while playing) */
+#dashYTPlayer.yt-floating {
+  position: fixed !important;
+  inset: auto 16px 16px auto !important;
+  width: 280px !important;
+  height: 158px !important;
+  z-index: 100;
+  border-radius: 12px;
+  border: 2px solid var(--c-coral);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.55);
+  display: block !important;
+}
+.yt-float-controls {
+  position: fixed;
+  bottom: 178px;
+  right: 16px;
+  z-index: 101;
+  display: none;
+  gap: 6px;
+}
+.yt-float-controls.visible { display: flex; }
+.yt-float-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  border: 1px solid var(--c-coral);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.15s var(--ease);
+}
+.yt-float-btn:hover {
+  background: var(--c-coral);
+  transform: scale(1.08);
 }
 
 /* Tablet portrait / smaller landscape */
@@ -13266,8 +13312,8 @@ function setTool(name) {
   if (name === 'youtube') renderYTHistory();
 }
 
-// Pause / blank the YouTube iframe when navigating away so audio doesn't keep playing.
-// Hook into setView to detect leaving the tools view.
+// Pause / blank the YouTube tool iframe when navigating away so audio doesn't keep playing.
+// (Home widget keeps playing — that's handled separately.)
 (function() {
   const _origSetView = window.setView;
   if (typeof _origSetView !== 'function') return;
@@ -13276,8 +13322,12 @@ function setTool(name) {
     const result = _origSetView.apply(this, arguments);
     if (wasOnYoutube && view !== 'tools') {
       const f = document.getElementById('ytPlayerFrame');
+      // Destroy the YT.Player object before clearing src
+      if (typeof fullYTPlayer !== 'undefined' && fullYTPlayer && typeof fullYTPlayer.destroy === 'function') {
+        try { fullYTPlayer.destroy(); } catch (e) {}
+        fullYTPlayer = null;
+      }
       if (f && f.src) {
-        // Stop playback by clearing the src
         f.src = '';
         f.style.display = 'none';
         const empty = document.getElementById('ytPlayerEmpty');
@@ -14211,6 +14261,59 @@ function renderSportsNews(data) {
   }).join('');
 }
 
+// ---------- YOUTUBE IFRAME PLAYER API (for seek-position handoff) ----------
+// Loaded once. window.onYouTubeIframeAPIReady fires when ready.
+let _ytApiReady = false;
+let _ytApiLoading = false;
+let dashYTPlayer = null;     // YT.Player attached to home mini iframe
+let fullYTPlayer = null;     // YT.Player attached to full-tab iframe
+
+function loadYTApi() {
+  if (_ytApiReady || _ytApiLoading) return;
+  if (window.YT && window.YT.Player) { _ytApiReady = true; return; }
+  _ytApiLoading = true;
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  tag.id = 'yt-iframe-api-script';
+  document.head.appendChild(tag);
+}
+window.onYouTubeIframeAPIReady = function() {
+  _ytApiReady = true;
+};
+
+// Wait until the API is loaded; resolves immediately if already ready.
+function whenYTApiReady() {
+  return new Promise((resolve) => {
+    if (_ytApiReady && window.YT && window.YT.Player) return resolve();
+    loadYTApi();
+    const start = Date.now();
+    const tick = () => {
+      if (_ytApiReady && window.YT && window.YT.Player) return resolve();
+      if (Date.now() - start > 10000) return resolve(); // give up after 10s, fall back to plain iframe
+      setTimeout(tick, 80);
+    };
+    tick();
+  });
+}
+
+// Attach a YT.Player object to an existing iframe (which already has src + enablejsapi=1).
+function _attachPlayer(iframeId) {
+  return new Promise((resolve) => {
+    if (!_ytApiReady || !window.YT || !window.YT.Player) return resolve(null);
+    try {
+      // Player attaches to the existing iframe element since the URL has enablejsapi=1
+      const p = new YT.Player(iframeId, {
+        events: {
+          onReady: () => resolve(p),
+          onError: () => resolve(p),
+        },
+      });
+      // Some browsers don't fire onReady reliably — fall back after a short timeout
+      setTimeout(() => resolve(p), 1500);
+    } catch (e) { resolve(null); }
+  });
+}
+
 // ---------- YOUTUBE (paste URL → embed inline; search opens external) ----------
 const YT_HIST_KEY = 'goff_yt_history_v1';
 let ytHistory = [];
@@ -14437,19 +14540,40 @@ function ytFormatDuration(seconds) {
   return `${m}:${String(sec).padStart(2,'0')}`;
 }
 
-function ytLoadVideo(videoId) {
+async function ytLoadVideo(videoId, startSeconds) {
   const frame = document.getElementById('ytPlayerFrame');
   const empty = document.getElementById('ytPlayerEmpty');
   if (!frame) return;
-  // Use the privacy-enhanced domain so cookies aren't dropped
-  frame.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+  startSeconds = Math.max(0, Math.floor(startSeconds || 0));
+
+  // Fast path — reuse existing Player
+  if (fullYTPlayer && typeof fullYTPlayer.loadVideoById === 'function' && frame.src) {
+    try {
+      fullYTPlayer.loadVideoById({ videoId, startSeconds });
+      frame.style.display = 'block';
+      if (empty) empty.style.display = 'none';
+      const inputEl = document.getElementById('ytInput');
+      if (inputEl) inputEl.value = '';
+      ytAddToHistory(videoId);
+      return;
+    } catch (e) { /* fall through */ }
+  }
+
+  // First load — set src then attach Player
+  const startQs = startSeconds ? `&start=${startSeconds}` : '';
+  frame.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1${startQs}`;
   frame.style.display = 'block';
   if (empty) empty.style.display = 'none';
-  // Clear input after playing
   const inputEl = document.getElementById('ytInput');
   if (inputEl) inputEl.value = '';
-  // Save to history with title (fetched in background)
   ytAddToHistory(videoId);
+
+  await whenYTApiReady();
+  if (fullYTPlayer && typeof fullYTPlayer.destroy === 'function') {
+    try { fullYTPlayer.destroy(); } catch (e) {}
+    fullYTPlayer = null;
+  }
+  fullYTPlayer = await _attachPlayer('ytPlayerFrame');
 }
 
 async function ytAddToHistory(videoId) {
@@ -14970,16 +15094,42 @@ async function dashYTSearchInternal(query) {
   return null;
 }
 
-function dashYTPlay(videoId, title) {
-  const player = document.getElementById('dashYTPlayer');
+async function dashYTPlay(videoId, title, startSeconds) {
+  const iframe = document.getElementById('dashYTPlayer');
   const empty = document.getElementById('dashYTEmpty');
   const results = document.getElementById('dashYTResults');
-  if (!player) return;
-  player.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
-  player.style.display = 'block';
+  if (!iframe) return;
+  startSeconds = Math.max(0, Math.floor(startSeconds || 0));
+
+  // If we already have a YT.Player attached to this iframe, just call loadVideoById
+  // for instant in-place playback — no iframe reload, no flicker.
+  if (dashYTPlayer && typeof dashYTPlayer.loadVideoById === 'function' && iframe.src) {
+    try {
+      dashYTPlayer.loadVideoById({ videoId, startSeconds });
+      iframe.style.display = 'block';
+      if (empty) empty.style.display = 'none';
+      if (results) results.style.display = 'none';
+      _currentDashYTVideoId = videoId;
+      _ytFloatPaused = false;
+      const playBtn = document.getElementById('ytFloatPlayBtn');
+      if (playBtn) playBtn.textContent = '⏸';
+      return;
+    } catch (e) { /* fall through */ }
+  }
+
+  // First play (or after stop): set iframe src to YouTube embed URL.
+  // enablejsapi=1 lets us attach a Player object once the API is ready.
+  const startQs = startSeconds ? `&start=${startSeconds}` : '';
+  iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1${startQs}`;
+  iframe.style.display = 'block';
   if (empty) empty.style.display = 'none';
   if (results) results.style.display = 'none';
-  // Save to history (skip noembed lookup if we already have a title)
+  _currentDashYTVideoId = videoId;
+  _ytFloatPaused = false;
+  const playBtn = document.getElementById('ytFloatPlayBtn');
+  if (playBtn) playBtn.textContent = '⏸';
+
+  // Save to history immediately (don't wait for API attach)
   if (typeof ytHistory !== 'undefined') {
     ytHistory = ytHistory.filter(h => h.id !== videoId);
     ytHistory.unshift({
@@ -14992,8 +15142,15 @@ function dashYTPlay(videoId, title) {
     if (typeof saveYTHistoryStorage === 'function') saveYTHistoryStorage();
     if (typeof renderYTHistory === 'function') renderYTHistory();
   }
-  // If no real title, fetch one in the background
   if (!title && typeof ytAddToHistory === 'function') ytAddToHistory(videoId);
+
+  // Attach the Player object in the background so we can later call getCurrentTime()
+  await whenYTApiReady();
+  if (dashYTPlayer && typeof dashYTPlayer.destroy === 'function') {
+    try { dashYTPlayer.destroy(); } catch (e) {}
+    dashYTPlayer = null;
+  }
+  dashYTPlayer = await _attachPlayer('dashYTPlayer');
 }
 
 function dashYTCloseResults() {
@@ -15009,24 +15166,135 @@ function dashYTCloseResults() {
   }
 }
 
-// Stop the dashboard mini-player when navigating away from home
+// ---------- HOME YOUTUBE: persistent playback across tabs ----------
+// Tracks the video that's playing in the home mini-widget (so we can transfer it to the full tab)
+let _currentDashYTVideoId = null;
+
+function ytFloatStop() {
+  const player = document.getElementById('dashYTPlayer');
+  const empty = document.getElementById('dashYTEmpty');
+  const results = document.getElementById('dashYTResults');
+  // Destroy YT.Player object first
+  if (dashYTPlayer && typeof dashYTPlayer.destroy === 'function') {
+    try { dashYTPlayer.destroy(); } catch (e) {}
+    dashYTPlayer = null;
+  }
+  if (player) {
+    player.src = '';
+    player.style.display = 'none';
+    player.classList.remove('yt-floating');
+  }
+  if (empty) empty.style.display = 'flex';
+  if (results) results.style.display = 'none';
+  _currentDashYTVideoId = null;
+  _ytFloatPaused = false;
+  document.getElementById('ytFloatControls')?.classList.remove('visible');
+  if (typeof renderDashYT === 'function') renderDashYT();
+}
+
+// Pause/resume the home iframe via YouTube embed postMessage commands.
+// Works because we set ?enablejsapi=1 on the embed URL.
+let _ytFloatPaused = false;
+function ytFloatTogglePlay() {
+  const iframe = document.getElementById('dashYTPlayer');
+  const btn = document.getElementById('ytFloatPlayBtn');
+  if (!iframe || !iframe.contentWindow) return;
+  if (_ytFloatPaused) {
+    iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+    _ytFloatPaused = false;
+    if (btn) btn.textContent = '⏸';
+  } else {
+    iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+    _ytFloatPaused = true;
+    if (btn) btn.textContent = '▶';
+  }
+}
+
+function ytFloatOpen() {
+  // Navigate to the YouTube full tab — the setView/setTool hooks will transfer playback
+  setView('tools');
+  setTool('youtube');
+}
+
+// Update floating UI based on whether home YT is playing AND user is on a non-home/non-YouTube view
+function updateYTFloatVisibility() {
+  const player = document.getElementById('dashYTPlayer');
+  const ctrls = document.getElementById('ytFloatControls');
+  if (!player || !ctrls) return;
+  const playing = !!(player.src);
+  const onHome = document.getElementById('view-dashboard')?.classList.contains('active');
+  const onYT = document.getElementById('tool-youtube')?.classList.contains('active')
+            && document.getElementById('view-tools')?.classList.contains('active');
+
+  if (playing && !onHome && !onYT) {
+    player.classList.add('yt-floating');
+    player.style.display = 'block';
+    ctrls.classList.add('visible');
+  } else {
+    player.classList.remove('yt-floating');
+    ctrls.classList.remove('visible');
+    // Restore display only if we were on home and a video is loaded; otherwise leave alone
+    if (onHome && playing) {
+      player.style.display = 'block';
+    }
+  }
+}
+
+// setView hook: keep the home video playing across tabs (instead of clearing it).
+// When entering YouTube tool, transfer playback to the full tab player.
 (function() {
   const _origSetView2 = window.setView;
   if (typeof _origSetView2 !== 'function') return;
   window.setView = function(view) {
-    const wasOnDash = document.getElementById('view-dashboard')?.classList.contains('active');
     const result = _origSetView2.apply(this, arguments);
-    if (wasOnDash && view !== 'dashboard') {
-      const f = document.getElementById('dashYTPlayer');
-      if (f && f.src) {
-        f.src = '';
-        f.style.display = 'none';
+    // Update visibility AFTER the view switch so .active classes are correct
+    setTimeout(updateYTFloatVisibility, 0);
+    return result;
+  };
+})();
+
+// setTool hook: when entering the YouTube tool tab while home is playing,
+// transfer the current video INTO the full-tab player AT THE SAME TIMESTAMP.
+(function() {
+  const _origSetTool = window.setTool;
+  if (typeof _origSetTool !== 'function') return;
+  window.setTool = function(name) {
+    const result = _origSetTool.apply(this, arguments);
+    if (name === 'youtube') {
+      if (_currentDashYTVideoId) {
+        const transferId = _currentDashYTVideoId;
+        // Capture current playback position from the home Player
+        let startSec = 0;
+        if (dashYTPlayer && typeof dashYTPlayer.getCurrentTime === 'function') {
+          try { startSec = Math.floor(dashYTPlayer.getCurrentTime() || 0); } catch (e) {}
+        }
+        // Stop home iframe to avoid double playback
+        const homeIframe = document.getElementById('dashYTPlayer');
+        if (dashYTPlayer && typeof dashYTPlayer.destroy === 'function') {
+          try { dashYTPlayer.destroy(); } catch (e) {}
+          dashYTPlayer = null;
+        }
+        if (homeIframe) {
+          homeIframe.src = '';
+          homeIframe.style.display = 'none';
+          homeIframe.classList.remove('yt-floating');
+        }
         const empty = document.getElementById('dashYTEmpty');
         if (empty) empty.style.display = 'flex';
-        const res = document.getElementById('dashYTResults');
-        if (res) res.style.display = 'none';
+        document.getElementById('ytFloatControls')?.classList.remove('visible');
+        _currentDashYTVideoId = null;
+
+        // Load same video in the full-tab player at the same timestamp
+        const full = document.getElementById('ytPlayerFrame');
+        const isAlreadyLoaded = full && full.src && full.src.includes(transferId);
+        if (!isAlreadyLoaded && typeof ytLoadVideo === 'function') {
+          // Tiny delay so the YouTube tool pane is in the DOM and active
+          setTimeout(() => ytLoadVideo(transferId, startSec), 50);
+        }
+        if (typeof renderDashYT === 'function') renderDashYT();
       }
     }
+    setTimeout(updateYTFloatVisibility, 0);
     return result;
   };
 })();
@@ -15197,6 +15465,8 @@ function init() {
   loadNotes();
   loadDogHistory();
   loadYTHistory();
+  // Pre-load the YouTube IFrame Player API so first play has seek-handoff support
+  loadYTApi();
   checkAutoReset();
 
   if (!state.settings.onboarded) {
@@ -15263,5 +15533,14 @@ function init() {
 
 init();
 </script>
+
+<!-- Floating YouTube controls (visible only when home widget is playing AND user is on a non-home/non-YouTube tab) -->
+<div id="ytFloatControls" class="yt-float-controls">
+  <button class="yt-float-btn" id="ytFloatPlayBtn" onclick="ytFloatTogglePlay()" title="Play / Pause" aria-label="Play / Pause">⏸</button>
+  <button class="yt-float-btn" onclick="ytFloatOpen()" title="Open in full tab" aria-label="Open in full tab">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+  </button>
+  <button class="yt-float-btn" onclick="ytFloatStop()" title="Stop video" aria-label="Stop">×</button>
+</div>
 </body>
 </html>
