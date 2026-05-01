@@ -4080,11 +4080,12 @@ input, textarea, select {
 
 /* ---- TOP ROW: Clock + Weather ---- */
 .kiosk-top {
-  display: grid;
-  grid-template-columns: 1.25fr 1fr;
+  display: flex;
   gap: 14px;
   min-height: 0;
 }
+.kiosk-top > .kiosk-time { flex: 1.25 1 0; min-width: 0; }
+.kiosk-top > .kiosk-weather { flex: 1 1 0; min-width: 0; }
 
 .kiosk-time {
   background: var(--surface);
@@ -4148,8 +4149,9 @@ input, textarea, select {
 .k-clock {
   font-family: var(--display);
   font-weight: 600;
-  /* Bigger now that the clock has the right column to itself. */
-  font-size: min(11vw, 19vh, 160px);
+  /* Capped tighter so the AM/PM never gets cut off at any tablet width.
+     The clock has the right column of the time card to itself. */
+  font-size: min(8.5vw, 16vh, 120px);
   line-height: 1;
   letter-spacing: -0.025em;
   font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
@@ -4197,14 +4199,20 @@ input, textarea, select {
   background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: clamp(12px, 1.8vh, 22px) clamp(16px, 2vw, 26px);
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  padding: clamp(12px, 1.8vh, 22px) clamp(20px, 2.5vw, 32px);
+  display: flex;
   align-items: center;
-  gap: clamp(10px, 1.5vw, 18px);
+  justify-content: center;
+  gap: clamp(14px, 2vw, 26px);
   position: relative;
   overflow: hidden;
   min-height: 0;
+}
+.kw-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
 }
 .kiosk-weather::before {
   content: "";
@@ -4327,11 +4335,13 @@ input, textarea, select {
 
 /* ---- BOTTOM ROW: Photo (wide) + Upcoming Events (thin) + Quick Tools ---- */
 .kiosk-bottom {
-  display: grid;
-  grid-template-columns: 1.85fr 0.78fr 1.05fr;
+  display: flex;
   gap: 14px;
   min-height: 0;
 }
+.kiosk-bottom > .photo-widget { flex: 1.85 1 0; min-width: 0; }
+.kiosk-bottom > .kcard:nth-of-type(1) { flex: 0.78 1 0; min-width: 0; }
+.kiosk-bottom > .kcard:nth-of-type(2) { flex: 1.05 1 0; min-width: 0; }
 .kcard {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -4495,16 +4505,16 @@ input, textarea, select {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 6px 4px;
+  gap: 2px;
+  padding: 4px 3px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 9px;
   color: var(--text);
   font-family: inherit;
   cursor: pointer;
   transition: all 0.2s var(--ease);
-  min-height: 50px;
+  min-height: 0;
   min-width: 0;
 }
 .qt-tile:hover {
@@ -4515,18 +4525,17 @@ input, textarea, select {
 }
 .qt-tile:active { transform: scale(0.94); }
 .qt-tile .qt-icon {
-  font-size: clamp(16px, min(1.9vw, 2.8vh), 22px);
+  font-size: clamp(15px, min(1.7vw, 2.4vh), 20px);
   line-height: 1;
   flex-shrink: 0;
 }
 .qt-tile .qt-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-align: center;
   line-height: 1.15;
   flex-shrink: 0;
-  word-break: keep-all;
   white-space: nowrap;
 }
 .qt-tile.qt-lock {
@@ -5615,6 +5624,70 @@ input, textarea, select {
   display: inline-block;
 }
 
+/* --- HOME WIDGETS CUSTOMIZER (settings) --- */
+.widget-toggle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 8px;
+  margin-top: 4px;
+}
+.widget-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  user-select: none;
+}
+.widget-toggle:hover { border-color: var(--border-strong); background: var(--surface-2); }
+.widget-toggle.on {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.widget-toggle-icon { font-size: 20px; line-height: 1; }
+.widget-toggle-info { flex: 1; min-width: 0; }
+.widget-toggle-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.widget-toggle.on .widget-toggle-label { color: var(--accent); }
+.widget-toggle-state {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+.widget-toggle.on .widget-toggle-state { color: var(--accent); }
+.widget-toggle-switch {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  background: var(--surface-3);
+  border-radius: 999px;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.widget-toggle-switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  background: var(--text);
+  border-radius: 50%;
+  transition: transform 0.2s var(--ease);
+}
+.widget-toggle.on .widget-toggle-switch { background: var(--accent); }
+.widget-toggle.on .widget-toggle-switch::after { transform: translateX(16px); background: #fff; }
+
 /* --- LIGHT / DARK MODE TOGGLE (settings) --- */
 .mode-toggle {
   display: inline-flex;
@@ -6109,14 +6182,18 @@ input, textarea, select {
   color: var(--accent);
 }
 
-/* Dashboard info strip: 3-column → Sports (scores only) | YouTube mini | Dogs */
+/* Dashboard info strip: Sports (scores only) | YouTube mini | Dogs.
+   Flex so hidden widgets collapse and remaining ones expand. */
 .kiosk-info-strip {
-  display: grid;
-  grid-template-columns: 0.9fr 0.9fr 1.2fr;
+  display: flex;
   gap: 12px;
   flex-shrink: 0;
   min-height: 0;
 }
+.kiosk-info-strip > .sports-strip-card { flex: 0.9 1 0; min-width: 0; }
+.kiosk-info-strip > .yt-strip-card { flex: 0.9 1 0; min-width: 0; }
+.kiosk-info-strip > .dogs-strip { flex: 1.2 1 0; min-width: 0; }
+.widget-hidden { display: none !important; }
 .sports-strip-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -6894,10 +6971,6 @@ body::before {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
       <span>Schedule</span>
     </button>
-    <button class="rail-btn" data-view="invites" aria-label="Invites" id="railInvites">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 8l9 6 9-6M3 8v10a2 2 0 002 2h14a2 2 0 002-2V8M3 8l9-5 9 5"/></svg>
-      <span>Invites</span>
-    </button>
     <button class="rail-btn" data-view="groceries" aria-label="Groceries">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 7h14l-1.5 11a2 2 0 01-2 1.7H8.5a2 2 0 01-2-1.7L5 7zM9 7V5a3 3 0 016 0v2"/></svg>
       <span>Groceries</span>
@@ -6948,7 +7021,7 @@ body::before {
             <div class="k-date" id="dateText">Monday, January 1</div>
             <span id="dashSubGreet" style="display:none"></span>
           </div>
-          <div class="kiosk-weather" onclick="fetchWeather()">
+          <div class="kiosk-weather" data-widget="weather" onclick="fetchWeather()">
             <div class="kw-icon" id="weatherIcon">☀️</div>
             <div class="kw-main">
               <div class="kw-temp"><span id="weatherTemp">—</span><span class="deg">°</span></div>
@@ -6974,7 +7047,7 @@ body::before {
 
         <!-- Info strip: Sports (scores only) + YouTube mini + Dogs status -->
         <div class="kiosk-info-strip">
-          <div class="sports-strip-card" id="dashSportsCard" onclick="setView('tools'); setTool('sports');">
+          <div class="sports-strip-card" data-widget="sports" id="dashSportsCard" onclick="setView('tools'); setTool('sports');">
             <div class="ssc-head">
               <span class="ssc-league" id="dashSportsLeague">📺 Sports</span>
               <span class="ssc-tap-hint">Tap →</span>
@@ -6987,7 +7060,7 @@ body::before {
               <div class="ssc-news" id="dashSportsNews" style="display:none;"></div>
             </div>
           </div>
-          <div class="yt-strip-card" id="dashYTCard">
+          <div class="yt-strip-card" data-widget="youtube" id="dashYTCard">
             <div class="ssc-head">
               <span class="ssc-league" style="color: var(--c-coral);">▶️ YouTube</span>
               <button class="ssc-tap-hint yt-mini-fullbtn" onclick="setView('tools'); setTool('youtube');">Full tab →</button>
@@ -7005,18 +7078,18 @@ body::before {
               <div class="yt-mini-results" id="dashYTResults" style="display:none;"></div>
             </div>
           </div>
-          <div class="dogs-strip" id="dashDogsStrip"></div>
+          <div class="dogs-strip" data-widget="pets" id="dashDogsStrip"></div>
         </div>
 
         <!-- Bottom: Big rotating Photo widget + compact Schedule + Chores -->
         <div class="kiosk-bottom">
-          <div class="photo-widget" id="dashPhotoWidget" onclick="enterScreensaver()">
+          <div class="photo-widget" data-widget="photos" id="dashPhotoWidget" onclick="enterScreensaver()">
             <div class="photo-widget-empty" id="dashPhotoEmpty">
               <div class="pw-icon">📷</div>
               <div class="pw-text">Add family photos to start the slideshow</div>
             </div>
           </div>
-          <div class="kcard">
+          <div class="kcard" data-widget="events">
             <div class="kcard-head">
               <div class="kcard-title">Upcoming Events</div>
               <div class="kcard-badge" id="schedDayBadge">NEXT 7 DAYS</div>
@@ -7030,7 +7103,7 @@ body::before {
               <div class="today-list" id="todayEvents" style="display:none;"></div>
             </div>
           </div>
-          <div class="kcard">
+          <div class="kcard" data-widget="tools">
             <div class="kcard-head">
               <div class="kcard-title">Quick Tools</div>
               <div class="kcard-badge" id="alarmsBadge">—</div>
@@ -7064,11 +7137,8 @@ body::before {
                 <button class="qt-tile" onclick="setView('tools'); setTool('dogs');">
                   <span class="qt-icon">🐾</span><span class="qt-label">Pets</span>
                 </button>
-                <button class="qt-tile" onclick="setView('tools'); setTool('youtube');">
+                <button class="qt-tile" onclick="setView('tools'); setTool('youtube');" style="grid-column: 1 / -1;">
                   <span class="qt-icon">▶️</span><span class="qt-label">YouTube</span>
-                </button>
-                <button class="qt-tile qt-lock" onclick="enterScreensaver()" style="grid-column: 1 / -1;">
-                  <span class="qt-icon">🌙</span><span class="qt-label">Lock</span>
                 </button>
               </div>
               <!-- keep todayChores element so renderDashboard's chore code doesn't error -->
@@ -7086,10 +7156,16 @@ body::before {
           <h1 class="view-title">The <em>Schedule</em></h1>
           <div class="view-sub">Plan together, never miss a beat</div>
         </div>
-        <button class="btn btn-primary" onclick="openEventModal()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>
-          Add Event
-        </button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn" id="schedInvitesBtn" onclick="setView('invites')" style="display:none;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l9 6 9-6M3 8v10a2 2 0 002 2h14a2 2 0 002-2V8M3 8l9-5 9 5"/></svg>
+            <span id="schedInvitesLabel">Invites</span>
+          </button>
+          <button class="btn btn-primary" onclick="openEventModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>
+            Add Event
+          </button>
+        </div>
       </div>
 
       <div class="cal-toolbar">
@@ -7742,6 +7818,20 @@ body::before {
           </div>
           <input class="settings-input" id="setWeatherLoc" type="text" onchange="saveSetting('weatherLocation', this.value); fetchWeather();">
         </div>
+
+        <div class="settings-row" style="border-top: 1px solid var(--border-strong); padding-top: 24px; margin-top: 8px;">
+          <div>
+            <div class="settings-label" style="font-weight: 700;">🏠 Home Page Widgets</div>
+            <div class="settings-desc">Toggle which widgets appear on the home screen — clock and date are always shown</div>
+          </div>
+          <span></span>
+        </div>
+        <div class="settings-row" style="border-bottom: none;">
+          <div style="flex: 1;">
+            <div class="widget-toggle-grid" id="widgetToggleGrid"></div>
+          </div>
+        </div>
+
         <div class="settings-row">
           <div>
             <div class="settings-label">YouTube API Key <span style="font-weight:400;color:var(--text-3);">(optional)</span></div>
@@ -8604,6 +8694,16 @@ const defaultState = () => ({
     // YouTube — optional Data API key for guaranteed inline search
     // Get one free at https://console.cloud.google.com → APIs → YouTube Data API v3
     ytApiKey: '',
+    // Home dashboard widget visibility — each can be toggled off in Family > Settings
+    dashboardWidgets: {
+      weather: true,
+      sports: true,
+      youtube: true,
+      pets: true,
+      photos: true,
+      events: true,
+      tools: true,
+    },
   },
   pets: [
     { id: 'axel', name: 'Axel', emoji: '🐕', color: '#fbbf24', type: 'dog', breed: '', birthday: '', notes: '', fedBreakfast: false, fedDinner: false, treats: 0, lastReset: '' },
@@ -9166,6 +9266,8 @@ function renderDashboard() {
     alarmsBadge.textContent = enabledCount > 0 ? `${enabledCount} ALARM${enabledCount === 1 ? '' : 'S'}` : 'READY';
   }
 
+  // Apply widget visibility settings
+  if (typeof applyWidgetSettings === 'function') applyWidgetSettings();
   // Dogs status strip
   renderDashDogsStrip();
   // Sports widget (lazy-fetches in background)
@@ -9421,6 +9523,8 @@ function goToday() {
 function renderCalendar() {
   if (calMode === 'week') renderWeek();
   else renderMonth();
+  // Refresh the inline Invites button + count
+  if (typeof updateInviteBadge === 'function') updateInviteBadge();
 }
 
 function renderWeek() {
@@ -11538,20 +11642,27 @@ function pendingInviteCount(memberId) {
 }
 
 function updateInviteBadge() {
-  const railBtn = document.getElementById('railInvites');
-  if (!railBtn) return;
-  // Show badge for total pending across the whole family
-  const total = state.invitations.filter(i => i.status === 'pending').length;
-  let badge = railBtn.querySelector('.badge');
-  if (total > 0) {
-    if (!badge) {
-      badge = document.createElement('div');
-      badge.className = 'badge';
-      railBtn.appendChild(badge);
+  // Invites is now accessed via the Schedule view's "Invites" button.
+  const total = (state.invitations || []).filter(i => i.status === 'pending').length;
+  // Show/hide the Invites button on the Schedule view, with a count
+  const btn = document.getElementById('schedInvitesBtn');
+  const lbl = document.getElementById('schedInvitesLabel');
+  if (btn && lbl) {
+    if (total > 0) {
+      btn.style.display = '';
+      lbl.textContent = `Invites · ${total}`;
+      btn.classList.add('btn-primary');
+      btn.style.background = 'var(--c-coral)';
+      btn.style.color = '#fff';
+      btn.style.borderColor = 'var(--c-coral)';
+    } else {
+      btn.style.display = 'none';
+      lbl.textContent = 'Invites';
+      btn.classList.remove('btn-primary');
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.style.borderColor = '';
     }
-    badge.textContent = total > 9 ? '9+' : total;
-  } else if (badge) {
-    badge.remove();
   }
 }
 
@@ -12527,6 +12638,8 @@ function renderFamily() {
   }
   const ytKey = document.getElementById('setYTApiKey');
   if (ytKey) ytKey.value = state.settings.ytApiKey || '';
+  // Render widget toggles
+  if (typeof renderWidgetToggles === 'function') renderWidgetToggles();
   // Slideshow / screensaver settings
   const ps = document.getElementById('setPhotoSpeed');
   if (ps) ps.value = String(state.settings.photoSpeed || 8);
@@ -14448,6 +14561,62 @@ function deletePet() {
     if (typeof renderDogs === 'function') renderDogs();
     toast('Pet removed');
   }, { okText: 'Remove' });
+}
+
+// ---------- HOME PAGE WIDGET CUSTOMIZER ----------
+const DASHBOARD_WIDGETS = [
+  { key: 'weather',  icon: '⛅', label: 'Weather' },
+  { key: 'sports',   icon: '📺', label: 'Sports' },
+  { key: 'youtube',  icon: '▶️', label: 'YouTube' },
+  { key: 'pets',     icon: '🐾', label: 'Pets' },
+  { key: 'photos',   icon: '📷', label: 'Photo Slideshow' },
+  { key: 'events',   icon: '📅', label: 'Upcoming Events' },
+  { key: 'tools',    icon: '🛠️', label: 'Quick Tools' },
+];
+
+function getWidgetSetting(key) {
+  const s = state.settings.dashboardWidgets;
+  if (!s) return true;
+  return s[key] !== false; // default ON if undefined
+}
+
+function applyWidgetSettings() {
+  const settings = state.settings.dashboardWidgets || {};
+  document.querySelectorAll('[data-widget]').forEach(el => {
+    const key = el.getAttribute('data-widget');
+    const visible = settings[key] !== false;
+    el.classList.toggle('widget-hidden', !visible);
+  });
+}
+
+function toggleDashboardWidget(key) {
+  if (!state.settings.dashboardWidgets) {
+    state.settings.dashboardWidgets = {};
+    DASHBOARD_WIDGETS.forEach(w => { state.settings.dashboardWidgets[w.key] = true; });
+  }
+  const cur = state.settings.dashboardWidgets[key];
+  state.settings.dashboardWidgets[key] = (cur === false) ? true : false;
+  saveState();
+  applyWidgetSettings();
+  renderWidgetToggles();
+}
+
+function renderWidgetToggles() {
+  const c = document.getElementById('widgetToggleGrid');
+  if (!c) return;
+  c.innerHTML = DASHBOARD_WIDGETS.map(w => {
+    const on = getWidgetSetting(w.key);
+    return `
+      <div class="widget-toggle ${on ? 'on' : ''}" onclick="toggleDashboardWidget('${w.key}')">
+        <span class="widget-toggle-icon">${w.icon}</span>
+        <div class="widget-toggle-info">
+          <div class="widget-toggle-label">${w.label}</div>
+          <div class="widget-toggle-state">${on ? 'Visible' : 'Hidden'}</div>
+        </div>
+        <div class="widget-toggle-switch"></div>
+      </div>
+    `;
+  }).join('');
 }
 
 // Dashboard YouTube mini widget — embedded player + inline search
