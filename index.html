@@ -4199,20 +4199,24 @@ input, textarea, select {
   background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: clamp(12px, 1.8vh, 22px) clamp(20px, 2.5vw, 32px);
+  padding: clamp(12px, 1.8vh, 22px) clamp(18px, 2.2vw, 30px);
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: clamp(14px, 2vw, 26px);
+  gap: clamp(10px, 1.4vw, 18px);
   position: relative;
   overflow: hidden;
   min-height: 0;
+}
+.kw-temp {
+  flex-shrink: 0;
 }
 .kw-main {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: center;
   min-width: 0;
+  flex: 1;
 }
 .kiosk-weather::before {
   content: "";
@@ -4257,14 +4261,14 @@ input, textarea, select {
   margin-top: 0.05em;
 }
 .kw-desc {
-  font-size: clamp(14px, min(1.8vw, 2.6vh), 20px);
+  font-size: clamp(15px, min(2vw, 2.8vh), 22px);
   color: var(--text);
-  font-weight: 600;
-  margin-top: 4px;
+  font-weight: 700;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   letter-spacing: -0.005em;
+  line-height: 1.1;
 }
 .kw-loc {
   font-size: clamp(11px, min(1.2vw, 1.7vh), 14px);
@@ -7023,8 +7027,8 @@ body::before {
           </div>
           <div class="kiosk-weather" data-widget="weather" onclick="fetchWeather()">
             <div class="kw-icon" id="weatherIcon">☀️</div>
+            <div class="kw-temp"><span id="weatherTemp">—</span><span class="deg">°</span></div>
             <div class="kw-main">
-              <div class="kw-temp"><span id="weatherTemp">—</span><span class="deg">°</span></div>
               <div class="kw-desc" id="weatherDesc">Loading…</div>
               <div class="kw-loc" id="weatherLoc"></div>
               <div class="kw-extra">
