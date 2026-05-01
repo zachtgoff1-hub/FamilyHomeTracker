@@ -6347,12 +6347,12 @@ input, textarea, select {
   padding: 6px 4px;
 }
 
-/* Dashboard YouTube mini widget — search + embedded player */
+/* Dashboard YouTube mini widget — search-bar header + max-size player */
 .yt-strip-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 10px 12px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -6361,28 +6361,15 @@ input, textarea, select {
   overflow: hidden;
   min-height: 0;
 }
-.yt-strip-card .ssc-head {
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 5px;
-  flex-shrink: 0;
-}
-.yt-mini-fullbtn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  padding: 0;
-}
-.yt-mini-fullbtn:hover { color: var(--c-coral); }
-
-.yt-mini-search-row {
+.yt-mini-toprow {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 5px;
   flex-shrink: 0;
 }
-.yt-mini-search-row input {
+.yt-mini-toprow input {
   flex: 1;
-  padding: 6px 10px;
+  padding: 6px 12px;
   font-size: 12px;
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -6392,10 +6379,11 @@ input, textarea, select {
   outline: none;
   min-width: 0;
 }
-.yt-mini-search-row input:focus { border-color: var(--c-coral); }
-.yt-mini-search-btn {
-  width: 30px;
-  height: 30px;
+.yt-mini-toprow input:focus { border-color: var(--c-coral); }
+.yt-mini-search-btn,
+.yt-mini-fullbtn {
+  width: 28px;
+  height: 28px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 50%;
@@ -6405,11 +6393,18 @@ input, textarea, select {
   flex-shrink: 0;
   padding: 0;
   transition: all 0.15s var(--ease);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-2);
 }
-.yt-mini-search-btn:hover {
+.yt-mini-search-btn:hover,
+.yt-mini-fullbtn:hover {
   background: rgba(251, 113, 133, 0.14);
   border-color: var(--c-coral);
+  color: var(--c-coral);
 }
+.yt-mini-fullbtn svg { display: block; }
 
 .yt-mini-media {
   flex: 1;
@@ -7071,13 +7066,12 @@ body::before {
             </div>
           </div>
           <div class="yt-strip-card" data-widget="youtube" id="dashYTCard">
-            <div class="ssc-head">
-              <span class="ssc-league" style="color: var(--c-coral);">▶️ YouTube</span>
-              <button class="ssc-tap-hint yt-mini-fullbtn" onclick="setView('tools'); setTool('youtube');">Full tab →</button>
-            </div>
-            <div class="yt-mini-search-row">
-              <input id="dashYTInput" type="text" placeholder="Search or paste link…" onkeydown="if(event.key==='Enter') dashYTSearch()">
-              <button class="yt-mini-search-btn" onclick="dashYTSearch()" aria-label="Search">🔎</button>
+            <div class="yt-mini-toprow">
+              <input id="dashYTInput" type="text" placeholder="Search YouTube…" onkeydown="if(event.key==='Enter') dashYTSearch()">
+              <button class="yt-mini-search-btn" onclick="dashYTSearch()" aria-label="Search" title="Search">🔎</button>
+              <button class="yt-mini-fullbtn" onclick="setView('tools'); setTool('youtube');" aria-label="Open YouTube tab" title="Open full YouTube tab">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </button>
             </div>
             <div class="yt-mini-media" id="dashYTMedia">
               <div class="yt-mini-empty" id="dashYTEmpty">
